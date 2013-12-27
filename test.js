@@ -122,30 +122,68 @@ function advanceBodies(bodies, elapsed, input)
 
 window.addEventListener('load', function()
 {
-	var bodies		= [
-		/* The ship */
-		{
-			position:	[ 200,   0 ],
-			velocity:	[   0,   4 ],
-			radius:		3,
-			color:		'rgba(255, 255, 255, 1.0)',
-			density:	0.01
-		},
-
-		/* The planet, centered, not moving */
-		{
-			position:	[   0,   0 ],
-			velocity:	[   0,   0 ],
-			radius:		50,
-			color:		'rgba(255, 0, 0, 1.0)',
-			density:	0.01
-		}
-	];
+	var bodies		= [ ];
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
 	var w			= window.innerWidth;
 	var h			= window.innerHeight;
 	var center		= [ 0, 0 ];
+	var level		= 0;
+
+	switch (level) {
+		case 0:
+			bodies = [
+				/* The ship */
+				{
+					position:	[ 200,   0 ],
+					velocity:	[   0,   4 ],
+					radius:		3,
+					color:		'rgba(255, 255, 255, 1.0)',
+					density:	0.01
+				},
+
+				/* The planet, centered, not moving */
+				{
+					position:	[   0,   0 ],
+					velocity:	[   0,   0 ],
+					radius:		50,
+					color:		'rgba(255, 0, 0, 1.0)',
+					density:	0.01
+				}
+			];
+			break;
+
+		case 1:
+			bodies = [
+				/* The ship */
+				{
+					position:	[  30,   0 ],
+					velocity:	[   0,   0 ],
+					radius:		3,
+					color:		'rgba(255, 255, 255, 1.0)',
+					density:	0.01
+				},
+
+				/* Two planets, orbiting each other */
+				{
+					position:	[   0, 150 ],
+					velocity:	[-2.5,   0 ],
+					radius:		20,
+					color:		'rgba(255, 0, 0, 1.0)',
+					density:	0.09
+				},
+				{
+					position:	[   0,-150 ],
+					velocity:	[ 2.5,   0 ],
+					radius:		20,
+					color:		'rgba(0, 0, 255, 1.0)',
+					density:	0.09
+				}
+			];
+
+			break;
+	}
+
 
 	document.body.appendChild(canvas);
 
