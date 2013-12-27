@@ -47,24 +47,97 @@ function addVector(a, b, scale)
 	]);
 }
 
+function getInputVector()
+{
+	var axisX	= 0;
+	var axisY	= 0;
+
+	/* Is there a gamepad plugged in? */
+	if (navigator.webkitGetGamepads) {
+		var gamepads = navigator.webkitGetGamepads();
+		var gamepad;
+
+		if (!(gamepad = gamepads[0])) {
+			return([ 0, 0 ]);
+		}
+
+		axisX = gamepad.axes[0] || 0;
+		axisY = gamepad.axes[1] || 0;
+	}
+
+	// TODO	Read keyboard input
+
+	// TODO	Read mouse and/or touch input
+
+	return([ axisX, axisY ]);
+}
+
+function advanceBodies(bodies, elapsed, input)
+{
+	for (; elapsed > 16; elapsed -= 16) {
+		/*
+			Adjust the velocity of each body based on the gravitational
+			pull of every other body.
+		*/
+		for (var i = 0, body; body = bodies[i]; i++) {
+			for (var x = 0, b; b = bodies[x]; x++) {
+				/* A body does not effect itself */
+				if (i == x) continue;
+
+				var a = getAngle(b.position, body.position);
+				var d = getDistance(body.position, b.position);
+				var g = [ b.mass / Math.pow(d, 2), 0 ];
+
+				var v = rotatePoint(g, a);
+
+				if (i == 0 && input) {
+					/*
+						Add the input vector (ie controller, touchscreen,
+						keyboard, whatever we happen to implement) to the
+						velocity of the ship.
+
+						The input vector scales from -1 to 1 in both axes, so
+						scale that to a reasonable value (0.01 for now).
+					*/
+					v = addVector(v, getInputVector(), 0.01);
+				}
+
+				body.velocity = addVector(body.velocity, v);
+			}
+		}
+
+		/*
+			Adjust the position of each body based on it's velocity.
+
+			The velocity is scaled based on the elapsed time. Our base is about
+			16 ms per frame.
+		*/
+		for (var i = 0, body; body = bodies[i]; i++) {
+			body.position = addVector(body.position, body.velocity);
+		}
+	}
+
+	return(elapsed);
+}
+
 window.addEventListener('load', function()
 {
 	var bodies		= [
-		/* The planet, centered, not moving */
-		{
-			position:	[   0,   0 ],
-			velocity:	[   0,   0 ],
-			radius:		50,
-			color:		'rgba(255, 0, 0, 1.0)',
-			density:	0.01
-		},
-
 		/* The ship */
 		{
 			position:	[ 200,   0 ],
 			velocity:	[   0,   4 ],
 			radius:		3,
 			color:		'rgba(255, 255, 255, 1.0)',
+			density:	0.01
+		},
+
+		/* The planet, centered, not moving */
+		{
+			position:	[   0,   0 ],
+			velocity:	[   0,   0 ],
+			radius:		50,
+			color:		'rgba(255, 0, 0, 1.0)',
 			density:	0.01
 		}
 	];
@@ -110,33 +183,15 @@ window.addEventListener('load', function()
 		ctx.clearRect(-w, -h, 2 * w, 2 * h);
 
 		/*
-			Adjust the velocity of each body based on the gravitational
-			pull of every other body.
+			Apply gravitational pull and velocities to all bodies
+
+			This call will always act on 16ms time segments. This happens to be
+			rougly the delay you get in most browsers between frames.
+
+			If there is a remainder then account for that so it can be included
+			in the time for the next frame.
 		*/
-		for (var i = 0, body; body = bodies[i]; i++) {
-			for (var x = 0, b; b = bodies[x]; x++) {
-				/* A body does not effect itself */
-				if (i == x) continue;
-
-				var a = getAngle(b.position, body.position);
-				var d = getDistance(body.position, b.position);
-				var g = [ b.mass / Math.pow(d, 2), 0 ];
-
-				var v = rotatePoint(g, a);
-				body.velocity = addVector(body.velocity, v);
-			}
-		}
-
-		/*
-			Adjust the position of each body based on it's velocity.
-
-			The velocity is scaled based on the elapsed time. Our base is about
-			16 ms per frame.
-		*/
-		for (var i = 0, body; body = bodies[i]; i++) {
-			body.position = addVector(body.position, body.velocity,
-								elapsed / 16);
-		}
+		lasttime -= advanceBodies(bodies, elapsed, true);
 
 		/* Render each body */
 		for (var i = 0, body; body = bodies[i]; i++) {
@@ -151,6 +206,41 @@ window.addEventListener('load', function()
 			ctx.fill();
 			ctx.restore();
 		}
+
+		/* Calculate a trajectory for each body */
+		// TODO	Find a faster clone
+		var tbodies = JSON.parse(JSON.stringify(bodies));
+
+		for (var i = 0, b; b = tbodies[i]; i++) {
+			b.trajectory = [];
+		}
+
+		for (var x = 0; x < 100; x++) {
+			advanceBodies(tbodies, 64, false);
+
+			for (var i = 0, b; b = tbodies[i]; i++) {
+				b.trajectory.push([ b.position[0], b.position[1] ]);
+			}
+		}
+
+		/* Render the trajectories */
+		ctx.save();
+		ctx.strokeStyle = 'rgba(128, 128, 128, 0.7)';
+		ctx.lineCap = 'round';
+
+		for (var i = 0, b; b = tbodies[i]; i++) {
+			ctx.beginPath();
+
+// TODO	Change the opacity as we go so that it fades from white to nothing
+			for (var x = 0, t; t = b.trajectory[x]; x++) {
+				ctx.lineTo(t[0], t[1]);
+			}
+			ctx.lineTo(b.position[0], b.position[1]);
+			ctx.stroke();
+		}
+		ctx.restore();
+
+		delete tbodies;
 	};
 	requestAnimationFrame(render);
 });
