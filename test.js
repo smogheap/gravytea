@@ -5,25 +5,25 @@
 //		The units are currently in pixels, and the velocity is
 //		pixels per frame.
 
-var getAngle = function getAngle(a, b)
+function getAngle(a, b)
 {
 	var x = a[0] - b[0];
 	var y = a[1] - b[1];
 
 	// return(Math.atan2(y, x) * (180 / Math.PI));
 	return(Math.atan2(y, x));
-};
+}
 
-var getDistance = function getDistance(a, b)
+function getDistance(a, b)
 {
 	var x = a[0] - b[0];
 	var y = a[1] - b[1];
 
 	return(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
-};
+}
 
 /* Rotate a point around the origin */
-var rotatePoint = function rotatePoint(v, angle)
+function rotatePoint(v, angle)
 {
 	var s = Math.sin(angle);
 	var c = Math.cos(angle);
@@ -32,9 +32,9 @@ var rotatePoint = function rotatePoint(v, angle)
 		v[0] * c - v[1] * s,
 		v[0] * s + v[1] * c
 	]);
-};
+}
 
-var addVector = function addVector(a, b, scale)
+function addVector(a, b, scale)
 {
 	if (isNaN(scale)) {
 		scale = 1;
@@ -45,7 +45,7 @@ var addVector = function addVector(a, b, scale)
 		a[0] + (b[0] * scale),
 		a[1] + (b[1] * scale)
 	]);
-};
+}
 
 window.addEventListener('load', function()
 {
@@ -86,7 +86,7 @@ window.addEventListener('load', function()
 
 	/*
 		Calculate the mass of each body (assuming for now that they are
-		all perfect spheres.
+		all perfect spheres).
 	*/
 	for (var i = 0, body; body = bodies[i]; i++) {
 		body.volume = (4 / 3) * Math.PI * Math.pow(body.radius, 3);
@@ -155,6 +155,7 @@ window.addEventListener('load', function()
 	requestAnimationFrame(render);
 });
 
+/* pollyfill for requestAnimationFrame */
 (function() {
     var lastTime	= 0;
     var vendors		= ['webkit', 'moz'];
