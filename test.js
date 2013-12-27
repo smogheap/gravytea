@@ -207,40 +207,56 @@ window.addEventListener('load', function()
 			ctx.restore();
 		}
 
-		/* Calculate a trajectory for each body */
-		// TODO	Find a faster clone
-		var tbodies = JSON.parse(JSON.stringify(bodies));
-
-		for (var i = 0, b; b = tbodies[i]; i++) {
-			b.trajectory = [];
+		/*
+			Save the current position and velocity of each body before
+			calculating the trajectories.
+		*/
+		for (var i = 0, body; body = bodies[i]; i++) {
+			body.save = {
+				position:	[ body.position[0], body.position[1] ],
+				velocity:	[ body.velocity[0], body.velocity[1] ]
+			};
 		}
 
-		for (var x = 0; x < 100; x++) {
-			advanceBodies(tbodies, 64, false);
+		/* Calculate a trajectory for each body */
+		for (var i = 0, body; body = bodies[i]; i++) {
+			body.trajectory = [];
+			body.trajectory.push([ body.position[0], body.position[1] ]);
+		}
+		for (var x = 0; x < 50; x++) {
+			advanceBodies(bodies, 64, false);
 
-			for (var i = 0, b; b = tbodies[i]; i++) {
-				b.trajectory.push([ b.position[0], b.position[1] ]);
+			for (var i = 0, body; body = bodies[i]; i++) {
+				body.trajectory.push([ body.position[0], body.position[1] ]);
 			}
+		}
+
+		/* Restore the original position and velocity for each body */
+		for (var i = 0, body; body = bodies[i]; i++) {
+			body.position = body.save.position;
+			body.velocity = body.save.velocity;
+
+			delete body.save;
 		}
 
 		/* Render the trajectories */
 		ctx.save();
-		ctx.strokeStyle = 'rgba(128, 128, 128, 0.7)';
 		ctx.lineCap = 'round';
 
-		for (var i = 0, b; b = tbodies[i]; i++) {
-			ctx.beginPath();
+		for (var i = 0, body; body = bodies[i]; i++) {
+			for (var x = body.trajectory.length - 2; x >= 0; x--) {
+				ctx.beginPath();
+				ctx.strokeStyle = 'rgba(128, 128, 128, ' +
+									((body.trajectory.length - x) * 0.01) + ')';
 
-// TODO	Change the opacity as we go so that it fades from white to nothing
-			for (var x = 0, t; t = b.trajectory[x]; x++) {
-				ctx.lineTo(t[0], t[1]);
+				ctx.moveTo(body.trajectory[x    ][0], body.trajectory[x    ][1]);
+				ctx.lineTo(body.trajectory[x + 1][0], body.trajectory[x + 1][1]);
+				ctx.stroke();
 			}
-			ctx.lineTo(b.position[0], b.position[1]);
-			ctx.stroke();
+
+			delete body.trajectory;
 		}
 		ctx.restore();
-
-		delete tbodies;
 	};
 	requestAnimationFrame(render);
 });
