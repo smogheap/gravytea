@@ -128,7 +128,7 @@ window.addEventListener('load', function()
 	var w			= window.innerWidth;
 	var h			= window.innerHeight;
 	var center		= [ 0, 0 ];
-	var level		= 1;
+	var level		= 2;
 
 	switch (level) {
 		case 0:
@@ -180,7 +180,41 @@ window.addEventListener('load', function()
 					density:	0.09
 				}
 			];
+			break;
 
+		case 2:
+			bodies = [
+				/* The ship */
+				{
+					position:	[ 200,   0 ],
+					velocity:	[   0,   4 ],
+					radius:		3,
+					color:		'rgba(255, 255, 255, 1.0)',
+					density:	0.01
+				},
+
+				{
+					position:	[   0,   0 ],
+					velocity:	[   0,   0 ],
+					radius:		20,
+					color:		'rgba(255, 0, 0, 1.0)',
+					density:	0.09
+				},
+				{
+					position:	[   0,-150 ],
+					velocity:	[ 4.5,   0 ],
+					radius:		5,
+					color:		'rgba(0, 0, 255, 1.0)',
+					density:	0.03
+				},
+				{
+					position:	[ 330,  50 ],
+					velocity:	[   0,   3 ],
+					radius:		6,
+					color:		'rgba(0, 255, 0, 1.0)',
+					density:	0.03
+				}
+			];
 			break;
 	}
 
