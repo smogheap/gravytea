@@ -128,7 +128,7 @@ window.addEventListener('load', function()
 	var w			= window.innerWidth;
 	var h			= window.innerHeight;
 	var center		= [ 0, 0 ];
-	var level		= 0;
+	var level		= 1;
 
 	switch (level) {
 		case 0:
@@ -231,20 +231,6 @@ window.addEventListener('load', function()
 		*/
 		lasttime -= advanceBodies(bodies, elapsed, true);
 
-		/* Render each body */
-		for (var i = 0, body; body = bodies[i]; i++) {
-			ctx.save();
-
-			ctx.fillStyle = body.color;
-
-			ctx.beginPath();
-			ctx.arc(body.position[0], body.position[1],
-					body.radius, 0, Math.PI * 2, false);
-			ctx.closePath();
-			ctx.fill();
-			ctx.restore();
-		}
-
 		/*
 			Save the current position and velocity of each body before
 			calculating the trajectories.
@@ -277,7 +263,7 @@ window.addEventListener('load', function()
 			delete body.save;
 		}
 
-		/* Render the trajectories */
+		/* Render the trajectories, and the bodies */
 		ctx.save();
 		ctx.lineCap = 'round';
 
@@ -293,6 +279,14 @@ window.addEventListener('load', function()
 			}
 
 			delete body.trajectory;
+
+			ctx.fillStyle = body.color;
+
+			ctx.beginPath();
+			ctx.arc(body.position[0], body.position[1],
+					body.radius, 0, Math.PI * 2, false);
+			ctx.closePath();
+			ctx.fill();
 		}
 		ctx.restore();
 	};
