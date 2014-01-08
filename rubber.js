@@ -5,6 +5,11 @@
 //		The units are currently in pixels, and the velocity is
 //		pixels per frame.
 
+function toRad(angle)
+{
+	return(angle * (Math.PI / 180));
+}
+
 function getAngle(a, b)
 {
 	var x = a[0] - b[0];
@@ -47,7 +52,7 @@ function addVector(a, b, scale)
 	]);
 }
 
-function getInputVector()
+function getInputVector(body)
 {
 	var axisX	= 0;
 	var axisY	= 0;
@@ -57,7 +62,28 @@ function getInputVector()
 		var gamepads = navigator.webkitGetGamepads();
 		var gamepad;
 
-		if (!(gamepad = gamepads[0])) {
+		for (var i = 0; i < gamepads.length; i++) {
+			if (!(gamepad = gamepads[i])) {
+				/* This gamepad doesn't appear to exist */
+				continue;
+			}
+
+			if (!gamepad.axes || !gamepad.axes[0] || !gamepad.axes[1]) {
+				/* This gamepad doesn't have an analog stick */
+				continue;
+			}
+
+			if (!gamepad.axes[0] && !gamepad.axes[1]) {
+				/* Nothing is being pushed on this gamepad's analog stick */
+				continue;
+			}
+
+			/* Looks like we found a match */
+			break;
+		}
+
+		if (!gamepad) {
+			body.thrust	= 0;
 			return([ 0, 0 ]);
 		}
 
@@ -68,6 +94,9 @@ function getInputVector()
 	// TODO	Read keyboard input
 
 	// TODO	Read mouse and/or touch input
+
+	body.angle	= getAngle(		[ 0, 0 ], [ axisX, axisY ]);
+	body.thrust	= getDistance(	[ 0, 0 ], [ axisX, axisY ]);
 
 	return([ axisX, axisY ]);
 }
@@ -99,7 +128,7 @@ function advanceBodies(bodies, elapsed, input)
 						The input vector scales from -1 to 1 in both axes, so
 						scale that to a reasonable value (0.01 for now).
 					*/
-					v = addVector(v, getInputVector(), 0.01);
+					v = addVector(v, getInputVector(body), 0.01);
 				}
 
 				body.velocity = addVector(body.velocity, v);
@@ -118,6 +147,78 @@ function advanceBodies(bodies, elapsed, input)
 	}
 
 	return(elapsed);
+}
+
+// TODO	Only draw the flame if thrust is being applied
+function drawRocket(ctx, frame, x, y, size, angle, flameSize)
+{
+	ctx.save();
+
+	var scale = size / 20;
+
+	ctx.translate(x, y);
+	ctx.rotate(angle);
+	ctx.scale(scale || 1, scale || 1);
+
+	ctx.strokeStyle	= "white";
+	ctx.fillStyle	= "silver";
+
+	ctx.beginPath();
+
+	ctx.arc( 10, -10, 20, toRad(130), toRad(240));
+	ctx.arc(-10, -10, 20, toRad(300), toRad(50));
+
+	ctx.lineTo( 5, 10);
+	ctx.lineTo(-5, 10);
+
+	ctx.arc(10, -10, 20, toRad(130), toRad(130));
+
+	ctx.stroke();
+	ctx.fill();
+
+	if (flameSize > 0) {
+		ctx.scale(flameSize, flameSize);
+
+		switch(frame % 4) {
+			case 0:
+				ctx.strokeStyle	= "yellow";
+				ctx.fillStyle	= "orange";
+				break;
+
+			case 2:
+				ctx.strokeStyle	= "orange";
+				ctx.fillStyle	= "red";
+				break;
+
+			default:
+				ctx.strokeStyle	= "white";
+				ctx.fillStyle	= "yellow";
+
+				ctx.translate(0, 5.5);
+				ctx.scale(0.5, 0.5);
+				break;
+		}
+
+		ctx.beginPath();
+		ctx.arc( 5, 15, 10, toRad(120), toRad(200));
+		ctx.arc(-5, 15, 10, toRad(340), toRad(60));
+		ctx.stroke();
+		ctx.fill();
+	}
+
+	ctx.restore();
+}
+
+function drawPlanet(ctx, x, y, radius, color)
+{
+	ctx.save();
+	ctx.fillStyle = color;
+
+	ctx.beginPath();
+	ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+	ctx.closePath();
+	ctx.fill();
+	ctx.restore();
 }
 
 window.addEventListener('load', function()
@@ -139,7 +240,7 @@ window.addEventListener('load', function()
 				{
 					position:	[ 200,   0 ],
 					velocity:	[   0,   4 ],
-					radius:		3,
+					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.01
 				},
@@ -161,7 +262,7 @@ window.addEventListener('load', function()
 				{
 					position:	[  30,   0 ],
 					velocity:	[   0,   0 ],
-					radius:		3,
+					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.01
 				},
@@ -190,7 +291,7 @@ window.addEventListener('load', function()
 				{
 					position:	[ 200,   0 ],
 					velocity:	[   0,   4 ],
-					radius:		3,
+					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.01
 				},
@@ -232,7 +333,8 @@ window.addEventListener('load', function()
 		body.mass	= body.volume * body.density;
 	}
 
-	var lasttime = NaN;
+	var lasttime	= NaN;
+	var frame		= 0;
 	var render = function render(time)
 	{
 		requestAnimationFrame(render);
@@ -241,6 +343,8 @@ window.addEventListener('load', function()
 			lasttime = time;
 			return;
 		}
+
+		frame++;
 
 		var elapsed = time - lasttime;
 		lasttime = time;
@@ -327,13 +431,18 @@ window.addEventListener('load', function()
 
 			delete body.trajectory;
 
-			ctx.fillStyle = body.color;
-
-			ctx.beginPath();
-			ctx.arc(X + body.position[0], Y + body.position[1],
-					body.radius, 0, Math.PI * 2, false);
-			ctx.closePath();
-			ctx.fill();
+			if (i == 0) {
+				/*
+					For now there is always a single ship, and it is the first
+					body in the list.
+				*/
+				drawRocket(ctx, frame,
+					X + body.position[0], Y + body.position[1],
+					body.radius, body.angle, body.thrust);
+			} else {
+				drawPlanet(ctx, X + body.position[0], Y + body.position[1],
+					body.radius, body.color);
+			}
 		}
 		ctx.restore();
 	};
