@@ -82,21 +82,31 @@ function getInputVector(body)
 			break;
 		}
 
-		if (!gamepad) {
-			body.thrust	= 0;
-			return([ 0, 0 ]);
+		if (gamepad) {
+			axisX = gamepad.axes[0] || 0;
+			axisY = gamepad.axes[1] || 0;
 		}
-
-		axisX = gamepad.axes[0] || 0;
-		axisY = gamepad.axes[1] || 0;
 	}
 
-	// TODO	Read keyboard input
+	if (window.buttons && !axisX && !axisY) {
+		/*
+			We didn't get anything from a gamepad, so check to see if the
+			keyboard is being used...
+		*/
+		if (window.buttons.left)		axisX--;
+		if (window.buttons.up)			axisY--;
+		if (window.buttons.right)		axisX++;
+		if (window.buttons.down)		axisY++;
+	}
 
 	// TODO	Read mouse and/or touch input
 
-	body.angle	= getAngle(		[ 0, 0 ], [ axisX, axisY ]);
-	body.thrust	= getDistance(	[ 0, 0 ], [ axisX, axisY ]);
+	if (axisX || axisY) {
+		body.angle	= getAngle(		[ 0, 0 ], [ axisX, axisY ]);
+		body.thrust	= getDistance(	[ 0, 0 ], [ axisX, axisY ]);
+	} else {
+		body.thrust	= 0;
+	}
 
 	return([ axisX, axisY ]);
 }
@@ -157,7 +167,7 @@ function drawRocket(ctx, frame, x, y, size, angle, flameSize)
 	var scale = size / 20;
 
 	ctx.translate(x, y);
-	ctx.rotate(angle);
+	ctx.rotate(angle - toRad(90));
 	ctx.scale(scale || 1, scale || 1);
 
 	ctx.strokeStyle	= "white";
@@ -321,6 +331,31 @@ window.addEventListener('load', function()
 			break;
 	}
 
+	window.buttons = {};
+
+	window.addEventListener('keydown', function(event)
+	{
+		switch (event.keyCode) {
+			case 37:	window.buttons.left		= true; break;
+			case 38:	window.buttons.up		= true; break;
+			case 39:	window.buttons.right	= true; break;
+			case 40:	window.buttons.down		= true; break;
+
+			default:	return;
+		}
+	});
+
+	window.addEventListener('keyup', function(event)
+	{
+		switch (event.keyCode) {
+			case 37:	delete window.buttons.left;		break;
+			case 38:	delete window.buttons.up;		break;
+			case 39:	delete window.buttons.right;	break;
+			case 40:	delete window.buttons.down;		break;
+
+			default:	return;
+		}
+	});
 
 	document.body.appendChild(canvas);
 
