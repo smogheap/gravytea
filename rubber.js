@@ -299,11 +299,11 @@ window.addEventListener('load', function()
 			bodies = [
 				/* The ship */
 				{
-					position:	[ 200,   0 ],
-					velocity:	[   0,   4 ],
+					position:	[ 200,   0   ],
+					velocity:	[   0,   0.8 ],
 					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
-					density:	0.01
+					density:	0.001
 				},
 
 				{
@@ -311,21 +311,21 @@ window.addEventListener('load', function()
 					velocity:	[   0,   0 ],
 					radius:		20,
 					color:		'rgba(255, 0, 0, 1.0)',
-					density:	0.09
+					density:	0.009
 				},
 				{
-					position:	[   0,-150 ],
-					velocity:	[ 4.5,   0 ],
+					position:	[    0,-150 ],
+					velocity:	[ 0.85,   0 ],
 					radius:		5,
 					color:		'rgba(0, 0, 255, 1.0)',
-					density:	0.03
+					density:	0.003
 				},
 				{
-					position:	[ 330,  50 ],
-					velocity:	[   0,   3 ],
+					position:	[ 330,   50 ],
+					velocity:	[   0,  0.7 ],
 					radius:		6,
 					color:		'rgba(0, 255, 0, 1.0)',
-					density:	0.03
+					density:	0.003
 				}
 			];
 			break;
@@ -381,10 +381,6 @@ window.addEventListener('load', function()
 
 		frame++;
 
-		var elapsed = time - lasttime;
-		lasttime = time;
-// console.log('elapsed', elapsed);
-
 		if (w != window.innerWidth || h != window.innerHeight) {
 			// TODO	Scale the game to fit on the screen...
 
@@ -415,7 +411,7 @@ window.addEventListener('load', function()
 			If there is a remainder then account for that so it can be included
 			in the time for the next frame.
 		*/
-		lasttime -= advanceBodies(bodies, elapsed, true);
+		lasttime = time - advanceBodies(bodies, time - lasttime, true);
 
 		/*
 			Save the current position and velocity of each body before
