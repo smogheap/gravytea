@@ -125,10 +125,12 @@ window.addEventListener('load', function()
 	var bodies		= [ ];
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
-	var w			= window.innerWidth;
-	var h			= window.innerHeight;
 	var center		= [ 0, 0 ];
 	var level		= 2;
+	var w			= -1;
+	var h			= -1;
+	var X			= -1;
+	var Y			= -1;
 
 	switch (level) {
 		case 0:
@@ -221,14 +223,6 @@ window.addEventListener('load', function()
 
 	document.body.appendChild(canvas);
 
-	canvas.setAttribute('width',  w);
-	canvas.setAttribute('height', h);
-
-	w = Math.floor(w / 2);
-	h = Math.floor(h / 2);
-
-	ctx.translate(w, h);
-
 	/*
 		Calculate the mass of each body (assuming for now that they are
 		all perfect spheres).
@@ -252,7 +246,24 @@ window.addEventListener('load', function()
 		lasttime = time;
 // console.log('elapsed', elapsed);
 
-		ctx.clearRect(-w, -h, 2 * w, 2 * h);
+		if (w != window.innerWidth || h != window.innerHeight) {
+			w = window.innerWidth;
+			h = window.innerHeight;
+
+			X = w / 2;
+			Y = h / 2;
+
+			canvas.setAttribute('width',  w);
+			canvas.setAttribute('height', h);
+		}
+
+		/*
+			It would be nice to translate, but it doesn't work on webOS. Instead
+			all positions need to be adjusted relative to the center of the
+			screen manually.
+		*/
+		// ctx.translate(x, y);
+		ctx.clearRect(0, 0, w, h);
 
 		/*
 			Apply gravitational pull and velocities to all bodies
@@ -307,8 +318,8 @@ window.addEventListener('load', function()
 				ctx.strokeStyle = 'rgba(128, 128, 128, ' +
 									((body.trajectory.length - x) * 0.01) + ')';
 
-				ctx.moveTo(body.trajectory[x    ][0], body.trajectory[x    ][1]);
-				ctx.lineTo(body.trajectory[x + 1][0], body.trajectory[x + 1][1]);
+				ctx.moveTo(X + body.trajectory[x    ][0], Y + body.trajectory[x    ][1]);
+				ctx.lineTo(X + body.trajectory[x + 1][0], Y + body.trajectory[x + 1][1]);
 				ctx.stroke();
 			}
 
@@ -317,7 +328,7 @@ window.addEventListener('load', function()
 			ctx.fillStyle = body.color;
 
 			ctx.beginPath();
-			ctx.arc(body.position[0], body.position[1],
+			ctx.arc(X + body.position[0], Y + body.position[1],
 					body.radius, 0, Math.PI * 2, false);
 			ctx.closePath();
 			ctx.fill();
