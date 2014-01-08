@@ -247,6 +247,8 @@ window.addEventListener('load', function()
 // console.log('elapsed', elapsed);
 
 		if (w != window.innerWidth || h != window.innerHeight) {
+			// TODO	Scale the game to fit on the screen...
+
 			w = window.innerWidth;
 			h = window.innerHeight;
 
