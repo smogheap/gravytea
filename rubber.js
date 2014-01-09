@@ -154,6 +154,24 @@ function advanceBodies(bodies, elapsed, input)
 		for (var i = 0, body; body = bodies[i]; i++) {
 			body.position = addVector(body.position, body.velocity);
 		}
+
+		/*
+			Detect any collisions, and bounce the colliding objects off of each
+			other.
+		*/
+		for (var i = 0, body; body = bodies[i]; i++) {
+			for (var x = 0, b; b = bodies[x]; x++) {
+				/* Can't bounce off of yourself */
+				if (i == x) continue;
+
+				var d = getDistance(body.position, b.position);
+
+				if (d < body.radius + b.radius) {
+// TODO	Implement the bounce code...
+					// console.log('bounce');
+				}
+			}
+		}
 	}
 
 	return(elapsed);
@@ -231,19 +249,13 @@ function drawPlanet(ctx, x, y, radius, color)
 	ctx.restore();
 }
 
-window.addEventListener('load', function()
+/* Return a list of bodies for the specified level */
+function loadLevel(level)
 {
-	var bodies		= [ ];
-	var canvas		= document.createElement('canvas');
-	var ctx			= canvas.getContext('2d');
-	var center		= [ 0, 0 ];
-	var level		= 2;
-	var w			= -1;
-	var h			= -1;
-	var X			= -1;
-	var Y			= -1;
+	var bodies;
 
 	switch (level) {
+		default:
 		case 0:
 			bodies = [
 				/* The ship */
@@ -331,6 +343,29 @@ window.addEventListener('load', function()
 			break;
 	}
 
+	/*
+		Calculate the mass of each body (assuming for now that they are
+		all perfect spheres).
+	*/
+	for (var i = 0, body; body = bodies[i]; i++) {
+		body.volume = (4 / 3) * Math.PI * Math.pow(body.radius, 3);
+		body.mass	= body.volume * body.density;
+	}
+
+	return(bodies);
+}
+
+window.addEventListener('load', function()
+{
+	var bodies		= loadLevel(1);
+	var canvas		= document.createElement('canvas');
+	var ctx			= canvas.getContext('2d');
+	var center		= [ 0, 0 ];
+	var w			= -1;
+	var h			= -1;
+	var X			= -1;
+	var Y			= -1;
+
 	window.buttons = {};
 
 	window.addEventListener('keydown', function(event)
@@ -340,8 +375,11 @@ window.addEventListener('load', function()
 			case 38:	window.buttons.up		= true; break;
 			case 39:	window.buttons.right	= true; break;
 			case 40:	window.buttons.down		= true; break;
+		}
 
-			default:	return;
+		/* Allow loading a level by number (for now) */
+		if (event.keyCode >= 48 && event.keyCode < 58) {
+			bodies = loadLevel(event.keyCode - 48);
 		}
 	});
 
@@ -352,21 +390,10 @@ window.addEventListener('load', function()
 			case 38:	delete window.buttons.up;		break;
 			case 39:	delete window.buttons.right;	break;
 			case 40:	delete window.buttons.down;		break;
-
-			default:	return;
 		}
 	});
 
 	document.body.appendChild(canvas);
-
-	/*
-		Calculate the mass of each body (assuming for now that they are
-		all perfect spheres).
-	*/
-	for (var i = 0, body; body = bodies[i]; i++) {
-		body.volume = (4 / 3) * Math.PI * Math.pow(body.radius, 3);
-		body.mass	= body.volume * body.density;
-	}
 
 	var lasttime	= NaN;
 	var frame		= 0;
