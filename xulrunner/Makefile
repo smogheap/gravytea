@@ -55,7 +55,7 @@ realclean: clean
 # TODO Fix the extension for the stub on windows...
 all: ${APP}/xulrunner
 	mkdir -p ${CONTENT}
-	cp ../index.html ../src ${CONTENT}
+	cp -r ../index.html ../src ${CONTENT}
 	cp ${APP}/xulrunner/*stub* ${APP}/${APP}
 
 # TODO	Implement a 'package' target that builds the correct package for the
