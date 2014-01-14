@@ -47,16 +47,20 @@ xulrunner-${XR_VERSION}.en-US.win32.zip:
 clean:
 	rm -rf ${CONTENT}			|| true
 	rm ${APP}/${APP}			|| true
+	rm ${APP}/${APP}.exe		|| true
 
 realclean: clean
 	rm -rf ${APP}/xulrunner		|| true
 
 
-# TODO Fix the extension for the stub on windows...
 all: ${APP}/xulrunner
 	mkdir -p ${CONTENT}
 	cp -r ../index.html ../src ${CONTENT}
-	cp ${APP}/xulrunner/*stub* ${APP}/${APP}
+	if [ -f ${APP}/xulrunner/*stub*.exe ]; then				\
+		cp ${APP}/xulrunner/*stub* ${APP}/${APP}.exe	;	\
+	else													\
+		cp ${APP}/xulrunner/*stub* ${APP}/${APP}		;	\
+	fi
 
 # TODO	Implement a 'package' target that builds the correct package for the
 #		platform that was just built... .deb/.rpm/.tgz/.msi/.dmg
