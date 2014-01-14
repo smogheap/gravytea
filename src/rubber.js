@@ -7,6 +7,10 @@ function collide(a, b)
 		// TODO	This method of detecting a collision has a problem... If a body
 		//		is moving fast enough to go right past the object in a 16ms
 		//		slice then it just goes past it...
+		//
+		//		Really we should check to see if the lines cross, but that will
+		//		require taking into account the radius of both objects. Not
+		//		terribly difficult.
 
 		/* No collision */
 		return(false);
@@ -64,6 +68,10 @@ function getRocketThrust(body)
 	}
 
 	// TODO	Read mouse and/or touch input
+
+	if (!axisX && !axisY) {
+		return(null);
+	}
 
 	var v = new V(axisX, axisY);
 
@@ -202,7 +210,7 @@ function loadLevel(level)
 					position:	new V(200, 0),
 					velocity:	new V(0, 0.8),
 					radius:		5,
-					color:		'rgba(255, 255, 255, 1.0)'
+					density:	0.001
 				}),
 
 				new Body({
@@ -229,8 +237,7 @@ function loadLevel(level)
 	}
 
 	/* For this game the first body is always the ship */
-	bodies[0].renderCB		= renderRocket;
-	bodies[0].thrustCB		= getRocketThrust;
+	bodies[0].renderCB = renderRocket;
 
 	return(bodies);
 }
@@ -280,6 +287,9 @@ window.addEventListener('load', function()
 	var frame		= 0;
 	var render = function render(time)
 	{
+		var thrust;
+		var rocket;
+
 		requestAnimationFrame(render);
 
 		if (w != window.innerWidth || h != window.innerHeight) {
@@ -296,6 +306,13 @@ window.addEventListener('load', function()
 		ctx.clearRect(0, 0, w, h);
 
 		ctx.translate(w / 2, h / 2);
+
+		/* Is there any thrust to apply to the rocket? */
+		if ((rocket = solarsys.bodies[0]) && (thrust = getRocketThrust(rocket))) {
+			rocket.velocity.tx(thrust.multiply(0.01));
+			solarsys.resetTrajectories();
+		}
+
 		solarsys.render(ctx, time);
 		ctx.restore();
 	};
