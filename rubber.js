@@ -1,55 +1,168 @@
-// TODO	Create a class for bodies that can control it's own
-//		rendering and other things. This should be extended by
-//		a planet class and a rocket class etc.
-//
-//		The units are currently in pixels, and the velocity is
-//		pixels per frame.
-
 function toRad(angle)
 {
 	return(angle * (Math.PI / 180));
 }
 
-function getAngle(a, b)
-{
-	var x = a[0] - b[0];
-	var y = a[1] - b[1];
+function V(x, y) {
+	switch (typeof(x)) {
+		case 'number':
+			this.x = x;
+			this.y = y;
 
-	// return(Math.atan2(y, x) * (180 / Math.PI));
-	return(Math.atan2(y, x));
+			break;
+
+		case 'object':
+			this.x = x.x;
+			this.y = x.y;
+			break;
+	}
+
 }
 
-function getDistance(a, b)
+V.prototype.tx = function(v)
 {
-	var x = a[0] - b[0];
-	var y = a[1] - b[1];
+	switch (typeof(v)) {
+		case 'number':	this.x += v;	this.y += v;	break;
+		case 'object':	this.x += v.x;	this.y += v.y;	break;
+	}
+};
 
-	return(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
-}
+V.prototype.multiply = function(v)
+{
+	switch (typeof(v)) {
+		case 'number':	return(new V(this.x * v,	this.y * v	));
+		case 'object':	return(new V(this.x * v.x,	this.y * v.y));
+		default:		return(null);
+	}
+};
 
-/* Rotate a point around the origin */
-function rotatePoint(v, angle)
+V.prototype.divide = function(v)
+{
+	switch (typeof(v)) {
+		case 'number':	return(new V(this.x / v,	this.y / v	));
+		case 'object':	return(new V(this.x / v.x,	this.y / v.y));
+		default:		return(null);
+	}
+};
+
+V.prototype.add = function(v)
+{
+	switch (typeof(v)) {
+		case 'number':	return(new V(this.x + v,	this.y + v	));
+		case 'object':	return(new V(this.x + v.x,	this.y + v.y));
+		default:		return(null);
+	}
+};
+
+V.prototype.subtract = function(v)
+{
+	switch (typeof(v)) {
+		case 'number':	return(new V(this.x - v,	this.y - v	));
+		case 'object':	return(new V(this.x - v.x,	this.y - v.y));
+		default:		return(null);
+	}
+};
+
+V.prototype.dot = function(v)
+{
+	return(this.x * v.x + this.y * v.y);
+};
+
+V.prototype.length = function()
+{
+	return(Math.sqrt((this.x * this.x) + (this.y * this.y)));
+};
+
+V.prototype.distance = function(v)
+{
+	return(this.subtract(v).length());
+};
+
+V.prototype.angle = function(v)
+{
+	var d = this.subtract(v);
+
+	// return(Math.atan2(d.y, d.x) * (180 / Math.PI));
+	return(Math.atan2(d.y, d.x));
+};
+
+V.prototype.normal = function()
+{
+	var s = 1 / this.length();
+
+	return(new V(this.x * s, this.y * s));
+};
+
+V.prototype.rotate = function(angle)
 {
 	var s = Math.sin(angle);
 	var c = Math.cos(angle);
 
-	return([
-		v[0] * c - v[1] * s,
-		v[0] * s + v[1] * c
-	]);
+	return(new V(
+		this.x * c - this.y * s,
+		this.x * s + this.y * c
+	));
+};
+
+function collide(a, b)
+{
+	var delta		= a.position.subtract(b.position);
+	var distance	= delta.length();
+
+	if (distance > a.radius + b.radius) {
+		// TODO	This method of detecting a collision has a problem... If a body
+		//		is moving fast enough to go right past the object in a 16ms
+		//		slice then it just goes past it...
+
+		/* No collision */
+		return(false);
+	}
+
+	return(true);
 }
 
-function addVector(a, b, scale)
+function uggbounce(a, b)
 {
-	if (isNaN(scale)) {
-		scale = 1;
-	}
-// console.log('scale', scale);
+	var delta		= a.position.subtract(b.position);
+	var distance	= delta.length();
+	var massSum		= a.mass + b.mass;
 
-	return([
-		a[0] + (b[0] * scale),
-		a[1] + (b[1] * scale)
-	]);
+	if (distance > a.radius + b.radius) {
+		/* No collision */
+		return(null);
+	}
+
+	/* Calculate the normal and the tangential */
+	var dNormal		= (new V(delta)).normal();
+	var dTan		= new V(dNormal.y, -dNormal.x);
+	var mT			= dNormal.multiply(a.radius + b.radius - distance);
+
+	a.position.tx(mT.multiply(b.mass / massSum));
+	b.position.tx(mT.multiply(-a.mass / massSum));
+
+	/* Coefficient of restitution */
+	if (isNaN(a.elasticity)) {
+		a.elasticity = 1.0;
+	}
+	if (isNaN(b.elasticity)) {
+		b.elasticity = 1.0;
+	}
+	var cr			= Math.min(a.elasticity, b.elasticity);
+	var v1			= dNormal.multiply(a.velocity.dot(dNormal)).length();
+	var v2			= dNormal.multiply(b.velocity.dot(dNormal)).length();
+
+	/*
+		Store a new velocity that can be applied after all bounces have been
+		calculated. If they are applied before hand then the calculations will
+		not be wrong.
+	*/
+	a.bvelocity = dTan.multiply(a.velocity.dot(dTan));
+	a.bvelocity.tx(dNormal.multiply((cr * b.mass * (v2 - v1) + a.mass * v1 + b.mass * v2) / massSum));
+
+	b.bvelocity = dTan.multiply(b.velocity.dot(dTan));
+	b.bvelocity.tx(dNormal.multiply((cr * a.mass * (v1 - v2) + b.mass * v2 + a.mass * v1) / massSum));
+
+	return(true);
 }
 
 function getInputVector(body)
@@ -101,19 +214,25 @@ function getInputVector(body)
 
 	// TODO	Read mouse and/or touch input
 
+	var v = new V(axisX, axisY);
+
+
+
 	if (axisX || axisY) {
-		body.angle	= getAngle(		[ 0, 0 ], [ axisX, axisY ]);
-		body.thrust	= getDistance(	[ 0, 0 ], [ axisX, axisY ]);
+		var o = new V(0, 0);
+
+		body.angle	= o.angle(v);
+		body.thrust	= o.distance(v);
 	} else {
 		body.thrust	= 0;
 	}
 
-	return([ axisX, axisY ]);
+	return(v);
 }
 
-function advanceBodies(bodies, elapsed, input)
+function advanceBodies(bodies, elapsed, simulation)
 {
-	for (; elapsed > 16; elapsed -= 16) {
+	for (; elapsed >= 16; elapsed -= 16) {
 		/*
 			Adjust the velocity of each body based on the gravitational
 			pull of every other body.
@@ -123,13 +242,13 @@ function advanceBodies(bodies, elapsed, input)
 				/* A body does not effect itself */
 				if (i == x) continue;
 
-				var a = getAngle(b.position, body.position);
-				var d = getDistance(body.position, b.position);
-				var g = [ b.mass / Math.pow(d, 2), 0 ];
+				var a = b.position.angle(body.position);
+				var d = b.position.distance(body.position);
+				var g = new V(b.mass / Math.pow(d, 2), 0);
 
-				var v = rotatePoint(g, a);
+				g = g.rotate(a);
 
-				if (i == 0 && input) {
+				if (i == 0 && !simulation) {
 					/*
 						Add the input vector (ie controller, touchscreen,
 						keyboard, whatever we happen to implement) to the
@@ -138,10 +257,10 @@ function advanceBodies(bodies, elapsed, input)
 						The input vector scales from -1 to 1 in both axes, so
 						scale that to a reasonable value (0.01 for now).
 					*/
-					v = addVector(v, getInputVector(body), 0.01);
+					g = g.add(getInputVector(body).multiply(0.01));
 				}
 
-				body.velocity = addVector(body.velocity, v);
+				body.velocity.tx(g);
 			}
 		}
 
@@ -152,23 +271,16 @@ function advanceBodies(bodies, elapsed, input)
 			16 ms per frame.
 		*/
 		for (var i = 0, body; body = bodies[i]; i++) {
-			body.position = addVector(body.position, body.velocity);
+			body.position = body.position.add(body.velocity);
 		}
 
-		/*
-			Detect any collisions, and bounce the colliding objects off of each
-			other.
-		*/
-		for (var i = 0, body; body = bodies[i]; i++) {
-			for (var x = 0, b; b = bodies[x]; x++) {
-				/* Can't bounce off of yourself */
-				if (i == x) continue;
+		if (!simulation) {
+			for (var i = 0, body; body = bodies[i]; i++) {
+				for (var x = 0, b; b = bodies[x]; x++) {
+					/* Can't hit yourself */
+					if (i == x) continue;
 
-				var d = getDistance(body.position, b.position);
-
-				if (d < body.radius + b.radius) {
-// TODO	Implement the bounce code...
-					// console.log('bounce');
+					collide(body, b);
 				}
 			}
 		}
@@ -177,7 +289,6 @@ function advanceBodies(bodies, elapsed, input)
 	return(elapsed);
 }
 
-// TODO	Only draw the flame if thrust is being applied
 function drawRocket(ctx, frame, x, y, size, angle, flameSize)
 {
 	ctx.save();
@@ -260,8 +371,8 @@ function loadLevel(level)
 			bodies = [
 				/* The ship */
 				{
-					position:	[ 200,   0 ],
-					velocity:	[   0,   4 ],
+					position:	new V(200, 0),
+					velocity:	new V(0, 4),
 					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.01
@@ -269,8 +380,8 @@ function loadLevel(level)
 
 				/* The planet, centered, not moving */
 				{
-					position:	[   0,   0 ],
-					velocity:	[   0,   0 ],
+					position:	new V(0, 0),
+					velocity:	new V(0, 0),
 					radius:		50,
 					color:		'rgba(255, 0, 0, 1.0)',
 					density:	0.01
@@ -282,8 +393,8 @@ function loadLevel(level)
 			bodies = [
 				/* The ship */
 				{
-					position:	[  30,   0 ],
-					velocity:	[   0,   0 ],
+					position:	new V(40, 0),
+					velocity:	new V(0, 0),
 					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.01
@@ -291,15 +402,15 @@ function loadLevel(level)
 
 				/* Two planets, orbiting each other */
 				{
-					position:	[   0, 150 ],
-					velocity:	[-2.5,   0 ],
+					position:	new V(0, 150),
+					velocity:	new V(-2.5, 0),
 					radius:		20,
 					color:		'rgba(255, 0, 0, 1.0)',
 					density:	0.09
 				},
 				{
-					position:	[   0,-150 ],
-					velocity:	[ 2.5,   0 ],
+					position:	new V(0, -150),
+					velocity:	new V(2.5, 0),
 					radius:		20,
 					color:		'rgba(0, 0, 255, 1.0)',
 					density:	0.09
@@ -311,30 +422,30 @@ function loadLevel(level)
 			bodies = [
 				/* The ship */
 				{
-					position:	[ 200,   0   ],
-					velocity:	[   0,   0.8 ],
+					position:	new V(200, 0),
+					velocity:	new V(0, 0.8),
 					radius:		5,
 					color:		'rgba(255, 255, 255, 1.0)',
 					density:	0.001
 				},
 
 				{
-					position:	[   0,   0 ],
-					velocity:	[   0,   0 ],
+					position:	new V(0, 0),
+					velocity:	new V(0, 0),
 					radius:		20,
 					color:		'rgba(255, 0, 0, 1.0)',
 					density:	0.009
 				},
 				{
-					position:	[    0,-150 ],
-					velocity:	[ 0.85,   0 ],
+					position:	new V(0, -150),
+					velocity:	new V(0.85, 0),
 					radius:		5,
 					color:		'rgba(0, 0, 255, 1.0)',
 					density:	0.003
 				},
 				{
-					position:	[ 330,   50 ],
-					velocity:	[   0,  0.7 ],
+					position:	new V(330, 50),
+					velocity:	new V(0, 0.7),
 					radius:		6,
 					color:		'rgba(0, 255, 0, 1.0)',
 					density:	0.003
@@ -438,7 +549,7 @@ window.addEventListener('load', function()
 			If there is a remainder then account for that so it can be included
 			in the time for the next frame.
 		*/
-		lasttime = time - advanceBodies(bodies, time - lasttime, true);
+		lasttime = time - advanceBodies(bodies, time - lasttime, false);
 
 		/*
 			Save the current position and velocity of each body before
@@ -446,21 +557,21 @@ window.addEventListener('load', function()
 		*/
 		for (var i = 0, body; body = bodies[i]; i++) {
 			body.save = {
-				position:	[ body.position[0], body.position[1] ],
-				velocity:	[ body.velocity[0], body.velocity[1] ]
+				position:	new V(body.position),
+				velocity:	new V(body.velocity)
 			};
 		}
 
 		/* Calculate a trajectory for each body */
 		for (var i = 0, body; body = bodies[i]; i++) {
 			body.trajectory = [];
-			body.trajectory.push([ body.position[0], body.position[1] ]);
+			body.trajectory.push([ body.position.x, body.position.y ]);
 		}
-		for (var x = 0; x < 50; x++) {
-			advanceBodies(bodies, 64, false);
+		for (var x = 0; x < 250; x++) {
+			advanceBodies(bodies, 16, true);
 
 			for (var i = 0, body; body = bodies[i]; i++) {
-				body.trajectory.push([ body.position[0], body.position[1] ]);
+				body.trajectory.push([ body.position.x, body.position.y ]);
 			}
 		}
 
@@ -495,10 +606,10 @@ window.addEventListener('load', function()
 					body in the list.
 				*/
 				drawRocket(ctx, frame,
-					X + body.position[0], Y + body.position[1],
+					X + body.position.x, Y + body.position.y,
 					body.radius, body.angle, body.thrust);
 			} else {
-				drawPlanet(ctx, X + body.position[0], Y + body.position[1],
+				drawPlanet(ctx, X + body.position.x, Y + body.position.y,
 					body.radius, body.color);
 			}
 		}
