@@ -87,7 +87,7 @@ function makeCanvasZoomable(canvas, ctx)
 	var save = ctx.save;
 	ctx.save = function()
 	{
-		savedTransforms.push(xform.translate(0,0));
+		savedTransforms.push(xform.translate(0, 0));
 		return(save.call(ctx));
 	};
 

@@ -50,7 +50,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		var p = this;
 		for (var i = this.trajectory.length - 1, n; n = this.trajectory[i]; i--) {
 			ctx.strokeStyle = 'rgba(128, 128, 128, ' +
-								((this.trajectory.length - i) * 0.01) + ')';
+								((this.trajectory.length - (i + 1)) * 0.01) + ')';
 
 			ctx.beginPath();
 			ctx.moveTo(p.position.x, p.position.y);
@@ -84,40 +84,70 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	}
 
 	if (showVelocity) {
-		var v = new V(this.position);
-		var s = 7;
+		/*
+			Show a velocity indicator node
+
+			This point should be shown relative to the position of the body, and
+			should be a constant size regardless of current zoom level.
+
+			This is a bit tricky. Get 2 points with ctx.transformedPoint at a
+			known distance and use the resulting distance to determine the
+			current scale level.
+		*/
+		var a		= ctx.transformedPoint( 0, 0);
+		var b		= ctx.transformedPoint(10, 0);
+		var scale	= (b.x - a.x) / 10;
+
+		var s		= 7 * scale;
+		var t		= 3 * scale;
+		var v		= new V(this.position);
 
 		v.tx(this.velocity);
 
 		ctx.save();
 
-		ctx.lineCap = 'round';
-		ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+		ctx.lineWidth	= 1 * scale;
+		ctx.lineCap		= 'round';
+		ctx.strokeStyle	= 'rgba(255, 255, 255, 1.0)';
 
 		// TODO	End this line before it gets into the indicator?
+
 		ctx.beginPath();
 		ctx.moveTo(this.position.x, this.position.y);
 		ctx.lineTo(v.x, v.y);
 		ctx.stroke();
 
 		/* Draw the velocity indicator circle */
-		ctx.beginPath();
-		ctx.arc(v.x, v.y, s, 0, Math.PI * 2, false);
-		ctx.stroke();
+		for (var i = 0; i < 2; i++) {
+			switch (i) {
+				case 0:
+					ctx.lineWidth	= 3 * scale;
+					ctx.strokeStyle = 'rgba(0, 0, 0, 1.0)';
+					break;
 
-		/* Draw the little ticks on the sides */
-		ctx.beginPath();
+				case 1:
+					ctx.lineWidth	= 1 * scale;
+					ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+					break;
+			}
 
-		ctx.moveTo(v.x - s, v.y);
-		ctx.lineTo(v.x - (s + 3), v.y);
-		ctx.moveTo(v.x + s, v.y);
-		ctx.lineTo(v.x + (s + 3), v.y);
+			ctx.beginPath();
+			ctx.arc(v.x, v.y, s, 0, Math.PI * 2, false);
+			ctx.stroke();
 
-		ctx.moveTo(v.x, v.y - s);
-		ctx.lineTo(v.x, v.y - (s + 3));
+			/* Draw the little ticks on the sides */
+			ctx.beginPath();
 
-		ctx.stroke();
+			ctx.moveTo(v.x - s, v.y);
+			ctx.lineTo(v.x - (s + s), v.y);
+			ctx.moveTo(v.x + s, v.y);
+			ctx.lineTo(v.x + (s + s), v.y);
 
+			ctx.moveTo(v.x, v.y - s);
+			ctx.lineTo(v.x, v.y - (s + s));
+
+			ctx.stroke();
+		}
 
 		ctx.restore();
 	}
