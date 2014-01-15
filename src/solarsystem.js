@@ -81,7 +81,7 @@ SolarSystem.prototype.render = function render(ctx, time)
 
 	/* Render the bodies */
 	for (var i = 0, body; body = this.bodies[i]; i++) {
-		body.render(ctx, true, false);
+		body.render(ctx, true, false, this.options.showVelocity);
 	}
 };
 

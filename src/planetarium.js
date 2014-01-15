@@ -18,7 +18,7 @@ function loadLevel(level)
 				/* A planet */
 				new Body({
 					position:	new V(240, 0),
-					velocity:	new V(0, 22),
+					velocity:	new V(0, 15),
 					radius:		15,
 					color:		'#5f9ea0'
 				})
@@ -77,7 +77,8 @@ function runLevel(solarsys)
 		}
 	}
 
-	solarsys.options.paused = !solarsys.options.paused;
+	solarsys.options.paused			= !solarsys.options.paused;
+	solarsys.options.showVelocity	= !solarsys.options.showVelocity;
 };
 
 // TODO	Allow dragging planets around
@@ -87,8 +88,9 @@ function runLevel(solarsys)
 window.addEventListener('load', function()
 {
 	var solarsys	= new SolarSystem({
+		showVelocity:	true,
 		paused:			true,
-		trajectory:		5 * 1000
+		trajectory:		0.3 * 1000
 	});
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');

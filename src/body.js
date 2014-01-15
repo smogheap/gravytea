@@ -40,19 +40,19 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 
 // TODO	Add an option to display the velocity vector
 
-Body.prototype.render = function render(ctx, body, trajectory)
+Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
-	if (trajectory) {
+	if (showTrajectory) {
 		ctx.save();
 
 		ctx.lineCap = 'round';
 
 		var p = this;
 		for (var i = this.trajectory.length - 1, n; n = this.trajectory[i]; i--) {
-			ctx.beginPath();
 			ctx.strokeStyle = 'rgba(128, 128, 128, ' +
 								((this.trajectory.length - i) * 0.01) + ')';
 
+			ctx.beginPath();
 			ctx.moveTo(p.position.x, p.position.y);
 			ctx.lineTo(n.position.x, n.position.y);
 			ctx.stroke();
@@ -64,7 +64,7 @@ Body.prototype.render = function render(ctx, body, trajectory)
 		ctx.restore();
 	}
 
-	if (body) {
+	if (showBody) {
 		if (this.renderCB) {
 			/* There is an overridden render function for this body */
 			this.renderCB(ctx, this);
@@ -80,6 +80,45 @@ Body.prototype.render = function render(ctx, body, trajectory)
 				0, Math.PI * 2, false);
 		ctx.closePath();
 		ctx.fill();
+		ctx.restore();
+	}
+
+	if (showVelocity) {
+		var v = new V(this.position);
+		var s = 7;
+
+		v.tx(this.velocity);
+
+		ctx.save();
+
+		ctx.lineCap = 'round';
+		ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+
+		// TODO	End this line before it gets into the indicator?
+		ctx.beginPath();
+		ctx.moveTo(this.position.x, this.position.y);
+		ctx.lineTo(v.x, v.y);
+		ctx.stroke();
+
+		/* Draw the velocity indicator circle */
+		ctx.beginPath();
+		ctx.arc(v.x, v.y, s, 0, Math.PI * 2, false);
+		ctx.stroke();
+
+		/* Draw the little ticks on the sides */
+		ctx.beginPath();
+
+		ctx.moveTo(v.x - s, v.y);
+		ctx.lineTo(v.x - (s + 3), v.y);
+		ctx.moveTo(v.x + s, v.y);
+		ctx.lineTo(v.x + (s + 3), v.y);
+
+		ctx.moveTo(v.x, v.y - s);
+		ctx.lineTo(v.x, v.y - (s + 3));
+
+		ctx.stroke();
+
+
 		ctx.restore();
 	}
 };
