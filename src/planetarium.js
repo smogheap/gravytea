@@ -83,7 +83,6 @@ function runLevel(solarsys)
 
 // TODO	Allow dragging planets around
 // TODO	Allow moving a planet's velocity vector
-// TODO	Allow zooming
 
 window.addEventListener('load', function()
 {
@@ -117,30 +116,37 @@ window.addEventListener('load', function()
 
 	document.body.appendChild(canvas);
 
-	var render = function render(time)
+	var resizeCanvas = function()
 	{
-		requestAnimationFrame(render);
-
 		if (w != window.innerWidth || h != window.innerHeight) {
-			// TODO	Scale the game to fit on the screen...
-
 			w = window.innerWidth;
 			h = window.innerHeight;
 
 			canvas.setAttribute('width',  w);
 			canvas.setAttribute('height', h);
 		}
+	};
 
-		ctx.save();
-		ctx.clearRect(0, 0, w, h);
-		ctx.translate(w / 2, h / 2);
+	resizeCanvas();
+	makeCanvasZoomable(canvas, ctx);
+	ctx.translate(w / 2, h / 2);
 
-		/* Render a fixed view of the world... */
+	var render = function render(time)
+	{
+		requestAnimationFrame(render);
+
+		resizeCanvas();
+
+		/* Clear the canvas */
+		var a = ctx.transformedPoint(0, 0);
+		var b = ctx.transformedPoint(canvas.width, canvas.height);
+		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
+
 		// TODO	When the user hits the "Run" button allow the planets to advance
 		// TODO	Allow the user to drag bodies around
-		// TODO	Save the current state of every body when "Run" is hit, so the
-		//		state can be reverted if it doesn't succeed.
 
+		/* Render a fixed view of the world... */
+		ctx.save();
 		solarsys.render(ctx, time, true);
 		ctx.restore();
 	};
