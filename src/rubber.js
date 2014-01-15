@@ -284,27 +284,35 @@ window.addEventListener('load', function()
 
 	document.body.appendChild(canvas);
 
-	var render = function render(time)
+	var resizeCanvas = function()
 	{
-		var thrust;
-		var rocket;
-
-		requestAnimationFrame(render);
-
 		if (w != window.innerWidth || h != window.innerHeight) {
-			// TODO	Scale the game to fit on the screen...
-
 			w = window.innerWidth;
 			h = window.innerHeight;
 
 			canvas.setAttribute('width',  w);
 			canvas.setAttribute('height', h);
 		}
+	};
+
+	resizeCanvas();
+	makeCanvasZoomable(canvas, ctx);
+	ctx.translate(w / 2, h / 2);
+
+	var render = function render(time)
+	{
+		var thrust;
+		var rocket;
+
+		requestAnimationFrame(render);
+		resizeCanvas();
+
+		/* Clear the canvas */
+		var a = ctx.transformedPoint(0, 0);
+		var b = ctx.transformedPoint(canvas.width, canvas.height);
+		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
 		ctx.save();
-		ctx.clearRect(0, 0, w, h);
-
-		ctx.translate(w / 2, h / 2);
 
 		/* Is there any thrust to apply to the rocket? */
 		if ((rocket = solarsys.bodies[0]) && (thrust = getRocketThrust(rocket))) {

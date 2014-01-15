@@ -134,7 +134,6 @@ window.addEventListener('load', function()
 	var render = function render(time)
 	{
 		requestAnimationFrame(render);
-
 		resizeCanvas();
 
 		/* Clear the canvas */
