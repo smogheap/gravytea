@@ -284,7 +284,6 @@ window.addEventListener('load', function()
 
 	document.body.appendChild(canvas);
 
-	var frame		= 0;
 	var render = function render(time)
 	{
 		var thrust;

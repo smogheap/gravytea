@@ -66,13 +66,22 @@ SolarSystem.prototype.render = function render(ctx, time)
 		If there is a remainder then account for that so it can be included
 		in the time for the next frame.
 	*/
-	this.lasttime = time - this.advance(time - this.lasttime, false);
+	if (!this.options.paused) {
+		this.lasttime = time - this.advance(time - this.lasttime, false);
+	} else {
+		this.lasttime = time;
+	}
 
-	// TODO	Render all trajectories before any bodies so that the bodies all
-	//		appear above the trajectories
-	/* Render the trajectories, and the bodies */
+	/* Render the trajectories below the bodies */
+	if (this.options.trajectory) {
+		for (var i = 0, body; body = this.bodies[i]; i++) {
+			body.render(ctx, false, true);
+		}
+	}
+
+	/* Render the bodies */
 	for (var i = 0, body; body = this.bodies[i]; i++) {
-		body.render(ctx, this.options.trajectory ? true : false);
+		body.render(ctx, true, false);
 	}
 };
 

@@ -19,7 +19,28 @@ function Body(opts)
 	this.trajectory	= [];
 };
 
-Body.prototype.render = function render(ctx, trajectory)
+Body.prototype.save = function save()
+{
+	this.savedState = {
+		position:		new V(this.position),
+		velocity:		new V(this.velocity)
+	};
+};
+
+Body.prototype.restore = function save(ctx, body, trajectory)
+{
+	if (this.savedState) {
+		this.position	= new V(this.savedState.position);
+		this.velocity	= new V(this.savedState.velocity);
+
+		/* Reset the pre-calculated trajectory as well */
+		this.trajectory	= [];
+	}
+};
+
+// TODO	Add an option to display the velocity vector
+
+Body.prototype.render = function render(ctx, body, trajectory)
 {
 	if (trajectory) {
 		ctx.save();
@@ -43,22 +64,24 @@ Body.prototype.render = function render(ctx, trajectory)
 		ctx.restore();
 	}
 
-	if (this.renderCB) {
-		/* There is an overridden render function for this body */
-		this.renderCB(ctx, this);
-		return;
+	if (body) {
+		if (this.renderCB) {
+			/* There is an overridden render function for this body */
+			this.renderCB(ctx, this);
+			return;
+		}
+
+		/* Render as a generic simple planet, nothing fancy */
+		ctx.save();
+		ctx.fillStyle = this.color;
+
+		ctx.beginPath();
+		ctx.arc(this.position.x, this.position.y, this.radius,
+				0, Math.PI * 2, false);
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
 	}
-
-	/* Render as a generic simple planet, nothing fancy */
-	ctx.save();
-	ctx.fillStyle = this.color;
-
-	ctx.beginPath();
-	ctx.arc(this.position.x, this.position.y, this.radius,
-			0, Math.PI * 2, false);
-	ctx.closePath();
-	ctx.fill();
-	ctx.restore();
 };
 
 Body.prototype.getVelocity = function getVelocity(bodies, elapsed)
