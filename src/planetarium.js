@@ -124,12 +124,17 @@ window.addEventListener('load', function()
 
 			canvas.setAttribute('width',  w);
 			canvas.setAttribute('height', h);
+
+			/* Restore the initial saved state, and save it again */
+			ctx.restore();
+			ctx.save();
+			ctx.translate(w / 2, h / 2);
 		}
 	};
 
-	resizeCanvas();
+	ctx.save();
 	makeCanvasZoomable(canvas, ctx);
-	ctx.translate(w / 2, h / 2);
+	resizeCanvas();
 
 	var render = function render(time)
 	{
@@ -138,7 +143,8 @@ window.addEventListener('load', function()
 
 		/* Clear the canvas */
 		var a = ctx.transformedPoint(0, 0);
-		var b = ctx.transformedPoint(canvas.width, canvas.height);
+		var b = ctx.transformedPoint(w, h);
+// console.log(a.x, a.y, b.x, b.y);
 		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
 		// TODO	When the user hits the "Run" button allow the planets to advance

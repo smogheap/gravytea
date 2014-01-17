@@ -94,6 +94,11 @@ function makeCanvasZoomable(canvas, ctx)
 	var restore = ctx.restore;
 	ctx.restore = function(){
 		xform = savedTransforms.pop();
+
+		if (!xform) {
+			xform = svg.createSVGMatrix();
+		}
+
 		return(restore.call(ctx));
 	};
 
@@ -148,7 +153,7 @@ function makeCanvasZoomable(canvas, ctx)
 	};
 
 	var point = svg.createSVGPoint();
-	ctx.transformedPoint = function(x,y)
+	ctx.transformedPoint = function(x, y)
 	{
 		point.x = x;
 		point.y = y;

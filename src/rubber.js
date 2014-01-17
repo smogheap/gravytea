@@ -292,12 +292,17 @@ window.addEventListener('load', function()
 
 			canvas.setAttribute('width',  w);
 			canvas.setAttribute('height', h);
+
+			/* Restore the initial saved state, and save it again */
+			ctx.restore();
+			ctx.save();
+			ctx.translate(w / 2, h / 2);
 		}
 	};
 
-	resizeCanvas();
+	ctx.save();
 	makeCanvasZoomable(canvas, ctx);
-	ctx.translate(w / 2, h / 2);
+	resizeCanvas();
 
 	var render = function render(time)
 	{
