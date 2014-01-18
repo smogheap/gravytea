@@ -7,12 +7,21 @@ function makeCanvasZoomable(canvas, ctx)
 	};
 	var dragStart	= null;
 	var dragged		= false;
+	var dragEnabled	= true;
+	var zoomEnabled	= true;
+
+	document.body.style.mozUserSelect		= 'none';
+	document.body.style.webkitUserSelect	= 'none';
+	document.body.style.userSelect			= 'none';
 
 	canvas.addEventListener('mousedown',function(e)
 	{
-		document.body.style.mozUserSelect		= 'none';
-		document.body.style.webkitUserSelect	= 'none';
-		document.body.style.userSelect			= 'none';
+		if (!dragEnabled) {
+			dragStart	= null;
+			dragged		= false;
+
+			return;
+		}
 
 		position.x = e.offsetX || (e.pageX - canvas.offsetLeft);
 		position.y = e.offsetY || (e.pageY - canvas.offsetTop);
@@ -23,20 +32,26 @@ function makeCanvasZoomable(canvas, ctx)
 
 	canvas.addEventListener('mousemove',function(e)
 	{
+		if (!dragStart) {
+			return;
+		}
+
 		position.x = e.offsetX || (e.pageX - canvas.offsetLeft);
 		position.y = e.offsetY || (e.pageY - canvas.offsetTop);
 
 		dragged = true;
 
-		if (dragStart) {
-			var point = ctx.transformedPoint(position.x,position.y);
+		var point = ctx.transformedPoint(position.x, position.y);
 
-			ctx.translate(point.x - dragStart.x, point.y - dragStart.y);
-		}
+		ctx.translate(point.x - dragStart.x, point.y - dragStart.y);
 	}, false);
 
 	var zoom = function ctxZoom(clicks)
 	{
+		if (!zoomEnabled) {
+			return;
+		}
+
 		var point	= ctx.transformedPoint(position.x, position.y);
 		var factor	= Math.pow(scaleFactor, clicks);
 
@@ -159,6 +174,25 @@ function makeCanvasZoomable(canvas, ctx)
 		point.y = y;
 
 		return(point.matrixTransform(xform.inverse()));
+	};
+
+	ctx.getScale = function()
+	{
+		var a		= ctx.transformedPoint(  0, 0);
+		var b		= ctx.transformedPoint(100, 0);
+		var scale	= (b.x - a.x) / 100;
+
+		return(scale);
+	};
+
+	ctx.setDraggable = function(enabled)
+	{
+		dragEnabled = enabled;
+	};
+
+	ctx.setZoomable = function(enabled)
+	{
+		zoomEnabled = enabled;
 	};
 }
 

@@ -133,6 +133,7 @@ window.addEventListener('load', function()
 	};
 
 	ctx.save();
+	makeBodiesDraggable(canvas, ctx, solarsys);
 	makeCanvasZoomable(canvas, ctx);
 	resizeCanvas();
 

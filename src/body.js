@@ -38,8 +38,6 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 	}
 };
 
-// TODO	Add an option to display the velocity vector
-
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
 	if (showTrajectory) {
@@ -94,9 +92,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			known distance and use the resulting distance to determine the
 			current scale level.
 		*/
-		var a		= ctx.transformedPoint( 0, 0);
-		var b		= ctx.transformedPoint(10, 0);
-		var scale	= (b.x - a.x) / 10;
+		var scale	= ctx.getScale();
 
 		var s		= 7 * scale;
 		var t		= 3 * scale;
@@ -150,6 +146,34 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		}
 
 		ctx.restore();
+	}
+};
+
+/*
+	Return true if the specified point is inside this body.
+
+	If vectorIndicator is true then the check will be performed for the position
+	the velocity vector indicator is displayed instead of the position of the
+	body itself.
+*/
+Body.prototype.inside = function checkPoint(ctx, point, vectorIndicator)
+{
+	var center	= new V(this.position);
+	var radius	= this.radius;
+
+	if (vectorIndicator) {
+		/*
+			The size of the velocity vector indicator node is constant
+			regardless of the zoom level. This has to be accounted for here.
+		*/
+		var scale = ctx.getScale();
+
+		radius = 7 * scale;
+		center.tx(this.velocity);
+	}
+
+	if (center.distance(point) <= radius) {
+		return(true);
 	}
 };
 
