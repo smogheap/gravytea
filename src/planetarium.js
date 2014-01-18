@@ -81,15 +81,12 @@ function runLevel(solarsys)
 	solarsys.options.showVelocity	= !solarsys.options.showVelocity;
 };
 
-// TODO	Allow dragging planets around
-// TODO	Allow moving a planet's velocity vector
-
 window.addEventListener('load', function()
 {
 	var solarsys	= new SolarSystem({
 		showVelocity:	true,
 		paused:			true,
-		trajectory:		0.3 * 1000
+		trajectory:		3 * 1000
 	});
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
@@ -97,7 +94,7 @@ window.addEventListener('load', function()
 	var w			= -1;
 	var h			= -1;
 
-	solarsys.setBodies(loadLevel(0));
+	solarsys.setBodies(loadLevel(1));
 
 	window.addEventListener('keydown', function(event)
 	{
