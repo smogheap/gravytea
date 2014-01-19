@@ -1,3 +1,26 @@
+// TODO	Create some sort of UI... hints about how to play, a level select screen
+//		etc...
+
+// TODO	Detect collisions and fail a level when that happens
+
+// TODO	Implement goals. The first being an orbit count down set for each body.
+//
+//		For each body keep track of the total angle of change relative to every
+//		other body, using the largest to calculate the angle of change.
+//
+//		This is a bit complicated though... If you have a sun, a planet and a
+//		small moon then the planet's relationship to the sun is the important
+//		one to count.
+//
+//		There may be cases with 2 similar sized bodies orbiting each other
+//		though...
+//
+//		Perhaps set a limit on the size ratio.... A body can not be considered
+//		to be orbitting another body if it is significantly smaller than it is.
+//
+//		Only count the angle of change for bodies that are at least 90% of the
+//		size of the body.
+
 /* Return a list of bodies for the specified level */
 function loadLevel(level)
 {
@@ -59,6 +82,14 @@ function loadLevel(level)
 			break;
 
 		// TODO	Add more levels
+	}
+
+	/*
+		The velocities of the bodies are scaled down to account for showing them
+		as larger than they are. This should allow finer control.
+	*/
+	for (var i = 0, b; b = bodies[i]; i++) {
+		b.velocityScale = 0.5;
 	}
 
 	return(bodies);

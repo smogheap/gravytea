@@ -2,9 +2,9 @@ function Body(opts)
 {
 	opts = opts || {};
 
+	this.angle		= opts.angle	|| 0;
 	this.position	= opts.position	|| new V(0, 0);
 	this.velocity	= opts.velocity	|| new V(0, 0);
-	this.angle		= opts.angle	|| 0;
 
 	this.radius		= opts.radius	|| 5;
 	this.density	= opts.density	|| 0.01;
@@ -15,6 +15,16 @@ function Body(opts)
 	/* Calculate the mass (assuming it is a perfect sphere for now) */
 	this.volume		= (4 / 3) * Math.PI * Math.pow(this.radius, 3);
 	this.mass		= this.volume * this.density;
+
+	/*
+		Indicator scale
+
+		The indicator is shown asa 4 times it's actual value to make it more
+		obvious.
+
+		This value should match the dragScale value set in drag-bodies.js
+	*/
+	this.indicatorScale = 4;
 
 	this.trajectory	= [];
 };
@@ -98,7 +108,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		var t		= 3 * scale;
 		var v		= new V(this.position);
 
-		v.tx(this.velocity);
+		v.tx(this.velocity.multiply(this.indicatorScale));
 
 		ctx.save();
 
@@ -169,7 +179,7 @@ Body.prototype.inside = function checkPoint(ctx, point, vectorIndicator)
 		var scale = ctx.getScale();
 
 		radius = 7 * scale;
-		center.tx(this.velocity);
+		center.tx(this.velocity.multiply(this.indicatorScale));
 	}
 
 	if (center.distance(point) <= radius) {

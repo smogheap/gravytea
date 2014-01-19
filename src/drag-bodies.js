@@ -3,6 +3,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 {
 	var activeVector	= null;
 	var lastPoint		= null;
+	var dragScale		= 1.0;
 
 	canvas.addEventListener('mousedown',function(e)
 	{
@@ -16,6 +17,14 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 		for (var i = 0, b; b = solarsys.bodies[i]; i++) {
 			if (b.inside(ctx, point, true)) {
 				activeVector = b.velocity;
+
+				/*
+					The actual distance that the velocity vector is moved on
+					screen is divided by this value to allow for finer control.
+
+					This should match the indicatorScale value used in body.js
+				*/
+				dragScale = 4.0;
 				break;
 			}
 		}
@@ -25,6 +34,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 			for (var i = 0, b; b = solarsys.bodies[i]; i++) {
 				if (b.inside(ctx, point, false)) {
 					activeVector = b.position;
+					dragScale = 1.0;
 					break;
 				}
 			}
@@ -54,8 +64,8 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 		if (point.x != lastPoint.x || point.y != lastPoint.y) {
 			activeVector.tx({
-				x: point.x - lastPoint.x,
-				y: point.y - lastPoint.y
+				x: (point.x - lastPoint.x) / dragScale,
+				y: (point.y - lastPoint.y) / dragScale
 			});
 
 			lastPoint = point;
