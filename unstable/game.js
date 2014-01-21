@@ -40,8 +40,8 @@ function loadLevel(level)
 
 				/* A planet */
 				new Body({
-					position:	new V(240, 0),
-					velocity:	new V(0, 15),
+					position:	new V(140, 0),
+					velocity:	new V(0, 7),
 					radius:		15,
 					color:		'#5f9ea0'
 				})

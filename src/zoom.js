@@ -65,9 +65,12 @@ function makeCanvasZoomable(canvas, ctx)
 	{
 		dragStart = null;
 
+if (false) {
+// Turn back on to allow click and shift click to zoom in and out...
 		if (!dragged) {
 			zoom(e.shiftKey ? -1 : 1 );
 		}
+}
 	}, false);
 
 	function handleScroll(e)

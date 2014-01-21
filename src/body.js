@@ -43,6 +43,8 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 		this.position	= new V(this.savedState.position);
 		this.velocity	= new V(this.savedState.velocity);
 
+		this.collision	= false;
+
 		/* Reset the pre-calculated trajectory as well */
 		this.trajectory	= [];
 	}
@@ -56,7 +58,15 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.lineCap = 'round';
 
 		var p = this;
-		for (var i = this.trajectory.length - 1, n; n = this.trajectory[i]; i--) {
+		var n;
+
+		for (var i = 0; i < this.trajectory.length; i++) {
+			n = this.trajectory[i];
+
+			if (n.collision) {
+				break;
+			}
+
 			ctx.strokeStyle = 'rgba(128, 128, 128, ' +
 								((this.trajectory.length - (i + 1)) * 0.01) + ')';
 
@@ -247,6 +257,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 			/* Get the values prior to the ones we are trying to calculate */
 			var pos = this.getPosition(bodies, o * 16);
 			var vel	= this.getVelocity(bodies, o * 16);
+			var col	= false;
 
 			for (var i = 0, b; b = bodies[i]; i++) {
 				if (this === b) {
@@ -260,6 +271,10 @@ Body.prototype.predict = function predict(bodies, elapsed)
 				var g	= new V(b.mass / Math.pow(d, 2), 0);
 
 				vel.tx(g.rotate(a));
+
+				if (b.radius + this.radius > d) {
+					col = true;
+				}
 			}
 
 			this.trajectory.splice(o, this.trajectory.length - o);
@@ -267,6 +282,10 @@ Body.prototype.predict = function predict(bodies, elapsed)
 				velocity:	vel,
 				position:	pos.add(vel)
 			};
+
+			if (col) {
+				this.trajectory[o].collision = true;
+			}
 		}
 	}
 
@@ -287,6 +306,10 @@ Body.prototype.advance = function advance(bodies, elapsed)
 		if ((p = this.predict(bodies, offset * 16))) {
 			this.position	= p.position;
 			this.velocity	= p.velocity;
+
+			if (p.collision) {
+				this.collision = true;
+			}
 		}
 
 		/* All values prior to this one are no longer need */
