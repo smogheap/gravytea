@@ -1,0 +1,79 @@
+body {
+	margin:				0px;
+	background:			black;
+	overflow:			hidden;
+}
+
+a, a:visited {
+	color:				white;
+}
+
+
+@font-face {
+	font-family:		'vSHandprinted';
+	src:				url('../fonts/vSHandprinted.otf') format('opentype');
+	font-weight:		normal;
+	font-style:			normal;
+}
+
+.hint {
+	font-family:		'vSHandPrinted';
+	font-weight:		normal;
+	font-style:			normal;
+
+	color:				white;
+	position:			absolute;
+
+	left:				10px;
+	top:				10px;
+	font-size:			14px;
+}
+
+.title, .menu {
+	font-family:		'vSHandPrinted', 'sans-serif';
+	font-weight:		normal;
+	font-style:			normal;
+
+	color:				white;
+	position:			absolute;
+}
+
+.title {
+	left:				10px;
+	top:				10px;
+	font-size:			50px;
+}
+
+.menu {
+	left:				30px;
+	top:				100px;
+	font-size:			13px;
+}
+.menu a, .menu a:visited {
+	text-decoration:	none;
+}
+.menu a:hover {
+	color:				#E04421;
+}
+
+.content {
+	color:				white;
+	position:			absolute;
+
+	left:				30px;
+	top:				300px;
+
+	font-family:		Arial;
+	display:			none;
+}
+
+canvas {
+	position:			absolute;
+	top:				0px;
+	right:				0px;
+	bottom:				0px;
+	left:				0px;
+
+	z-index:			-1;
+}
+
