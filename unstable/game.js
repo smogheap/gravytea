@@ -1,4 +1,23 @@
-// TODO	Detect collisions and fail a level when that happens
+// TODO	Show a button bar
+//
+//		 > Play    |  Reset  |  Help
+//		<< Rewind  |  Reset  |  Help
+
+// TODO	Show a help dialog
+//
+//		This should be a large area of text that floats above the game (with a
+//		transparent background) that describes how the game works in detail.
+//
+//		It should include pictures of things like the velocity node, as examples
+//		for the user.
+//
+//		In the level editor this can show the extra keys as well. This should
+//		use a regular san-serif font, not the handwriting font.
+
+// TODO	Detect collisions and fail a level when that happens. Perhaps show some
+//		icon as well indicating a crash. The level doesn't really need to fail,
+//		it just needs to pause. If the goal hasn't been completed by that point
+//		then it won't continue.
 
 // TODO	Implement goals. The first being an orbit count down set for each body.
 //
@@ -21,9 +40,6 @@
 // TODO	Allow a level editing mode where people can insert or remove bodies and
 //		can change their size. Then allow dumping to JSON to be inserted into
 //		the game as a new level.
-
-// TODO	Show a button bar (run/retry | reset | exit)
-
 
 
 /* Return a list of bodies for the specified level */
