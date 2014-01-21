@@ -18,6 +18,9 @@
 //		Only count the angle of change for bodies that are at least 90% of the
 //		size of the body.
 
+// TODO	Allow a level editing mode where people can insert or remove bodies and
+//		can change their size. Then allow dumping to JSON to be inserted into
+//		the game as a new level.
 
 // TODO	Show a button bar (run/retry | reset | exit)
 
@@ -98,30 +101,61 @@ function loadLevel(level, hintDiv)
 			bodies = [
 				/* A Sun */
 				new Body({
-					position:	new V(-150, 0),
+					position:	new V(0, 0, true),
+					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'#ffff00'
-				}),
-
-				/* A small rocky planet */
-				new Body({
-					position:	new V(-50, 0),
-					radius:		10,
-					color:		'#556b2f'
+					color:		'#ffff00',
+					density:	0.15
 				}),
 
 				/* A bit larger rocky planet */
 				new Body({
-					position:	new V(50, 0),
+					position:	new V(0, 220),
+					velocity:	new V(-3, 0),
 					radius:		25,
 					color:		'#5f9ea0'
 				}),
 
 				/* Another rocky planet */
 				new Body({
-					position:	new V(150, 0),
+					position:	new V(300, 0),
+					velocity:	new V(5, 5),
 					radius:		15,
 					color:		'#ff0000'
+				})
+			];
+			break;
+
+		case 4:
+			bodies = [
+				/* A Sun */
+				new Body({
+					position:	new V(0, 0, true),
+					velocity:	new V(0, 0, true),
+					radius:		50,
+					color:		'#ffff00',
+					density:	0.15
+				}),
+
+				new Body({
+					position:	new V(0, 220),
+					velocity:	new V(-3, 0),
+					radius:		35,
+					color:		'#5f9ea0'
+				}),
+
+				new Body({
+					position:	new V(300, 0),
+					velocity:	new V(5, 5),
+					radius:		15,
+					color:		'#ff0000'
+				}),
+
+				new Body({
+					position:	new V(-350, -300),
+					velocity:	new V(2, 2),
+					radius:		20,
+					color:		'#bada55'
 				})
 			];
 			break;
