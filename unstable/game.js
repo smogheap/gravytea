@@ -22,9 +22,10 @@
 // TODO	Show a button bar (run/retry | reset | exit)
 
 /* Return a list of bodies for the specified level */
-function loadLevel(level)
+function loadLevel(level, hintDiv)
 {
 	var bodies;
+	var hint	= [];
 
 	/*
 		When creating a body the position or velocity may be 'locked' by passing
@@ -35,6 +36,12 @@ function loadLevel(level)
 	switch (level) {
 		default:
 		case 1:
+			hint = [
+				'That planet looks like it is going to crash into the sun!',
+				'That could be bad.',
+				'Maybe you should move it a bit further away...'
+			];
+
 			bodies = [
 				/* A Sun */
 				new Body({
@@ -56,6 +63,12 @@ function loadLevel(level)
 			break;
 
 		case 2:
+			hint = [
+				'Oh look, another planet about to crash into the sun!',
+				'This time try making it go a bit faster.',
+				'Drag the velocity indicator to change the speed of the planet.'
+			];
+
 			bodies = [
 				/* A Sun */
 				new Body({
@@ -71,12 +84,17 @@ function loadLevel(level)
 					position:	new V(140, 0, true),
 					velocity:	new V(0, 7),
 					radius:		15,
-					color:		'#5f9ea0'
+					color:		'#ff0000'
 				})
 			];
 			break;
 
 		case 3:
+			hint = [
+				'Now you are on your own.',
+				'Good luck!'
+			];
+
 			bodies = [
 				/* A Sun */
 				new Body({
@@ -119,29 +137,11 @@ function loadLevel(level)
 		b.velocityScale = 0.5;
 	}
 
-	return(bodies);
-}
-
-function loadLevelHint(level)
-{
-	switch (level) {
-		case 1:
-			return([
-				'That planet looks like it is going to crash into the sun!',
-				'',
-				'That could be bad. Maybe you should move it a bit further away...'
-			]);
-
-		case 2:
-			return([
-				'That planet looks like it is going to crash into the sun!',
-				'',
-				'That could be bad. This time try making it go a bit faster.',
-				'Drag the velocity indicator to change the speed of the planet.'
-			]);
+	if (hintDiv) {
+		hintDiv.innerHTML = hint.join('<br/>');
 	}
 
-	return(null);
+	return(bodies);
 }
 
 // TODO	Add a button to run to make it easier
@@ -169,12 +169,12 @@ window.addEventListener('load', function()
 		trajectory:		3 * 1000
 	});
 	var canvas		= document.createElement('canvas');
+	var hintDiv		= document.createElement('div');
 	var ctx			= canvas.getContext('2d');
 	var center		= [ 0, 0 ];
 	var w			= -1;
 	var h			= -1;
 	var level		= 1;
-	var hint		= null;
 
 	/* Allow specifying the level in the hash of the location */
 	try {
@@ -187,8 +187,7 @@ window.addEventListener('load', function()
 		level = 1;
 	}
 
-	solarsys.setBodies(loadLevel(level));
-	hint = loadLevelHint(level);
+	solarsys.setBodies(loadLevel(level, hintDiv));
 
 	window.addEventListener('keydown', function(event)
 	{
@@ -196,8 +195,7 @@ window.addEventListener('load', function()
 		if (event.keyCode >= 48 && event.keyCode < 58) {
 			level = event.keyCode - 48;
 
-			solarsys.setBodies(loadLevel(level));
-			hint = loadLevelHint(level);
+			solarsys.setBodies(loadLevel(level, hintDiv));
 		}
 
 		switch (event.keyCode) {
@@ -208,6 +206,9 @@ window.addEventListener('load', function()
 		}
 	});
 
+	hintDiv.className = 'hint';
+
+	document.body.appendChild(hintDiv);
 	document.body.appendChild(canvas);
 
 	var resizeCanvas = function()
@@ -247,22 +248,7 @@ window.addEventListener('load', function()
 
 		/* Render the solar system */
 		ctx.save();
-
 		solarsys.render(ctx, time, true);
-
-		if (hint) {
-			// TODO	Render the hint text
-			ctx.font			= '12px sans-serif';
-			ctx.textBaseline	= 'top';
-			ctx.fillStyle		= '#ffffff';
-
-			a = ctx.transformedPoint(10, 10);
-
-			for (var i = 0; i < hint.length; i++) {
-				ctx.fillText(hint[i], a.x, a.y + (i * 20));
-			}
-		}
-
 		ctx.restore();
 	};
 	requestAnimationFrame(render);
