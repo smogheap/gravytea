@@ -32,6 +32,20 @@ function V(x, y, locked)
 	}
 }
 
+V.prototype.toJSON = function()
+{
+	var j = {
+		x: this.x,
+		y: this.y
+	};
+
+	if (this.locked) {
+		j.locked = true;
+	}
+
+	return(j);
+};
+
 V.prototype.toString = function()
 {
 	return('[' +

@@ -12,8 +12,19 @@ SolarSystem.prototype.resetTrajectories = function resetTrajectories()
 
 SolarSystem.prototype.setBodies = function setBodies(bodies)
 {
+	for (var i = 0, b; b = bodies[i]; i++) {
+		if (!(b instanceof Body)) {
+			bodies[i] = new Body(b);
+		}
+	}
+
 	this.bodies = bodies;
 	this.resetTrajectories();
+};
+
+SolarSystem.prototype.getBodies = function getBodies()
+{
+	return(this.bodies);
 };
 
 SolarSystem.prototype.advance = function advance(elapsed)

@@ -3,8 +3,8 @@ function Body(opts)
 	opts = opts || {};
 
 	this.angle		= opts.angle	|| 0;
-	this.position	= opts.position	|| new V(0, 0);
-	this.velocity	= opts.velocity	|| new V(0, 0);
+	this.position	= new V(opts.position) || new V(0, 0);
+	this.velocity	= new V(opts.velocity) || new V(0, 0);
 
 	this.radius		= opts.radius	|| 5;
 	this.density	= opts.density	|| 0.01;
@@ -28,6 +28,30 @@ function Body(opts)
 	this.indicatorScale = 4;
 
 	this.trajectory	= [];
+};
+
+Body.prototype.toJSON = function toJSON()
+{
+	var j = {
+		position:	this.position.toJSON(),
+		velocity:	this.velocity.toJSON()
+	};
+
+	if (this.angle) {
+		j.angle = this.angle;
+	}
+
+	if (this.radius != 5) {
+		j.radius = this.radius;
+	}
+	if (this.density != 0.01) {
+		j.density = this.density;
+	}
+	if (this.orgColor) {
+		j.color = this.orgColor;
+	}
+
+	return(j);
 };
 
 Body.prototype.save = function save()
@@ -65,10 +89,12 @@ Body.prototype.colors = [
 	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
 	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
 ];
-Body.prototype.nextcolor = 0;
+Body.prototype.nextcolor = 1;
 
 Body.prototype.setColor = function setColor(color)
 {
+	this.orgColor = color;
+
 	switch (typeof color) {
 		case 'string':
 			if (color == 'sun') {

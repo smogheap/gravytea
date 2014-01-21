@@ -44,6 +44,23 @@ function loadLevel(level, hintDiv)
 				Level editor mode, extra keystrokes are enabled allowing adding
 				or removing of bodies and allowing changing the size of bodies.
 			*/
+			hint = [
+				'- Strike plus to add a random planet',
+				'- Hover over a planet and strike minus to remove it',
+				'- Hover over a planet and scroll up or down to adjust it\'s size',
+				'- Strike enter to dump the level data'
+			];
+			bodies = [
+				/* A Sun */
+				{
+					position:	new V(0, 0, true),
+					velocity:	new V(0, 0, true),
+					radius:		50,
+					color:		'sun',
+					density:	0.09
+				}
+			];
+
 			break;
 
 		default:
@@ -56,20 +73,20 @@ function loadLevel(level, hintDiv)
 
 			bodies = [
 				/* A Sun */
-				new Body({
+				{
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
 					color:		'sun',
 					density:	0.09
-				}),
+				},
 
 				/* A planet */
-				new Body({
+				{
 					position:	new V(140, 0),
 					velocity:	new V(0, 7, true),
 					radius:		15
-				})
+				}
 			];
 			break;
 
@@ -82,20 +99,20 @@ function loadLevel(level, hintDiv)
 
 			bodies = [
 				/* A Sun */
-				new Body({
+				{
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
 					color:		'sun',
 					density:	0.09
-				}),
+				},
 
 				/* A planet */
-				new Body({
+				{
 					position:	new V(140, 0, true),
 					velocity:	new V(0, 7),
 					radius:		15
-				})
+				}
 			];
 			break;
 
@@ -107,58 +124,58 @@ function loadLevel(level, hintDiv)
 
 			bodies = [
 				/* A Sun */
-				new Body({
+				{
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
 					color:		'sun',
 					density:	0.15
-				}),
+				},
 
 				/* A bit larger rocky planet */
-				new Body({
+				{
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
 					radius:		25
-				}),
+				},
 
 				/* Another rocky planet */
-				new Body({
+				{
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
 					radius:		15
-				})
+				}
 			];
 			break;
 
 		case 4:
 			bodies = [
 				/* A Sun */
-				new Body({
+				{
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
 					color:		'sun',
 					density:	0.15
-				}),
+				},
 
-				new Body({
+				{
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
 					radius:		35
-				}),
+				},
 
-				new Body({
+				{
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
 					radius:		15
-				}),
+				},
 
-				new Body({
+				{
 					position:	new V(-350, -300),
 					velocity:	new V(2, 2),
 					radius:		20
-				})
+				}
 			];
 			break;
 
@@ -247,8 +264,77 @@ window.addEventListener('load', function()
 				runLevel(solarsys);
 
 				break;
+
+			case 13: /* Enter */
+				var bodies = solarsys.getBodies();
+
+				alert(JSON.stringify(bodies));
+				break;
+
+			case 187: /* plus sign */
+				if (level < 0) {
+					var bodies = solarsys.getBodies();
+
+					bodies.push({
+						position:	new V(ctx.getMouse()),
+						velocity:	new V(0, 0),
+						radius:		15
+					});
+
+					solarsys.setBodies(bodies);
+				}
+				break;
+
+			case 189: /* minus sign */
+				if (level < 0) {
+					var bodies	= solarsys.getBodies();
+					var mouse	= ctx.getMouse();
+
+					for (var i = 0, b; b = bodies[i]; i++) {
+						if (b.inside(ctx, mouse)) {
+							bodies.splice(i, 1);
+							break;
+						}
+					}
+
+					solarsys.setBodies(bodies);
+				}
+				break;
+
+			default:
+				console.log(event.keyCode);
+				break;
 		}
 	});
+
+	function handleScroll(e)
+	{
+		var delta = e.wheelDelta ? e.wheelDelta/40 : e.detail ? -e.detail : 0;
+
+		if (level < 0) {
+			var bodies	= solarsys.getBodies();
+			var mouse	= ctx.getMouse();
+
+			for (var i = 0, b; b = bodies[i]; i++) {
+				if (b.inside(ctx, mouse)) {
+					b.radius += delta;
+
+					if (b.radius < 1) {
+						b.radius = 1;
+					}
+
+					solarsys.setBodies(bodies);
+					ctx.setZoomable(-1);
+					break;
+				}
+			}
+		}
+
+		return e.preventDefault() && false;
+	};
+
+	canvas.addEventListener('DOMMouseScroll',	handleScroll, false);
+	canvas.addEventListener('mousewheel',		handleScroll, false);
 
 	hintDiv.className = 'hint';
 

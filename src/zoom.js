@@ -9,6 +9,7 @@ function makeCanvasZoomable(canvas, ctx)
 	var dragged		= false;
 	var dragEnabled	= true;
 	var zoomEnabled	= true;
+	var mousePos	= { x: 0, y: 0 };
 
 	document.body.style.mozUserSelect		= 'none';
 	document.body.style.webkitUserSelect	= 'none';
@@ -32,12 +33,15 @@ function makeCanvasZoomable(canvas, ctx)
 
 	canvas.addEventListener('mousemove',function(e)
 	{
+		mousePos.x = e.offsetX || (e.pageX - canvas.offsetLeft);
+		mousePos.y = e.offsetY || (e.pageY - canvas.offsetTop);
+
 		if (!dragStart) {
 			return;
 		}
 
-		position.x = e.offsetX || (e.pageX - canvas.offsetLeft);
-		position.y = e.offsetY || (e.pageY - canvas.offsetTop);
+		position.x = mousePos.x;
+		position.y = mousePos.y;
 
 		dragged = true;
 
@@ -48,8 +52,19 @@ function makeCanvasZoomable(canvas, ctx)
 
 	var zoom = function ctxZoom(clicks)
 	{
-		if (!zoomEnabled) {
-			return;
+console.log('zoom', zoomEnabled);
+		switch (typeof zoomEnabled) {
+			case 'number':
+				if (zoomEnabled++ < 0) {
+					return;
+				}
+				break;
+
+			default:
+				if (!zoomEnabled) {
+					return;
+				}
+				break;
 		}
 
 		var point	= ctx.transformedPoint(position.x, position.y);
@@ -62,16 +77,16 @@ function makeCanvasZoomable(canvas, ctx)
 	};
 
 	canvas.addEventListener('mouseup',function(e)
-	{
-		dragStart = null;
+			{
+			dragStart = null;
 
-if (false) {
-// Turn back on to allow click and shift click to zoom in and out...
-		if (!dragged) {
+			if (false) {
+			// Turn back on to allow click and shift click to zoom in and out...
+			if (!dragged) {
 			zoom(e.shiftKey ? -1 : 1 );
-		}
-}
-	}, false);
+			}
+			}
+			}, false);
 
 	function handleScroll(e)
 	{
@@ -88,10 +103,10 @@ if (false) {
 
 
 	/*
-		Wrap many of the canvas functions so that the transforms may be tracked
-		in order to allow applying the same transformations to a point at any
-		time.
-	*/
+	   Wrap many of the canvas functions so that the transforms may be tracked
+	   in order to allow applying the same transformations to a point at any
+	   time.
+	   */
 	var svg		= document.createElementNS("http://www.w3.org/2000/svg",'svg');
 	var xform	= svg.createSVGMatrix();
 
@@ -195,7 +210,24 @@ if (false) {
 
 	ctx.setZoomable = function(enabled)
 	{
-		zoomEnabled = enabled;
+		switch (typeof enabled) {
+			case 'number':
+				if (typeof(zoomEnabled) != 'number') {
+					zoomEnabled = 0;
+				}
+
+				zoomEnabled += enabled;
+				break;
+
+			default:
+				zoomEnabled = enabled;
+				break;
+		}
+	};
+
+	ctx.getMouse = function()
+	{
+		return(ctx.transformedPoint(mousePos.x, mousePos.y));
 	};
 }
 
