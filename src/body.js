@@ -101,7 +101,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-	if (showVelocity) {
+	if (showVelocity && !this.velocity.locked) {
 		/*
 			Show a velocity indicator node
 

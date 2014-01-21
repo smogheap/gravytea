@@ -3,7 +3,12 @@ function toRad(angle)
 	return(angle * (Math.PI / 180));
 }
 
-function V(x, y)
+/*
+	Locked can be set to true to indicate that this vector should not be
+	editable by a user. This is not enforced by this object. It is just
+	preserved for consumers of this object.
+*/
+function V(x, y, locked)
 {
 	switch (typeof(x)) {
 		case 'number':
@@ -15,9 +20,16 @@ function V(x, y)
 		case 'object':
 			this.x = x.x;
 			this.y = x.y;
+
+			if (x.locked) {
+				this.locked = true;
+			}
 			break;
 	}
 
+	if (locked) {
+		this.locked = true;
+	}
 }
 
 V.prototype.toString = function()
