@@ -30,6 +30,14 @@ function V(x, y, locked)
 	if (locked) {
 		this.locked = true;
 	}
+
+	if (isNaN(this.x)) {
+		this.x = 0;
+	}
+
+	if (isNaN(this.y)) {
+		this.y = 0;
+	}
 }
 
 V.prototype.toJSON = function()

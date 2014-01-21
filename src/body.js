@@ -3,8 +3,8 @@ function Body(opts)
 	opts = opts || {};
 
 	this.angle		= opts.angle	|| 0;
-	this.position	= new V(opts.position) || new V(0, 0);
-	this.velocity	= new V(opts.velocity) || new V(0, 0);
+	this.position	= new V(opts.position);
+	this.velocity	= new V(opts.velocity);
 
 	this.radius		= opts.radius	|| 5;
 	this.density	= opts.density	|| 0.01;

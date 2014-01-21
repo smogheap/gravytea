@@ -198,7 +198,7 @@ function loadLevel(level, hintDiv)
 	/* Assign a randomish color to any body that doesn't have one */
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
-			b.setColor(Math.pow(level, i));
+			b.color = Math.pow(level, i);
 		}
 	}
 
