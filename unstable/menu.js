@@ -5,7 +5,8 @@ window.addEventListener('load', function()
 	var solarsys	= new SolarSystem({
 		showVelocity:	false,
 		paused:			debug,
-		trajectory:		debug ? 3 * 1000 : 1 * 1000
+		// trajectory:		debug ? 3 * 1000 : 1 * 1000
+		trajectory:		300
 	});
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
