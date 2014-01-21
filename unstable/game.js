@@ -28,7 +28,7 @@ function loadLevel(level)
 
 	switch (level) {
 		default:
-		case 0:
+		case 1:
 			bodies = [
 				/* A Sun */
 				new Body({
@@ -49,7 +49,7 @@ function loadLevel(level)
 			break;
 
 
-		case 1:
+		case 2:
 			bodies = [
 				/* A Sun */
 				new Body({
@@ -125,7 +125,12 @@ window.addEventListener('load', function()
 	var w			= -1;
 	var h			= -1;
 
-	solarsys.setBodies(loadLevel(1));
+	/* Allow specifying the level in the hash of the location */
+	try {
+		solarsys.setBodies(loadLevel(parseInt(window.location.hash.substring(1))));
+	} catch (e) {
+		solarsys.setBodies(loadLevel(1));
+	}
 
 	window.addEventListener('keydown', function(event)
 	{
