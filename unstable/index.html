@@ -1,0 +1,112 @@
+<!doctype html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+		<title>Unstable</title>
+
+		<!-- The solar system game engine -->
+		<script type="text/javascript" src="../src/util.js"			></script>
+		<script type="text/javascript" src="../src/v.js"			></script>
+		<script type="text/javascript" src="../src/body.js"			></script>
+		<script type="text/javascript" src="../src/solarsystem.js"	></script>
+
+		<!-- Menu -->
+		<script type="text/javascript" src="menu.js"				></script>
+
+		<style>
+			body {
+				margin:				0px;
+				background:			black;
+				overflow:			hidden;
+			}
+
+			a, a:visited {
+				color:				white;
+			}
+
+
+			@font-face {
+				font-family:		'vSHandprinted';
+				src:				url('../fonts/vSHandprinted.otf') format('opentype');
+				font-weight:		normal;
+				font-style:			normal;
+			}
+
+			.title, .menu {
+				font-family:		'vSHandPrinted';
+				font-weight:		normal;
+				font-style:			normal;
+
+				color:				white;
+				position:			absolute;
+			}
+
+			.title {
+				left:				10px;
+				top:				10px;
+				font-size:			50px;
+			}
+
+			.menu {
+				left:				10px;
+				top:				130px;
+				font-size:			13px;
+			}
+			.menu a, .menu a:visited {
+				text-decoration:	none;
+			}
+			.menu a:hover {
+				font-weight:		bold;
+			}
+
+			.content {
+				color:				white;
+				position:			absolute;
+
+				left:				30px;
+				top:				300px;
+
+				font-family:		Arial;
+			}
+
+			#about {
+				display:			none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="title">Unstable</div>
+
+		<div class="menu">
+			<a href="game.html">Play</a><br/>
+
+			<!-- TODO: Show the relevant section when these links are clicked -->
+			<a href="#">Choose a Level</a><br/>
+			<a href="#" onclick="
+				var a = document.getElementById('about');
+
+				if (a.style.display == 'block') {
+					a.style.display = 'none';
+				} else {
+					a.style.display = 'block';
+				}
+			">About</a><br/>
+		</div>
+
+		<div id="about" class="content"><pre>
+A <a target="_blank" href="https://github.com/smogheap/idle/blob/master/SMOGHEAP-CHARTER">smog heap game</a>
+
+Created by Micah N Gorrell. Special thanks to Owen Swerkstrom, Rodney Price and
+many others.
+
+This game is avaliable as open source under the GPLv3 license. You may access
+the original source and license at on the <a target="_blank" href="https://github.com/smogheap/gravytea">smogheap github page</a>.
+
+Copyright (c) 2013, Micah N Gorrell
+		</pre></div>
+	</body>
+</html>
+
