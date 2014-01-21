@@ -13,21 +13,16 @@ window.addEventListener('load', function()
 	var w			= -1;
 	var h			= -1;
 
-	// TODO	Replace this with a more stable solar system? That will take a bit
-	//		more effort though...
 	solarsys.setBodies([
 		/* A Sun */
 		new Body({
 			position:	new V(0, 0),
 			radius:		50,
-			color:		'#ffff00',
+			color:		'sun',
 			density:	0.09
 		}),
 
 		new Body({
-			name:		'kerbin',
-			color:		'#BADA55',
-
 			position:	new V(-100, 100),
 			velocity:	new V(12, 12),
 			radius:		10
@@ -36,23 +31,20 @@ window.addEventListener('load', function()
 		new Body({
 			position:	new V(240, 0),
 			velocity:	new V(0, 15),
-			radius:		15,
-			color:		'#5f9ea0'
+			radius:		15
 		}),
 
 		new Body({
 			position:	new V(0, 400),
 			velocity:	new V(11, 0),
-			radius:		35,
-			color:		'#333333'
+			radius:		35
 		}),
 
 
 		new Body({
 			position:	new V(0, 320),
 			velocity:	new V(16, 0),
-			radius:		2,
-			color:		'#ffffff'
+			radius:		2
 		})
 	]);
 

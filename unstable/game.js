@@ -24,6 +24,8 @@
 
 // TODO	Show a button bar (run/retry | reset | exit)
 
+
+
 /* Return a list of bodies for the specified level */
 function loadLevel(level, hintDiv)
 {
@@ -37,6 +39,13 @@ function loadLevel(level, hintDiv)
 		This means the user will not be able to edit that vector.
 	*/
 	switch (level) {
+		case -1:
+			/*
+				Level editor mode, extra keystrokes are enabled allowing adding
+				or removing of bodies and allowing changing the size of bodies.
+			*/
+			break;
+
 		default:
 		case 1:
 			hint = [
@@ -51,7 +60,7 @@ function loadLevel(level, hintDiv)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'#ffff00',
+					color:		'sun',
 					density:	0.09
 				}),
 
@@ -59,8 +68,7 @@ function loadLevel(level, hintDiv)
 				new Body({
 					position:	new V(140, 0),
 					velocity:	new V(0, 7, true),
-					radius:		15,
-					color:		'#5f9ea0'
+					radius:		15
 				})
 			];
 			break;
@@ -78,7 +86,7 @@ function loadLevel(level, hintDiv)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'#ffff00',
+					color:		'sun',
 					density:	0.09
 				}),
 
@@ -86,8 +94,7 @@ function loadLevel(level, hintDiv)
 				new Body({
 					position:	new V(140, 0, true),
 					velocity:	new V(0, 7),
-					radius:		15,
-					color:		'#ff0000'
+					radius:		15
 				})
 			];
 			break;
@@ -104,7 +111,7 @@ function loadLevel(level, hintDiv)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'#ffff00',
+					color:		'sun',
 					density:	0.15
 				}),
 
@@ -112,16 +119,14 @@ function loadLevel(level, hintDiv)
 				new Body({
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
-					radius:		25,
-					color:		'#5f9ea0'
+					radius:		25
 				}),
 
 				/* Another rocky planet */
 				new Body({
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
-					radius:		15,
-					color:		'#ff0000'
+					radius:		15
 				})
 			];
 			break;
@@ -133,29 +138,26 @@ function loadLevel(level, hintDiv)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'#ffff00',
+					color:		'sun',
 					density:	0.15
 				}),
 
 				new Body({
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
-					radius:		35,
-					color:		'#5f9ea0'
+					radius:		35
 				}),
 
 				new Body({
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
-					radius:		15,
-					color:		'#ff0000'
+					radius:		15
 				}),
 
 				new Body({
 					position:	new V(-350, -300),
 					velocity:	new V(2, 2),
-					radius:		20,
-					color:		'#bada55'
+					radius:		20
 				})
 			];
 			break;
@@ -173,6 +175,14 @@ function loadLevel(level, hintDiv)
 
 	if (hintDiv) {
 		hintDiv.innerHTML = hint.join('<br/>');
+	}
+
+
+	/* Assign a randomish color to any body that doesn't have one */
+	for (var i = 0, b; b = bodies[i]; i++) {
+		if (!b.color) {
+			b.setColor(Math.pow(level, i));
+		}
 	}
 
 	return(bodies);

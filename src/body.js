@@ -9,12 +9,13 @@ function Body(opts)
 	this.radius		= opts.radius	|| 5;
 	this.density	= opts.density	|| 0.01;
 
-	this.color		= opts.color	|| 'red';
 	this.renderCB	= opts.renderCB;
 
 	/* Calculate the mass (assuming it is a perfect sphere for now) */
 	this.volume		= (4 / 3) * Math.PI * Math.pow(this.radius, 3);
 	this.mass		= this.volume * this.density;
+
+	this.setColor(opts.color);
 
 	/*
 		Indicator scale
@@ -47,6 +48,49 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 
 		/* Reset the pre-calculated trajectory as well */
 		this.trajectory	= [];
+	}
+};
+
+/*
+	Color pallete to use for planets
+
+	Generated at http://tools.medialab.sciences-po.fr/iwanthue/index.php
+	with	Hue: 0-250, Chroma: 0.5-3, Lightness: 0.5-1.5
+
+	Yellows where removed (after one was taken to use for the sun)
+*/
+Body.prototype.colors = [
+	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
+	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
+	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
+	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
+];
+Body.prototype.nextcolor = 0;
+
+Body.prototype.setColor = function setColor(color)
+{
+	switch (typeof color) {
+		case 'string':
+			if (color == 'sun') {
+				// this.color = '#DFCE3B';
+				this.color = '#CAEC33';
+			} else {
+				this.color = color;
+			}
+
+			break;
+
+		case 'number':
+			color = Math.floor(color);
+
+			this.color = this.colors[color % this.colors.length];
+			break;
+
+		default:
+			var c = Body.prototype.nextcolor++;
+
+			this.color = this.colors[c % this.colors.length];
+			break;
 	}
 };
 
@@ -91,7 +135,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 		/* Render as a generic simple planet, nothing fancy */
 		ctx.save();
-		ctx.fillStyle = this.color;
+		ctx.fillStyle = this.color || 'red';
 
 		ctx.beginPath();
 		ctx.arc(this.position.x, this.position.y, this.radius,
