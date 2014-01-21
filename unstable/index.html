@@ -50,8 +50,8 @@
 			}
 
 			.menu {
-				left:				10px;
-				top:				130px;
+				left:				30px;
+				top:				100px;
 				font-size:			13px;
 			}
 			.menu a, .menu a:visited {
@@ -69,33 +69,45 @@
 				top:				300px;
 
 				font-family:		Arial;
-			}
-
-			#about {
 				display:			none;
 			}
 		</style>
 	</head>
 
 	<body>
+		<script>
+			function showSection(name)
+			{
+				var sections	= document.getElementsByClassName('content');
+				var section		= document.getElementById(name);
+
+				for (var i = 0, s; s = sections[i]; i++) {
+					s.style.display = 'none';
+				}
+
+				if (section) {
+					section.style.display = 'block';
+				}
+			}
+		</script>
+
+
 		<div class="title">Unstable</div>
 
 		<div class="menu">
-			<a href="game.html">Play</a><br/>
+			<!-- TODO: Add an option to return to the menu from the game -->
+			<a href="game.html">Play</a>
 
-			<!-- TODO: Show the relevant section when these links are clicked -->
-			<a href="#">Choose a Level</a><br/>
-			<a href="#" onclick="
-				var a = document.getElementById('about');
-
-				if (a.style.display == 'block') {
-					a.style.display = 'none';
-				} else {
-					a.style.display = 'block';
-				}
-			">About</a><br/>
+			&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" onclick="showSection('level'	);">Choose a Level</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" onclick="showSection('options'	);">Options</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#" onclick="showSection('about'	);">About</a>
 		</div>
 
+		<!--
+			TODO: Find a way to open links in a new window when launched from
+			the xulrunner wrapper. Right now they open in the same window even
+			with the target set.
+		-->
 		<div id="about" class="content"><pre>
 A <a target="_blank" href="https://github.com/smogheap/idle/blob/master/SMOGHEAP-CHARTER">smog heap game</a>
 
@@ -107,6 +119,23 @@ the original source and license at on the <a target="_blank" href="https://githu
 
 Copyright (c) 2013, Micah N Gorrell
 		</pre></div>
+
+		<div id="options" class="content">
+			At some point there will probably be some options exposed here
+		</div>
+
+		<div id="level" class="content">
+			<!--
+				TODO: Allow starting with a specific level
+
+				Ideally this will allow selecting the levels that the player has
+				unlocked, and will show any extra info such as stars for
+				completing difficult things in a level.
+			-->
+			At some point a list of levels you have completed will be displayed
+			here with some sort of score information, and you will be allowed to
+			replay them.
+		</div>
 	</body>
 </html>
 
