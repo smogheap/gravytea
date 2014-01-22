@@ -24,7 +24,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 					This should match the indicatorScale value used in body.js
 				*/
-				dragScale = 4.0;
+				dragScale = 8.0;
 				break;
 			}
 		}

@@ -143,6 +143,7 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 	var titles	= [
 		'Get moving',
 		'Getting up to speed',
+		'Let\'s have a race',
 		'On your own',
 		'A bit of a challenge'
 	];
@@ -283,6 +284,49 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 
 		case 3:
 			hint = [
+				'These planets are identical, except for their position. The',
+				'closer a planet is to the sun the faster it needs to go to',
+				'get a stable orbit.'
+			];
+
+			bodies = [
+				/* A Sun */
+				{
+					position:	new V(-250, 0, true),
+					velocity:	new V(0, 0, true),
+					radius:		70,
+					color:		'sun',
+					density:	0.09
+				},
+
+				{
+					position:	new V(-50, 0, true),
+					velocity:	new V(0, 7),
+					radius:		15
+				},
+
+				{
+					position:	new V(50, 0, true),
+					velocity:	new V(0, 7),
+					radius:		15
+				},
+
+				{
+					position:	new V(150, 0, true),
+					velocity:	new V(0, 7),
+					radius:		15
+				},
+
+				{
+					position:	new V(250, 0, true),
+					velocity:	new V(0, 7),
+					radius:		15
+				}
+			];
+			break;
+
+		case 4:
+			hint = [
 				'Now you are on your own.',
 				'Good luck!'
 			];
@@ -313,7 +357,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 			];
 			break;
 
-		case 4:
+		case 5:
 			bodies = [
 				/* A Sun */
 				{

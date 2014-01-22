@@ -21,7 +21,7 @@ function Body(opts)
 
 		This value should match the dragScale value set in drag-bodies.js
 	*/
-	this.indicatorScale = 4;
+	this.indicatorScale = 8.0;
 
 	this.trajectory	= [];
 };
