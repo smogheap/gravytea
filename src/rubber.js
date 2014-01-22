@@ -170,8 +170,7 @@ function loadLevel(level)
 
 				/* The planet, centered, not moving */
 				new Body({
-					radius:		50,
-					color:		'rgba(255, 0, 0, 1.0)'
+					radius:		50
 				})
 			];
 			break;
@@ -181,8 +180,7 @@ function loadLevel(level)
 				/* The ship */
 				new Body({
 					position:	new V(30, 0),
-					radius:		5,
-					color:		'rgba(255, 255, 255, 1.0)'
+					radius:		5
 				}),
 
 				/* Two planets, orbiting each other */
@@ -190,14 +188,12 @@ function loadLevel(level)
 					position:	new V(0, 150),
 					velocity:	new V(-2.5, 0),
 					radius:		20,
-					color:		'rgba(255, 0, 0, 1.0)',
 					density:	0.09
 				}),
 				new Body({
 					position:	new V(0, -150),
 					velocity:	new V(2.5, 0),
 					radius:		20,
-					color:		'rgba(0, 0, 255, 1.0)',
 					density:	0.09
 				})
 			];
@@ -215,21 +211,18 @@ function loadLevel(level)
 
 				new Body({
 					radius:		20,
-					color:		'rgba(255, 0, 0, 1.0)',
 					density:	0.009
 				}),
 				new Body({
 					position:	new V(0, -150),
 					velocity:	new V(0.85, 0),
 					radius:		5,
-					color:		'rgba(0, 0, 255, 1.0)',
 					density:	0.003
 				}),
 				new Body({
 					position:	new V(330, 50),
 					velocity:	new V(0, 0.7),
 					radius:		6,
-					color:		'rgba(0, 255, 0, 1.0)',
 					density:	0.003
 				})
 			];
