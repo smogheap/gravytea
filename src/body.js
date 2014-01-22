@@ -6,15 +6,11 @@ function Body(opts)
 	this.position	= new V(opts.position);
 	this.velocity	= new V(opts.velocity);
 
-	this.radius		= opts.radius	|| 5;
 	this.density	= opts.density	|| 0.01;
 
 	this.renderCB	= opts.renderCB;
 
-	/* Calculate the mass (assuming it is a perfect sphere for now) */
-	this.volume		= (4 / 3) * Math.PI * Math.pow(this.radius, 3);
-	this.mass		= this.volume * this.density;
-
+	this.setRadius(opts.radius);
 	this.setColor(opts.color);
 
 	/*
@@ -118,6 +114,19 @@ Body.prototype.setColor = function setColor(color)
 			this.color = this.colors[c % this.colors.length];
 			break;
 	}
+};
+
+Body.prototype.setRadius = function setRadius(radius)
+{
+	this.radius		= radius || 5;
+
+	if (this.radius < 1) {
+		this.radius = 1;
+	}
+
+	/* Calculate the mass (assuming it is a perfect sphere for now) */
+	this.volume		= (4 / 3) * Math.PI * Math.pow(this.radius, 3);
+	this.mass		= this.volume * this.density;
 };
 
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)

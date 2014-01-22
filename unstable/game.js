@@ -333,11 +333,7 @@ window.addEventListener('load', function()
 
 			for (var i = 0, b; b = bodies[i]; i++) {
 				if (b.inside(ctx, mouse)) {
-					b.radius += delta;
-
-					if (b.radius < 1) {
-						b.radius = 1;
-					}
+					b.setRadius(b.radius + delta);
 
 					solarsys.setBodies(bodies);
 					ctx.setZoomable(-1);
