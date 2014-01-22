@@ -48,6 +48,8 @@
 //		it isn't centered then it stays in the same relative position to the
 //		center...)
 
+// TODO	Reset position and everything when a level is loaded (aka reset...)
+
 function UnstableGame(opts)
 {
 	opts = opts || {};
@@ -126,6 +128,13 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						this.solarsys.setBodies(bodies);
 					}
 					return event.preventDefault() && false;
+
+				case 33: /* Page Up */
+					this.ctx.zoom(1, true);
+					break;
+				case 34: /* Page Down */
+					this.ctx.zoom(-1, true);
+					break;
 
 				default:
 					console.log(event.keyCode);

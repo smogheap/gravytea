@@ -52,7 +52,6 @@ function makeCanvasZoomable(canvas, ctx)
 
 	var zoom = function ctxZoom(clicks)
 	{
-console.log('zoom', zoomEnabled);
 		switch (typeof zoomEnabled) {
 			case 'number':
 				if (zoomEnabled++ < 0) {
@@ -228,6 +227,18 @@ console.log('zoom', zoomEnabled);
 	ctx.getMouse = function()
 	{
 		return(ctx.transformedPoint(mousePos.x, mousePos.y));
+	};
+
+	ctx.zoom = function(clicks, center)
+	{
+		if (center) {
+			position = {
+				x: canvas.width  / 2,
+				y: canvas.height / 2
+			};
+		}
+
+		zoom(clicks);
 	};
 }
 
