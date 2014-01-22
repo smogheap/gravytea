@@ -127,11 +127,16 @@ Copyright (c) 2013, Micah N Gorrell
 				<a onclick="game.go();">&gt; Play</a>
 
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="game.loadLevel(game.level);">Reset</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showHelp();">Help</a>
+				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('help');">Help</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showMenu();">Menu</a>
 			</div>
 
 			<div id="hint" class="hint"></div>
+
+			<!-- Add some way to close the help... That would be nice -->
+			<div id="help" class="content">
+				HELP!
+			</div>
 		</div>
 	</body>
 </html>
