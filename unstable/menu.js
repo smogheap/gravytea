@@ -41,7 +41,6 @@ window.addEventListener('load', function()
 			radius:		35
 		}),
 
-
 		new Body({
 			position:	new V(0, 320),
 			velocity:	new V(16, 0),
@@ -96,31 +95,6 @@ window.addEventListener('load', function()
 		solarsys.render(ctx, time, true);
 
 		ctx.restore();
-
-if (false) {
-		/* Render the name of the game, and the menu */
-		ctx.save();
-
-		ctx.fillStyle		= '#ffffff';
-		ctx.font			= '40pt vSHandprinted';
-		ctx.textBaseline	= 'top';
-
-		// TODO	Perhaps the menu should be done in html that is rendered on top
-		//		of the canvas?
-
-		// TODO	Decide on a final name... I kinda like "Unstable".
-		// ctx.fillText('My Little Planetarium', 10, 10);
-		ctx.fillText('Unstable', 10, 10);
-
-
-		ctx.font			= '13pt vSHandprinted';
-
-		ctx.fillText('Play',			30, 120);
-		ctx.fillText('Choose Level',	30, 150);
-		ctx.fillText('About',			30, 180);
-
-		ctx.restore();
-}
 	};
 	requestAnimationFrame(render);
 });
