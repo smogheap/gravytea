@@ -67,10 +67,17 @@ a, a:visited {
 	position:			absolute;
 
 	left:				30px;
-	top:				300px;
+	top:				200px;
 
 	font-family:		Arial;
 	display:			none;
+
+	max-width:			400px;
+}
+
+.content .center {
+	width:				100%;
+	text-align:			center;
 }
 
 canvas {
