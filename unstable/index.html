@@ -49,6 +49,51 @@
 			window.addEventListener('load', function()
 			{
 				showMenu(window.location.hash.substring(1));
+
+				/* Enable some options */
+				if (document.body.requestFullScreen		||
+					document.body.msRequestFullScreen	||
+					document.body.mozRequestFullScreen	||
+					document.body.webkitRequestFullScreen
+				) {
+					var f = document.getElementById('fullscreen');
+
+					f.disabled = false;
+					f.addEventListener('change', function()
+					{
+						if (f.checked) {
+							if (document.body.requestFullscreen) {
+								document.body.requestFullscreen();
+							} else if (document.body.msRequestFullscreen) {
+								document.body.msRequestFullscreen();
+							} else if (document.body.mozRequestFullScreen) {
+								document.body.mozRequestFullScreen();
+							} else if (document.body.webkitRequestFullscreen) {
+								document.body.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+							}
+
+							/* This is required when running in xulrunner */
+							setTimeout(function() {
+								window.fullScreen = true;
+							}, 1);
+						} else {
+							if (document.exitFullscreen) {
+								document.exitFullscreen();
+							} else if (document.msExitFullscreen) {
+								document.msExitFullscreen();
+							} else if (document.mozCancelFullScreen) {
+								document.mozCancelFullScreen();
+							} else if (document.webkitExitFullscreen) {
+								document.webkitExitFullscreen();
+							}
+
+							/* This is required when running in xulrunner */
+							setTimeout(function() {
+								window.fullScreen = false;
+							}, 1);
+						}
+					});
+				}
 			});
 
 			function loadLevel(level)
@@ -115,7 +160,7 @@ Copyright (c) 2013, Micah N Gorrell
 			</pre></div>
 
 			<div id="options" class="content">
-				At some point there will probably be some options exposed here
+				<input type="checkbox" disabled id="fullscreen" />Fullscreen<br/>
 			</div>
 
 			<div id="level" class="content"></div>

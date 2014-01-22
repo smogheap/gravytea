@@ -58,7 +58,7 @@ distclean: clean
 all: ${APP_DIR}/xulrunner
 	mkdir -p ${CONTENT}/unstable
 	cp -r ../fonts ../src ${CONTENT}
-	cp *.html *.js ${CONTENT}
+	cp *.html *.css *.js ${CONTENT}/${APP}
 	if [ -f ${APP_DIR}/xulrunner/*stub*.exe ]; then					\
 		cp ${APP_DIR}/xulrunner/*stub* ${APP_DIR}/${APP}.exe	;	\
 	else															\
