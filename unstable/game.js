@@ -186,6 +186,9 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 	var hintDiv;
 	var hint	= [];
 
+	/* Make sure the planets aren't moving when the new level is loaded */
+	this.stop();
+
 	/*
 		When creating a body the position or velocity may be 'locked' by passing
 		a 3rd argument of true. For example, new V(0, 0, true)
@@ -376,6 +379,17 @@ UnstableGame.prototype.go = function go()
 
 	this.solarsys.options.paused		= !this.solarsys.options.paused;
 	this.solarsys.options.showVelocity	= !this.solarsys.options.showVelocity;
+};
+
+UnstableGame.prototype.stop = function stop()
+{
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		/* Restore the state the user had */
+		b.restore();
+	}
+
+	this.solarsys.options.paused		= true;
+	this.solarsys.options.showVelocity	= true;
 };
 
 UnstableGame.prototype.show = function showUnstableGame()
