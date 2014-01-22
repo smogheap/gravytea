@@ -232,7 +232,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'sun',
+					sun:		true,
 					density:	0.09
 				}
 			];
@@ -253,7 +253,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'sun',
+					sun:		true,
 					density:	0.09
 				},
 
@@ -279,7 +279,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'sun',
+					sun:		true,
 					density:	0.09
 				},
 
@@ -305,7 +305,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(-250, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		70,
-					color:		'sun',
+					sun:		true,
 					density:	0.09
 				},
 
@@ -347,7 +347,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'sun',
+					sun:		true,
 					density:	0.15
 				},
 
@@ -374,7 +374,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					position:	new V(0, 0, true),
 					velocity:	new V(0, 0, true),
 					radius:		50,
-					color:		'sun',
+					sun:		true,
 					density:	0.15
 				},
 
@@ -469,6 +469,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 	var center	= [ 0, 0 ];
 	var w		= -1;
 	var h		= -1;
+	var center	= null;
 
 	if (isNaN(this.level)) {
 		this.loadLevel(1);
@@ -517,11 +518,15 @@ UnstableGame.prototype.show = function showUnstableGame()
 		/* Clear the canvas */
 		var a = ctx.transformedPoint(0, 0);
 		var b = ctx.transformedPoint(w, h);
-// console.log(a.x, a.y, b.x, b.y);
 		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
-		// TODO	When the user hits the "Run" button allow the planets to advance
-		// TODO	Allow the user to drag bodies around
+
+		/* Follow the position of the suns in the scene */
+		var c = this.solarsys.getCenter();
+		if (center) {
+			ctx.translate(center.x - c.x, center.y - c.y);
+		}
+		center = c;
 
 		/* Render the solar system */
 		ctx.save();

@@ -98,3 +98,33 @@ SolarSystem.prototype.render = function render(ctx, time)
 	}
 };
 
+/* Return the average position of all suns */
+// TODO	Should the positions be weighted by the relative mass of each sun?
+SolarSystem.prototype.getCenter = function getCenter()
+{
+	var x		= 0;
+	var y		= 0;
+	var count	= 0;
+
+	for (var i = 0, b; b = this.bodies[i]; i++) {
+		if (!b.sun) {
+			continue;
+		}
+
+		x += b.position.x;
+		y += b.position.y;
+
+		count++;
+	}
+
+	if (!count) {
+		return(new V(0, 0));
+	}
+
+	x = x / count;
+	y = y / count;
+
+	return(new V(x, y));
+};
+
+

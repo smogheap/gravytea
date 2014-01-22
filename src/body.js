@@ -11,7 +11,14 @@ function Body(opts)
 	this.renderCB	= opts.renderCB;
 
 	this.setRadius(opts.radius);
-	this.setColor(opts.color);
+
+	this.sun		= opts.sun || false;
+
+	if (this.sun) {
+		this.setColor('sun');
+	} else {
+		this.setColor(opts.color);
+	}
 
 	/*
 		Indicator scale
