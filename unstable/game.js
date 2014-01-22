@@ -1,4 +1,4 @@
-// TODO	Show a button bar
+// TODO	Update the buttons on the button bar based on current status
 //
 //		 > Play    |  Reset  |  Help
 //		<< Rewind  |  Reset  |  Help
@@ -37,9 +37,9 @@
 //		Only count the angle of change for bodies that are at least 90% of the
 //		size of the body.
 
-// TODO	Allow a level editing mode where people can insert or remove bodies and
-//		can change their size. Then allow dumping to JSON to be inserted into
-//		the game as a new level.
+// TODO	Move the level along with the sun so that the sun stays centered (or if
+//		it isn't centered then it stays in the same relative position to the
+//		center...)
 
 function UnstableGame(opts)
 {
@@ -136,6 +136,55 @@ UnstableGame.prototype.handleEvent = function handleEvent(e)
 	}
 
 	return true;
+};
+
+// TODO	Do not allow selecting a level that the player hasn't unlocked
+UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
+{
+	var titles	= [
+		'Get moving',
+		'Getting up to speed',
+		'On your own',
+		'A bit of a challenge'
+	];
+
+	/* Clear it out (rather violently) */
+	div.innerHTML = '';
+
+	for (var i = 0, title; title = titles[i]; i++) {
+		var a = document.createElement('a');
+
+		(function(level) {
+			a.href = '#';
+			a.addEventListener('click', function(e)
+			{
+				cb(level);
+
+				return e.preventDefault() && false;
+			});
+		})(i + 1);
+
+		a.innerText = title;
+		div.appendChild(a);
+
+		div.appendChild(document.createElement('br'));
+	}
+
+	// TODO	We may or may not want to hide this in release versions
+	div.appendChild(document.createElement('br'));
+
+	var a = document.createElement('a');
+
+	a.href = '#';
+	a.addEventListener('click', function(e)
+	{
+		cb(-1);
+
+		return e.preventDefault() && false;
+	});
+
+	a.innerText = 'Level Editor';
+	div.appendChild(a);
 };
 
 /* Return a list of bodies for the specified level */
@@ -386,7 +435,9 @@ UnstableGame.prototype.show = function showUnstableGame()
 	var render = function render(time)
 	{
 		if (!this.running) {
-			document.body.removeChild(this.canvas);
+			if (this.canvas) {
+				document.body.removeChild(this.canvas);
+			}
 
 			delete this.ctx;
 			delete this.canvas;

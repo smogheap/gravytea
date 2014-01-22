@@ -72,6 +72,9 @@
 
 				showSection(section);
 
+				/* Update the level list based on the player's progress */
+				game.loadLevelMenu(document.getElementById('level'), loadLevel);
+
 				game.hide();
 				menubg.show();
 			}
@@ -81,10 +84,9 @@
 			<div class="title">Unstable</div>
 
 			<div class="menu">
-				<!-- TODO: Add an option to return to the menu from the game -->
 				<!-- TODO: Make this continue the last level the user was on -->
 				<!-- TODO: Change text to "Resume" if a level is loaded -->
-				<a href="#" onclick="loadLevel(1);">Play</a>
+				<a href="#" onclick="loadLevel();">Play</a>
 
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#level"	onclick="showSection('level'	);">Choose a Level</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#options"	onclick="showSection('options'	);">Options</a>
@@ -116,26 +118,7 @@ Copyright (c) 2013, Micah N Gorrell
 				At some point there will probably be some options exposed here
 			</div>
 
-			<div id="level" class="content">
-				<!--
-					TODO: Allow starting with a specific level
-
-					Ideally this will allow selecting the levels that the player has
-					unlocked, and will show any extra info such as stars for
-					completing difficult things in a level.
-				-->
-				At some point a list of levels you have completed will be displayed
-				here with some sort of score information, and you will be allowed to
-				replay them.<br/><br/>
-
-				<!-- TODO: Generate the level list... -->
-				<a onclick="loadLevel(1);">Level 1: Getting moving</a><br/>
-				<a onclick="loadLevel(2);">Level 2: Getting up to speed</a><br/>
-				<a onclick="loadLevel(3);">Level 3: A Challenge</a><br/>
-
-				<br/>
-				<a onclick="loadLevel(-1);">Level Editor</a><br/>
-			</div>
+			<div id="level" class="content"></div>
 		</div>
 
 		<div id="game">
@@ -143,6 +126,7 @@ Copyright (c) 2013, Micah N Gorrell
 				<!-- TODO: Switch this to "<< Rewind" while playing -->
 				<a onclick="game.go();">&gt; Play</a>
 
+				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="game.loadLevel(game.level);">Reset</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showHelp();">Help</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showMenu();">Menu</a>
 			</div>
