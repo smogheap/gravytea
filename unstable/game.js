@@ -79,14 +79,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(e)
 			return e.preventDefault() && false;
 
 		case 'keydown':
-			/* Allow loading a level by number (for now) */
-			if (event.keyCode >= 48 && event.keyCode < 58) {
-				var level = event.keyCode - 48;
-
-				this.loadLevel(level);
-				return e.preventDefault() && false;
-			}
-
 			switch (event.keyCode) {
 				case 32: /* space	*/
 					this.go();
