@@ -153,6 +153,7 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 
 	for (var i = 0, title; title = titles[i]; i++) {
 		var a = document.createElement('a');
+		var t = document.createTextNode(title);
 
 		(function(level) {
 			a.href = '#';
@@ -164,7 +165,7 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 			});
 		})(i + 1);
 
-		a.innerText = title;
+		a.appendChild(t);
 		div.appendChild(a);
 
 		div.appendChild(document.createElement('br'));
