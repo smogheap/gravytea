@@ -61,12 +61,12 @@ function UnstableGame(opts)
 	});
 }
 
-UnstableGame.prototype.handleEvent = function handleEvent(e)
+UnstableGame.prototype.handleEvent = function handleEvent(event)
 {
 	switch (event.type) {
 		case 'DOMMouseScroll':
 		case 'mousewheel':
-			var delta = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0;
+			var delta = event.wheelDelta ? event.wheelDelta / 40 : event.detail ? -event.detail : 0;
 
 			if (this.level < 0) {
 				var bodies	= this.solarsys.getBodies();
@@ -83,19 +83,19 @@ UnstableGame.prototype.handleEvent = function handleEvent(e)
 				}
 			}
 
-			return e.preventDefault() && false;
+			return event.preventDefault() && false;
 
 		case 'keydown':
 			switch (event.keyCode) {
 				case 32: /* space	*/
 					this.go();
-					return e.preventDefault() && false;
+					return event.preventDefault() && false;
 
 				case 13: /* Enter */
 					var bodies = this.solarsys.getBodies();
 
 					alert(JSON.stringify(bodies));
-					return e.preventDefault() && false;
+					return event.preventDefault() && false;
 
 				case 187: /* plus sign */
 					if (this.level < 0) {
@@ -109,7 +109,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(e)
 
 						this.solarsys.setBodies(bodies);
 					}
-					return e.preventDefault() && false;
+					return event.preventDefault() && false;
 
 				case 189: /* minus sign */
 					if (this.level < 0) {
@@ -125,7 +125,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(e)
 
 						this.solarsys.setBodies(bodies);
 					}
-					return e.preventDefault() && false;
+					return event.preventDefault() && false;
 
 				default:
 					console.log(event.keyCode);
@@ -184,7 +184,7 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 		return e.preventDefault() && false;
 	});
 
-	a.innerText = 'Level Editor';
+	a.appendChild(document.createTextNode('Level Editor'));
 	div.appendChild(a);
 };
 
