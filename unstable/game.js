@@ -466,10 +466,8 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 	var canvas	= this.canvas;
 	var ctx		= this.ctx;
-	var center	= [ 0, 0 ];
 	var w		= -1;
 	var h		= -1;
-	var center	= null;
 
 	if (isNaN(this.level)) {
 		this.loadLevel(1);
@@ -520,17 +518,18 @@ UnstableGame.prototype.show = function showUnstableGame()
 		var b = ctx.transformedPoint(w, h);
 		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
-
-		/* Follow the position of the suns in the scene */
-		var c = this.solarsys.getCenter();
-		if (center) {
-			ctx.translate(center.x - c.x, center.y - c.y);
-		}
-		center = c;
-
 		/* Render the solar system */
 		ctx.save();
-		this.solarsys.render(ctx, time, true);
+
+		/* Advance the bodies to the current time */
+		if (this.solarsys.advance(time)) {
+			/* Adjust the position of the canvas to keep the suns fixed */
+			var c = this.solarsys.getCenter();
+			ctx.translate(-c.x, -c.y);
+
+			/* Render the bodies */
+			this.solarsys.render(ctx);
+		}
 		ctx.restore();
 	};
 	requestAnimationFrame(render.bind(this));

@@ -29,7 +29,7 @@ SolarSystem.prototype.getBodies = function getBodies()
 	return(this.bodies);
 };
 
-SolarSystem.prototype.advance = function advance(elapsed)
+SolarSystem.prototype.advanceBodies = function advanceBodies(elapsed)
 {
 	/*
 		Calculate the next position for each body.
@@ -50,11 +50,11 @@ SolarSystem.prototype.advance = function advance(elapsed)
 	return(elapsed - (Math.floor(elapsed / 16) * 16));
 };
 
-SolarSystem.prototype.render = function render(ctx, time)
+SolarSystem.prototype.advance = function advance(time)
 {
 	if (isNaN(this.lasttime)) {
 		this.lasttime	= time;
-		return;
+		return(false);
 	}
 
 	/*
@@ -80,11 +80,16 @@ SolarSystem.prototype.render = function render(ctx, time)
 		in the time for the next frame.
 	*/
 	if (!this.options.paused) {
-		this.lasttime = time - this.advance(time - this.lasttime, false);
+		this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
 	} else {
 		this.lasttime = time;
 	}
 
+	return(true);
+};
+
+SolarSystem.prototype.render = function render(ctx)
+{
 	/* Render the trajectories below the bodies */
 	if (this.options.trajectory) {
 		for (var i = 0, body; body = this.bodies[i]; i++) {

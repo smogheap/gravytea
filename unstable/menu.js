@@ -28,7 +28,7 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 		new Body({
 			position:	new V(0, 0),
 			radius:		50,
-			color:		'sun',
+			sun:		true,
 			density:	0.09
 		}),
 
@@ -88,20 +88,23 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 		/* Clear the canvas */
 		ctx.clearRect(0, 0, w, h);
 
-		var p = solarsys.bodies[0].getPosition();
+		/* Advance the bodies to the current time */
+		if (solarsys.advance(time)) {
+			var p = solarsys.bodies[0].getPosition();
 
-		if (!this.debug) {
-			/*
-				Keep the sun in the bottom right corner of the screen so there
-				is room for the menu top left.
-			*/
-			ctx.translate(w - p.x, h - p.y);
-		} else {
-			ctx.translate((w / 2) - p.x, (h / 2) - p.y);
+			if (!this.debug) {
+				/*
+					Keep the sun in the bottom right corner of the screen so there
+					is room for the menu top left.
+				*/
+				ctx.translate(w - p.x, h - p.y);
+			} else {
+				ctx.translate((w / 2) - p.x, (h / 2) - p.y);
+			}
+
+			/* Render the bodies */
+			solarsys.render(ctx);
 		}
-
-		/* Render a fixed view of the world... */
-		solarsys.render(ctx, time, true);
 
 		ctx.restore();
 	};
