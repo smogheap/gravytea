@@ -325,7 +325,9 @@ window.addEventListener('load', function()
 			solarsys.resetTrajectories();
 		}
 
-		solarsys.render(ctx, time);
+		if (solarsys.advance(time)) {
+			solarsys.render(ctx);
+		}
 		ctx.restore();
 	};
 	requestAnimationFrame(render);
