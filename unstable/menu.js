@@ -1,11 +1,20 @@
-window.addEventListener('load', function()
+function MenuBackdrop(opts)
 {
-	var debug		= false;
+	opts = opts || {};
+
+	this.debug = opts.debug || false;
+
+	this.running = false;
+}
+
+MenuBackdrop.prototype.show = function showMenuBackdrop()
+{
+	this.running = true;
 
 	var solarsys	= new SolarSystem({
 		showVelocity:	false,
-		paused:			debug,
-		// trajectory:		debug ? 3 * 1000 : 1 * 1000
+		paused:			this.debug,
+		// trajectory:		this.debug ? 3 * 1000 : 1 * 1000
 		trajectory:		300
 	});
 	var canvas		= document.createElement('canvas');
@@ -48,11 +57,6 @@ window.addEventListener('load', function()
 		})
 	]);
 
-	window.addEventListener('keydown', function(event)
-	{
-
-	});
-
 	document.body.appendChild(canvas);
 
 	var resizeCanvas = function()
@@ -71,7 +75,12 @@ window.addEventListener('load', function()
 
 	var render = function render(time)
 	{
-		requestAnimationFrame(render);
+		if (!this.running) {
+			document.body.removeChild(canvas);
+			return;
+		}
+
+		requestAnimationFrame(render.bind(this));
 		resizeCanvas();
 
 		ctx.save();
@@ -81,7 +90,7 @@ window.addEventListener('load', function()
 
 		var p = solarsys.bodies[0].getPosition();
 
-		if (!debug) {
+		if (!this.debug) {
 			/*
 				Keep the sun in the bottom right corner of the screen so there
 				is room for the menu top left.
@@ -96,7 +105,11 @@ window.addEventListener('load', function()
 
 		ctx.restore();
 	};
-	requestAnimationFrame(render);
-});
+	requestAnimationFrame(render.bind(this));
+};
 
+MenuBackdrop.prototype.hide = function hideMenuBackdrop()
+{
+	this.running = false;
+};
 

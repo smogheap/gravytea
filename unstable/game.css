@@ -17,7 +17,8 @@ a, a:visited {
 }
 
 .hint {
-	font-family:		'vSHandPrinted';
+	/* font-family:		'vSHandPrinted'; */
+	font-family:		'arial';
 	font-weight:		normal;
 	font-style:			normal;
 
@@ -25,7 +26,7 @@ a, a:visited {
 	position:			absolute;
 
 	left:				10px;
-	top:				10px;
+	top:				50px;
 	font-size:			14px;
 }
 
@@ -46,9 +47,14 @@ a, a:visited {
 
 .menu {
 	left:				30px;
-	top:				100px;
+	top:				10px;
 	font-size:			13px;
 }
+
+#menu .menu {
+	top:				100px;
+}
+
 .menu a, .menu a:visited {
 	text-decoration:	none;
 }

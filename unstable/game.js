@@ -41,11 +41,108 @@
 //		can change their size. Then allow dumping to JSON to be inserted into
 //		the game as a new level.
 
+function UnstableGame(opts)
+{
+	opts = opts || {};
+
+	this.running = false;
+
+	this.solarsys	= new SolarSystem({
+		showVelocity:	true,
+		paused:			true,
+		trajectory:		3 * 1000
+	});
+}
+
+UnstableGame.prototype.handleEvent = function handleEvent(e)
+{
+	switch (event.type) {
+		case 'DOMMouseScroll':
+		case 'mousewheel':
+			var delta = e.wheelDelta ? e.wheelDelta / 40 : e.detail ? -e.detail : 0;
+
+			if (this.level < 0) {
+				var bodies	= this.solarsys.getBodies();
+				var mouse	= this.ctx.getMouse();
+
+				for (var i = 0, b; b = bodies[i]; i++) {
+					if (b.inside(this.ctx, mouse)) {
+						b.setRadius(b.radius + delta);
+
+						this.solarsys.setBodies(bodies);
+						this.ctx.setZoomable(-1);
+						break;
+					}
+				}
+			}
+
+			return e.preventDefault() && false;
+
+		case 'keydown':
+			/* Allow loading a level by number (for now) */
+			if (event.keyCode >= 48 && event.keyCode < 58) {
+				var level = event.keyCode - 48;
+
+				this.loadLevel(level);
+				return e.preventDefault() && false;
+			}
+
+			switch (event.keyCode) {
+				case 32: /* space	*/
+					this.go();
+					return e.preventDefault() && false;
+
+				case 13: /* Enter */
+					var bodies = this.solarsys.getBodies();
+
+					alert(JSON.stringify(bodies));
+					return e.preventDefault() && false;
+
+				case 187: /* plus sign */
+					if (this.level < 0) {
+						var bodies = this.solarsys.getBodies();
+
+						bodies.push({
+							position:	new V(this.ctx.getMouse()),
+							velocity:	new V(0, 0),
+							radius:		15
+						});
+
+						this.solarsys.setBodies(bodies);
+					}
+					return e.preventDefault() && false;
+
+				case 189: /* minus sign */
+					if (this.level < 0) {
+						var bodies	= this.solarsys.getBodies();
+						var mouse	= this.ctx.getMouse();
+
+						for (var i = 0, b; b = bodies[i]; i++) {
+							if (b.inside(this.ctx, mouse)) {
+								bodies.splice(i, 1);
+								break;
+							}
+						}
+
+						this.solarsys.setBodies(bodies);
+					}
+					return e.preventDefault() && false;
+
+				default:
+					console.log(event.keyCode);
+					break;
+			}
+			break;
+	}
+
+	return true;
+};
 
 /* Return a list of bodies for the specified level */
-function loadLevel(level, hintDiv)
+UnstableGame.prototype.loadLevel = function loadLevel(level)
 {
 	var bodies;
+	var hintDiv;
 	var hint	= [];
 
 	/*
@@ -54,6 +151,7 @@ function loadLevel(level, hintDiv)
 
 		This means the user will not be able to edit that vector.
 	*/
+	this.level = level;
 	switch (level) {
 		case -1:
 			/*
@@ -61,10 +159,10 @@ function loadLevel(level, hintDiv)
 				or removing of bodies and allowing changing the size of bodies.
 			*/
 			hint = [
-				'- Strike plus to add a random planet',
-				'- Hover over a planet and strike minus to remove it',
-				'- Hover over a planet and scroll up or down to adjust it\'s size',
-				'- Strike enter to dump the level data'
+				'Press + to create a planet under the mouse',
+				'Press - to remove the planet under the mouse',
+				'Scroll up/down to resize the planet under the mouse',
+				'Press enter to dump level data'
 			];
 			bodies = [
 				/* A Sun */
@@ -206,7 +304,7 @@ function loadLevel(level, hintDiv)
 		b.velocityScale = 0.5;
 	}
 
-	if (hintDiv) {
+	if ((hintDiv = document.getElementById('hint'))) {
 		hintDiv.innerHTML = hint.join('<br/>');
 	}
 
@@ -218,14 +316,15 @@ function loadLevel(level, hintDiv)
 		}
 	}
 
-	return(bodies);
-}
+	this.solarsys.setBodies(bodies);
+};
 
 // TODO	Add a button to run to make it easier
-function runLevel(solarsys)
+/* Let the solarsystem the user has built/fixed run */
+UnstableGame.prototype.go = function go()
 {
-	for (var i = 0, b; b = solarsys.bodies[i]; i++) {
-		if (solarsys.options.paused) {
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		if (this.solarsys.options.paused) {
 			/* Save the state as the user had created it */
 			b.save();
 		} else {
@@ -234,124 +333,34 @@ function runLevel(solarsys)
 		}
 	}
 
-	solarsys.options.paused			= !solarsys.options.paused;
-	solarsys.options.showVelocity	= !solarsys.options.showVelocity;
+	this.solarsys.options.paused		= !this.solarsys.options.paused;
+	this.solarsys.options.showVelocity	= !this.solarsys.options.showVelocity;
 };
 
-window.addEventListener('load', function()
+UnstableGame.prototype.show = function showUnstableGame()
 {
-	var solarsys	= new SolarSystem({
-		showVelocity:	true,
-		paused:			true,
-		trajectory:		3 * 1000
-	});
-	var canvas		= document.createElement('canvas');
-	var hintDiv		= document.createElement('div');
-	var ctx			= canvas.getContext('2d');
-	var center		= [ 0, 0 ];
-	var w			= -1;
-	var h			= -1;
-	var level		= 1;
+	this.running = true;
 
-	/* Allow specifying the level in the hash of the location */
-	try {
-		level = parseInt(window.location.hash.substring(1));
-	} catch (e) {
-		level = 1;
+	if (!(this.canvas)) {
+		this.canvas	= document.createElement('canvas');
+		this.ctx	= this.canvas.getContext('2d');
+
+		document.body.appendChild(this.canvas);
 	}
 
-	if (isNaN(level)) {
-		level = 1;
+	var canvas	= this.canvas;
+	var ctx		= this.ctx;
+	var center	= [ 0, 0 ];
+	var w		= -1;
+	var h		= -1;
+
+	if (isNaN(this.level)) {
+		this.loadLevel(1);
 	}
 
-	solarsys.setBodies(loadLevel(level, hintDiv));
-
-	window.addEventListener('keydown', function(event)
-	{
-		/* Allow loading a level by number (for now) */
-		if (event.keyCode >= 48 && event.keyCode < 58) {
-			level = event.keyCode - 48;
-
-			solarsys.setBodies(loadLevel(level, hintDiv));
-		}
-
-		switch (event.keyCode) {
-			case 32: /* space	*/
-				runLevel(solarsys);
-
-				break;
-
-			case 13: /* Enter */
-				var bodies = solarsys.getBodies();
-
-				alert(JSON.stringify(bodies));
-				break;
-
-			case 187: /* plus sign */
-				if (level < 0) {
-					var bodies = solarsys.getBodies();
-
-					bodies.push({
-						position:	new V(ctx.getMouse()),
-						velocity:	new V(0, 0),
-						radius:		15
-					});
-
-					solarsys.setBodies(bodies);
-				}
-				break;
-
-			case 189: /* minus sign */
-				if (level < 0) {
-					var bodies	= solarsys.getBodies();
-					var mouse	= ctx.getMouse();
-
-					for (var i = 0, b; b = bodies[i]; i++) {
-						if (b.inside(ctx, mouse)) {
-							bodies.splice(i, 1);
-							break;
-						}
-					}
-
-					solarsys.setBodies(bodies);
-				}
-				break;
-
-			default:
-				console.log(event.keyCode);
-				break;
-		}
-	});
-
-	function handleScroll(e)
-	{
-		var delta = e.wheelDelta ? e.wheelDelta/40 : e.detail ? -e.detail : 0;
-
-		if (level < 0) {
-			var bodies	= solarsys.getBodies();
-			var mouse	= ctx.getMouse();
-
-			for (var i = 0, b; b = bodies[i]; i++) {
-				if (b.inside(ctx, mouse)) {
-					b.setRadius(b.radius + delta);
-
-					solarsys.setBodies(bodies);
-					ctx.setZoomable(-1);
-					break;
-				}
-			}
-		}
-
-		return e.preventDefault() && false;
-	};
-
-	canvas.addEventListener('DOMMouseScroll',	handleScroll, false);
-	canvas.addEventListener('mousewheel',		handleScroll, false);
-
-	hintDiv.className = 'hint';
-
-	document.body.appendChild(hintDiv);
-	document.body.appendChild(canvas);
+	canvas.addEventListener('DOMMouseScroll',	this, false);
+	canvas.addEventListener('mousewheel',		this, false);
+	window.addEventListener('keydown',			this, false);
 
 	var resizeCanvas = function()
 	{
@@ -370,13 +379,21 @@ window.addEventListener('load', function()
 	};
 
 	ctx.save();
-	makeBodiesDraggable(canvas, ctx, solarsys);
+	makeBodiesDraggable(canvas, ctx, this.solarsys);
 	makeCanvasZoomable(canvas, ctx);
 	resizeCanvas();
 
 	var render = function render(time)
 	{
-		requestAnimationFrame(render);
+		if (!this.running) {
+			document.body.removeChild(this.canvas);
+
+			delete this.ctx;
+			delete this.canvas;
+			return;
+		}
+
+		requestAnimationFrame(render.bind(this));
 		resizeCanvas();
 
 		/* Clear the canvas */
@@ -390,10 +407,20 @@ window.addEventListener('load', function()
 
 		/* Render the solar system */
 		ctx.save();
-		solarsys.render(ctx, time, true);
+		this.solarsys.render(ctx, time, true);
 		ctx.restore();
 	};
-	requestAnimationFrame(render);
-});
+	requestAnimationFrame(render.bind(this));
+};
 
+UnstableGame.prototype.hide = function hideUnstableGame(level)
+{
+	if (this.running) {
+		this.canvas.removeEventListener('DOMMouseScroll',	this, false);
+		this.canvas.removeEventListener('mousewheel',		this, false);
+		window.removeEventListener('keydown',				this, false);
+
+		this.running = false;
+	}
+};
 

@@ -1,6 +1,8 @@
 function SolarSystem(opts)
 {
 	this.options	= opts || {};
+
+	this.bodies		= [];
 };
 
 SolarSystem.prototype.resetTrajectories = function resetTrajectories()
