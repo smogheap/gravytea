@@ -14,10 +14,17 @@
 //		In the level editor this can show the extra keys as well. This should
 //		use a regular san-serif font, not the handwriting font.
 
-// TODO	Detect collisions and fail a level when that happens. Perhaps show some
-//		icon as well indicating a crash. The level doesn't really need to fail,
-//		it just needs to pause. If the goal hasn't been completed by that point
-//		then it won't continue.
+// TODO	Show a 60's batman style "Kaplow!" image at the location of a collision
+//		and show a dialog with funny text.
+//
+//				You where doing well until everyone died
+//				Think of the pixel children!
+//				Hey, that planet was where I kept all my stuff!
+//				Oh no, the planet's kerploding!
+//				It's as if millions of voices cried out in terror and where suddenly silenced
+//				I guess they don't need to worry about global warming any more
+//				No one liked that planet anyway
+//				Sucks to be you, you left your keys on that planet
 
 // TODO	Implement goals. The first being an orbit count down set for each body.
 //
