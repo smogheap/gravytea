@@ -136,18 +136,24 @@ UnstableGame.prototype.popup = function popup(message, actions, cb)
 	var scrim	= document.createElement('div');
 	var popup	= document.createElement('div');
 
+	scrim.className = 'scrim';
 	popup.className = 'popup';
 
 	document.body.appendChild(scrim);
-	scrim.addEventListener('click', function(e)
+	var ignoreEvent = function(event)
 	{
-		return e.preventDefault() && false;
-	});
+		return event.preventDefault() && false;
+	};
+
+	scrim.addEventListener('click',		ignoreEvent);
+	scrim.addEventListener('mousedown',	ignoreEvent);
+	scrim.addEventListener('mouseup',	ignoreEvent);
 
 	var p = document.createElement('p');
 	p.appendChild(document.createTextNode(message));
 	popup.appendChild(p);
 	popup.appendChild(document.createElement('br'));
+
 	document.body.appendChild(popup);
 
 	this.popupdiv = popup;
