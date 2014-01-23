@@ -98,6 +98,8 @@ a, a:visited {
 }
 
 .popup {
+	color:				white;
+
 	position:			absolute;
 	top:				0px;
 	right:				0px;
@@ -111,8 +113,8 @@ a, a:visited {
 	font-family:		'arial';
 	font-size:			18px;
 
-	color:				#000;
-	background:			url('static.gif'); /* rgba(136, 136, 136, 0.8); */
+	/* background:			url('static.gif'); */
+	background:			#000;
 	padding:			10px;
 	text-align:			center;
 
@@ -139,7 +141,7 @@ a, a:visited {
 
 .popup p,
 .popup a {
-	color:				black;
+	color:				white;
 	padding:			10px;
 }
 
