@@ -28,6 +28,15 @@
 //				No one liked that planet anyway
 //				Sucks to be you, you left your keys on that planet
 
+// TODO	Implement body grouping?!?
+//
+//		The idea is to somehow allow the user to select a group of planets and
+//		edit their layout and velocities relative to each other without the
+//		influence of any other bodies.
+//
+//		Once the user is happy with that grouping he/she can then return to the
+//		main level.
+
 function UnstableGame(opts)
 {
 	opts = opts || {};

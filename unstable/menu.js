@@ -77,7 +77,6 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 	ctx.save();
 	resizeCanvas();
 
-			console.log(h / 320, w / 320);
 	var render = function render(time)
 	{
 		if (!this.running) {
