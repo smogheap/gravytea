@@ -227,8 +227,21 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.fill();
 		ctx.restore();
 
-		/* Draw the goal on top of the planet */
+		if (this.selected) {
+			/* Highlight the body */
+			ctx.save();
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+
+			ctx.beginPath();
+			ctx.arc(this.position.x, this.position.y, this.radius,
+					0, Math.PI * 2, false);
+			ctx.closePath();
+			ctx.fill();
+			ctx.restore();
+		}
+
 		if (this.goal) {
+			/* Draw the goal on top of the planet */
 			this.completed = this.getOrbitCount();
 
 			ctx.save();
@@ -240,7 +253,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			var segmentSize	= (Math.PI * 2) / this.goal;
 
 			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= 3 * scale;
+			ctx.lineWidth	= 3;
 
 			for (var i = 0; i < this.goal; i++) {
 				if (i < this.completed) {
@@ -297,6 +310,10 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					break;
 			}
 
+			if (this.velocity.selected) {
+				ctx.lineWidth += 2 * scale;
+			}
+
 			ctx.beginPath();
 			ctx.arc(v.x, v.y, s, 0, Math.PI * 2, false);
 			ctx.stroke();
@@ -326,20 +343,20 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	the velocity vector indicator is displayed instead of the position of the
 	body itself.
 */
-Body.prototype.inside = function checkPoint(ctx, point, vectorIndicator)
+Body.prototype.inside = function inside(ctx, point, vectorIndicator, padding)
 {
 	var center	= new V(this.position);
 	var radius	= this.radius;
+	var scale	= ctx.getScale();
 
 	if (vectorIndicator) {
-		/*
-			The size of the velocity vector indicator node is constant
-			regardless of the zoom level. This has to be accounted for here.
-		*/
-		var scale = ctx.getScale();
 
 		radius = 7 * scale;
 		center.tx(this.velocity.multiply(this.indicatorScale));
+	}
+
+	if (!isNaN(padding)) {
+		radius += padding * scale;
 	}
 
 	if (center.distance(point) <= radius) {

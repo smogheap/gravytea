@@ -15,7 +15,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 		/* Did the user click on a velocity vector node? */
 		for (var i = 0, b; b = solarsys.bodies[i]; i++) {
-			if (!b.velocity.locked && b.inside(ctx, point, true)) {
+			if (!b.velocity.locked && b.inside(ctx, point, true, 3)) {
 				activeVector = b.velocity;
 
 				/*
@@ -32,7 +32,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 		if (!activeVector) {
 			/* Did the user click on a body? */
 			for (var i = 0, b; b = solarsys.bodies[i]; i++) {
-				if (!b.position.locked && b.inside(ctx, point, false)) {
+				if (!b.position.locked && b.inside(ctx, point, false, 7)) {
 					activeVector = b.position;
 					dragScale = 1.0;
 					break;

@@ -126,6 +126,39 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					break;
 			}
 			break;
+
+		case 'mousemove':
+			if (!this.solarsys.options.paused) {
+				/* Only allow selecting an object when the game isn't going */
+				return(true);
+			}
+
+			var mouse	= this.ctx.getMouse();
+
+			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+				delete b.selected;
+				delete b.velocity.selected;
+			}
+
+			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+				if (!b.velocity.locked &&
+					b.inside(this.ctx, mouse, true, 3)
+				) {
+					b.velocity.selected = true;
+					return(true);
+				}
+			}
+
+			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+				if (!b.position.locked &&
+					b.inside(this.ctx, mouse, false, 7)
+				) {
+					b.selected = true;
+					return(true);
+				}
+			}
+
+			break;
 	}
 
 	return true;
@@ -495,6 +528,11 @@ UnstableGame.prototype.go = function go()
 		return;
 	}
 
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		delete b.selected;
+		delete b.velocity.selected;
+	}
+
 	var btn = document.getElementById('gobtn');
 
 	btn.innerHTML = '';
@@ -558,6 +596,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 	canvas.addEventListener('DOMMouseScroll',	this, false);
 	canvas.addEventListener('mousewheel',		this, false);
+	canvas.addEventListener('mousemove',		this, false);
 	window.addEventListener('keydown',			this, false);
 
 	var resizeCanvas = function()
