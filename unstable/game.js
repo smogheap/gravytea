@@ -522,9 +522,11 @@ UnstableGame.prototype.stop = function stop()
 	}
 
 	/* Reset the canvas */
-	this.ctx.setTransform(1, 0, 0, 1,
-		window.innerWidth  / 2,
-		window.innerHeight / 2);
+	if (this.ctx) {
+		this.ctx.setTransform(1, 0, 0, 1,
+			window.innerWidth  / 2,
+			window.innerHeight / 2);
+	}
 
 	this.solarsys.options.paused		= true;
 	this.solarsys.options.showVelocity	= true;
@@ -614,24 +616,46 @@ UnstableGame.prototype.show = function showUnstableGame()
 			ctx.restore();
 		}
 
-		/* Has the user completed the level? */
-		var i, b;
+		/* Check for end of level events... */
+		if (level < 0 || this.solarsys.options.paused) {
+			return;
+		}
 
-		for (i = 0; b = this.solarsys.bodies[i]; i++) {
-			if (b.completed < b.goal) {
-				break;
+		/* Did anything crash? */
+		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+			if (b.collision) {
+				this.solarsys.options.paused = true;
+
+				this.popup("BOOM! You crashed!", [ "Retry", "Reset" ], function(action) {
+					switch (action) {
+						case "Reset":
+							this.hide();
+							this.loadLevel(this.level);
+							this.show();
+							break;
+
+						default:
+							this.stop();
+							break;
+					}
+				}.bind(this));
+				return;
 			}
 		}
 
-		if (i == this.solarsys.bodies.length && !this.solarsys.options.paused) {
-			this.solarsys.options.paused = true;
-
-			this.popup("Success!", [ "Play Next Level" ], function(action) {
-				this.hide();
-				this.loadLevel(this.level + 1);
-				this.show();
-			}.bind(this));
+		/* Has the user completed the level? */
+		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+			if (b.completed < b.goal) {
+				return;
+			}
 		}
+
+		this.solarsys.options.paused = true;
+		this.popup("Success!", [ "Play Next Level" ], function(action) {
+			this.hide();
+			this.loadLevel(this.level + 1);
+			this.show();
+		}.bind(this));
 	};
 	requestAnimationFrame(render.bind(this));
 };
