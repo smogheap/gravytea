@@ -381,6 +381,10 @@ Body.prototype.getPosition = function getPosition(bodies, elapsed)
 */
 Body.prototype.predict = function predict(bodies, elapsed)
 {
+	if (!this.stats.effect) {
+		this.stats.effect = [];
+	}
+
 	if (isNaN(elapsed)) {
 		elapsed = 16;
 	}
@@ -407,9 +411,10 @@ Body.prototype.predict = function predict(bodies, elapsed)
 		*/
 		for (var o = this.trajectory.length; o <= offset; o++) {
 			/* Get the values prior to the ones we are trying to calculate */
-			var pos = this.getPosition(bodies, o * 16);
-			var vel	= this.getVelocity(bodies, o * 16);
-			var col	= false;
+			var pos		= this.getPosition(bodies, o * 16);
+			var vel		= this.getVelocity(bodies, o * 16);
+			var col		= false;
+			var effect	= [];
 
 			for (var i = 0, b; b = bodies[i]; i++) {
 				if (this === b) {
@@ -422,6 +427,12 @@ Body.prototype.predict = function predict(bodies, elapsed)
 				var d	= bp.distance(pos);
 				var g	= new V(b.mass / Math.pow(d, 2), 0);
 
+				/*
+					Keep track of the gravitational effect for determining
+					orbits later on.
+				*/
+				effect[i] = g.x;
+
 				vel.tx(g.rotate(a));
 
 				if (b.radius + this.radius > d) {
@@ -432,7 +443,8 @@ Body.prototype.predict = function predict(bodies, elapsed)
 			this.trajectory.splice(o, this.trajectory.length - o);
 			this.trajectory[o] = {
 				velocity:	vel,
-				position:	pos.add(vel)
+				position:	pos.add(vel),
+				effect:		effect
 			};
 
 			if (col) {
@@ -456,8 +468,9 @@ Body.prototype.advance = function advance(bodies, elapsed)
 
 	if (offset) {
 		if ((p = this.predict(bodies, offset * 16))) {
-			this.position	= p.position;
-			this.velocity	= p.velocity;
+			this.position		= p.position;
+			this.velocity		= p.velocity;
+			this.stats.effect	= p.effect;
 
 			if (p.collision) {
 				this.collision = true;
@@ -481,6 +494,10 @@ Body.prototype.updateStats = function updateStats(bodies)
 		return;
 	}
 
+	if (!this.stats.effect) {
+		this.stats.effect = [];
+	}
+
 	if (!this.stats.angles) {
 		this.stats.angles = {
 			current:	[],
@@ -494,8 +511,18 @@ Body.prototype.updateStats = function updateStats(bodies)
 			continue;
 		}
 
-		if ((this.mass * 0.9) > b.mass) {
+		/*
+			Ignore bodies that are significantly smaller than this body, and
+			bodies that are not currently having a significant gravitational
+			effect on this body.
+		*/
+		if ((this.mass * 0.9) > b.mass ||
+			isNaN(this.stats.effect[i]) ||
+			this.stats.effect[i] < 0.05
+		) {
 			/* Ignore bodies that are significantly smaller than this body */
+			delete this.stats.angles.total[i];
+			delete this.stats.angles.current[i];
 			continue;
 		}
 

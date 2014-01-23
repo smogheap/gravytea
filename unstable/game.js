@@ -3,6 +3,8 @@
 //		 > Play    |  Reset  |  Help
 //		<< Rewind  |  Reset  |  Help
 
+// TODO	Ignore keyboard input while a popup is up
+
 // TODO	Show a help dialog
 //
 //		This should be a large area of text that floats above the game (with a
