@@ -28,32 +28,36 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 		new Body({
 			position:	new V(0, 0),
 			radius:		50,
-			sun:		true,
-			density:	0.09
+			density:	0.09,
+			color:		'white'
 		}),
 
 		new Body({
 			position:	new V(-100, 100),
 			velocity:	new V(12, 12),
-			radius:		10
+			radius:		10,
+			color:		'white'
 		}),
 
 		new Body({
 			position:	new V(240, 0),
 			velocity:	new V(0, 15),
-			radius:		15
+			radius:		15,
+			color:		'white'
 		}),
 
 		new Body({
 			position:	new V(0, 400),
 			velocity:	new V(11, 0),
-			radius:		35
+			radius:		35,
+			color:		'white'
 		}),
 
 		new Body({
 			position:	new V(0, 320),
 			velocity:	new V(16, 0),
-			radius:		2
+			radius:		2,
+			color:		'white'
 		})
 	]);
 
@@ -73,6 +77,7 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 	ctx.save();
 	resizeCanvas();
 
+			console.log(h / 320, w / 320);
 	var render = function render(time)
 	{
 		if (!this.running) {
