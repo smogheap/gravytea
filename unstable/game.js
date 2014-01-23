@@ -26,30 +26,6 @@
 //				No one liked that planet anyway
 //				Sucks to be you, you left your keys on that planet
 
-// TODO	Implement goals. The first being an orbit count down set for each body.
-//
-//		For each body keep track of the total angle of change relative to every
-//		other body, using the largest to calculate the angle of change.
-//
-//		This is a bit complicated though... If you have a sun, a planet and a
-//		small moon then the planet's relationship to the sun is the important
-//		one to count.
-//
-//		There may be cases with 2 similar sized bodies orbiting each other
-//		though...
-//
-//		Perhaps set a limit on the size ratio.... A body can not be considered
-//		to be orbitting another body if it is significantly smaller than it is.
-//
-//		Only count the angle of change for bodies that are at least 90% of the
-//		size of the body.
-
-// TODO	Move the level along with the sun so that the sun stays centered (or if
-//		it isn't centered then it stays in the same relative position to the
-//		center...)
-
-// TODO	Reset position and everything when a level is loaded (aka reset...)
-
 function UnstableGame(opts)
 {
 	opts = opts || {};
@@ -496,7 +472,6 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 	this.solarsys.setBodies(bodies);
 };
 
-// TODO	Add a button to run to make it easier
 /* Let the solarsystem the user has built/fixed run */
 UnstableGame.prototype.go = function go()
 {

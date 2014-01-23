@@ -59,8 +59,12 @@
 					var f = document.getElementById('fullscreen');
 
 					// TODO	Save this setting and apply it on startup
+
 					// TODO	Allow going fullscreen using a command line arg when
 					//		running with xulrunner
+
+					// TODO	Add options for mapping inputs with keyboard and/or
+					//		gamepads
 
 					f.disabled = false;
 					f.addEventListener('change', function()
@@ -143,9 +147,9 @@
 			</div>
 
 			<!--
-				TODO: Find a way to open links in a new window when launched from
-				the xulrunner wrapper. Right now they open in the same window even
-				with the target set.
+				TODO: Find a way to open links in a new window when launched
+				from the xulrunner wrapper. Right now they open in the same
+				window even with the target set.
 			-->
 			<div id="about" class="content">
 				<div class="center">A</div>
