@@ -518,7 +518,7 @@ Body.prototype.updateStats = function updateStats(bodies)
 		*/
 		if ((this.mass * 0.9) > b.mass ||
 			isNaN(this.stats.effect[i]) ||
-			this.stats.effect[i] < 0.05
+			this.stats.effect[i] < 0.01
 		) {
 			/* Ignore bodies that are significantly smaller than this body */
 			delete this.stats.angles.total[i];

@@ -427,7 +427,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					velocity:	new V(-3, 0),
 					radius:		35,
 
-					goal:		7
+					goal:		20
 				},
 
 				{
