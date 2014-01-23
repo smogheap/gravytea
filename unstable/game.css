@@ -47,6 +47,7 @@ a, a:visited {
 
 .menu {
 	left:				30px;
+	right:				30px;
 	top:				10px;
 	font-size:			13px;
 }
@@ -62,6 +63,11 @@ a, a:visited {
 .menu a:hover,
 .popup a:hover {
 	color:				#E04421;
+}
+
+#gobtn {
+	position:			absolute;
+	right:				0px;
 }
 
 .content {
@@ -83,6 +89,7 @@ a, a:visited {
 }
 
 .scrim {
+	background:			rgba(0, 0, 0, 0.7);
 	position:			absolute;
 	top:				0px;
 	right:				0px;

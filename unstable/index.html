@@ -192,12 +192,11 @@
 
 		<div id="game">
 			<div class="menu">
-				<!-- TODO: Switch this to "<< Rewind" while playing -->
-				<a onclick="game.go();">&gt; Play</a>
-
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="game.loadLevel(game.level);">Reset</a>
+				<a onclick="game.loadLevel(game.level);">Reset</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('help');">Help</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showMenu();">Menu</a>
+
+				<a id="gobtn" onclick="game.go();">&gt; Play</a>
 			</div>
 
 			<div id="hint" class="hint"></div>

@@ -495,6 +495,11 @@ UnstableGame.prototype.go = function go()
 		return;
 	}
 
+	var btn = document.getElementById('gobtn');
+
+	btn.innerHTML = '';
+	btn.appendChild(document.createTextNode('<< Rewind'));
+
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 		/* Save the state as the user had created it */
 		b.save();
@@ -506,6 +511,11 @@ UnstableGame.prototype.go = function go()
 
 UnstableGame.prototype.stop = function stop()
 {
+	var btn = document.getElementById('gobtn');
+
+	btn.innerHTML = '';
+	btn.appendChild(document.createTextNode('> Play'));
+
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 		/* Restore the state the user had */
 		b.restore();
