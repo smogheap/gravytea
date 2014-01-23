@@ -173,13 +173,16 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 	return true;
 };
 
-UnstableGame.prototype.popup = function popup(message, actions, cb)
+UnstableGame.prototype.popup = function popup(message, actions, cb, className)
 {
 	var scrim	= document.createElement('div');
 	var popup	= document.createElement('div');
 
 	scrim.className = 'scrim';
 	popup.className = 'popup';
+	if(className) {
+		popup.className += ' ' + className;
+	}
 
 	document.body.appendChild(scrim);
 	var ignoreEvent = function(event)
@@ -686,7 +689,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 							this.stop();
 							break;
 					}
-				}.bind(this));
+				}.bind(this), "fail");
 				return;
 			}
 		}
@@ -716,7 +719,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			this.hide();
 			this.loadLevel(l);
 			this.show();
-		}.bind(this));
+		}.bind(this), "success");
 	};
 	requestAnimationFrame(render.bind(this));
 };
