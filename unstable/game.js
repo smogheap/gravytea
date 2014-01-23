@@ -61,6 +61,9 @@ function UnstableGame(opts)
 		paused:			true,
 		trajectory:		3 * 1000
 	});
+
+	this.speed = 1.0;
+	// this.speed = 0.2;
 }
 
 UnstableGame.prototype.handleEvent = function handleEvent(event)
@@ -263,7 +266,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 					velocity:	new V(0, 7, true),
 					radius:		15,
 
-					goal:		1
+					goal:		3
 				}
 			];
 			break;
@@ -526,7 +529,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		ctx.save();
 
 		/* Advance the bodies to the current time */
-		if (this.solarsys.advance(time)) {
+		if (this.solarsys.advance(time * this.speed)) {
 			/* Adjust the position of the canvas to keep the suns fixed */
 			var c = this.solarsys.getCenter();
 			ctx.translate(-c.x, -c.y);

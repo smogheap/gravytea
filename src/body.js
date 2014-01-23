@@ -8,7 +8,6 @@ function Body(opts)
 
 	this.density	= opts.density	|| 0.01;
 	this.goal		= opts.goal		|| 0;
-	this.completed	= 0;
 
 	this.renderCB	= opts.renderCB;
 
@@ -33,6 +32,8 @@ function Body(opts)
 	this.indicatorScale = 8.0;
 
 	this.trajectory	= [];
+
+	this.stats = { };
 };
 
 Body.prototype.toJSON = function toJSON()
@@ -77,6 +78,9 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 
 		/* Reset the pre-calculated trajectory as well */
 		this.trajectory	= [];
+
+		/* Reset calculated stats as well */
+		this.stats = { };
 	}
 };
 
@@ -231,14 +235,13 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				Draw a line around the planet indicating how close to the goal
 				the player is.
 			*/
-			var segmentSize		= (Math.PI * 2) / this.goal;
+			var segmentSize	= (Math.PI * 2) / this.goal;
 
-			ctx.lineWidth = 3 * scale;
+			ctx.lineCap		= 'butt';
+			ctx.lineWidth	= 3 * scale;
 
-this.complete = 2;
-this.goal = 10;
 			for (var i = 0; i < this.goal; i++) {
-				if (i < this.complete) {
+				if (i < this.getOrbitCount()) {
 					ctx.strokeStyle = '#fff';
 				} else {
 					ctx.strokeStyle = '#333';
@@ -251,19 +254,6 @@ this.goal = 10;
 
 				ctx.stroke();
 			}
-
-
-			/* Draw the number of required orbits on top of the planet */
-/*
-			ctx.textAlign		= 'center';
-			ctx.textBaseline	= 'middle';
-			ctx.font			= (12 * scale) + 'px Arial';
-			ctx.fillStyle		= 'white';
-
-			ctx.fillText(this.goal, this.position.x, this.position.y);
-*/
-
-
 
 			ctx.restore();
 		}
@@ -473,5 +463,97 @@ Body.prototype.advance = function advance(bodies, elapsed)
 		/* All values prior to this one are no longer need */
 		this.trajectory.splice(0, offset);
 	}
+};
+
+/*
+	Keep track of the angle of change between the position of this body and all
+	other bodies. This will be used to calculate the number of orbits that have
+	been completed.
+*/
+Body.prototype.updateStats = function updateStats(bodies)
+{
+	if (!this.goal) {
+		/* Only count the statistics if this body has a goal (for now) */
+		return;
+	}
+
+	if (!this.stats.angles) {
+		this.stats.angles = {
+			current:	[],
+			change:		[],
+			total:		[]
+		};
+	}
+
+	for (var i = 0, b; b = bodies[i]; i++) {
+		if (this === b) {
+			continue;
+		}
+
+		if ((this.mass * 0.9) > b.mass) {
+			/* Ignore bodies that are significantly smaller than this body */
+			continue;
+		}
+
+		var a = b.position.angle(this.position);
+
+		if (isNaN(this.stats.angles.total[i])) {
+			/* Our first value */
+			this.stats.angles.total[i] = 0;
+		} else {
+			/*
+				If the direction of change reverses then the stats need to be
+				reset.
+
+				We don't want to reset if the angle wrapps though. Assume that
+				the smaller angle of change is the one that actually occured.
+			*/
+			var c = Math.min(
+				Math.abs(a - this.stats.angles.current[i]),
+				Math.abs(this.stats.angles.current[i] - a)
+			);
+
+			this.stats.angles.total[i] += c;
+		}
+
+		this.stats.angles.current[i] = a;
+	}
+};
+
+/*
+	Return the number of orbits that this body has completed.
+
+	This is calculated by looking at the total relative angle of change to every
+	other body, and taking the highest. Bodies that are significantly smaller
+	than this body are excluded. (A moon orbiting a planet does not count as the
+	planet orbiting the moon.)
+*/
+Body.prototype.getOrbitCount = function getOrbitCount()
+{
+	var highest	= 0;
+
+	if (!this.goal) {
+		/* Statas are currently only kept for bodies with a goal */
+		return(0);
+	}
+
+	if (!this.stats.angles) {
+		this.stats.angles = {
+			current:	[],
+			total:		[]
+		};
+	}
+
+	for (var i = 0; i < this.stats.angles.total.length; i++) {
+		if (Math.abs(this.stats.angles.total[i]) > highest) {
+			highest = Math.abs(this.stats.angles.total[i]);
+		}
+	}
+
+	if (highest > 0) {
+		return(Math.floor(highest / (Math.PI * 4)));
+	}
+
+	return(0);
 };
 

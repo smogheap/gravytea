@@ -46,6 +46,11 @@ SolarSystem.prototype.advanceBodies = function advanceBodies(elapsed)
 		body.advance(this.bodies, elapsed);
 	}
 
+	/* Keep track of how far each body has rotated around every other body */
+	for (var i = 0, body; body = this.bodies[i]; i++) {
+		body.updateStats(this.bodies);
+	}
+
 	/* Return the unused portion of the time */
 	return(elapsed - (Math.floor(elapsed / 16) * 16));
 };
