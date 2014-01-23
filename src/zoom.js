@@ -15,40 +15,75 @@ function makeCanvasZoomable(canvas, ctx)
 	document.body.style.webkitUserSelect	= 'none';
 	document.body.style.userSelect			= 'none';
 
-	canvas.addEventListener('mousedown',function(e)
+	var handleEvent = function handleEvent(event)
 	{
-		if (!dragEnabled) {
-			dragStart	= null;
-			dragged		= false;
+		switch (event.type) {
+			case 'mousedown':
+				if (!dragEnabled) {
+					dragStart	= null;
+					dragged		= false;
 
-			return;
+					return(true);
+				}
+
+				position.x = event.offsetX || (event.pageX - canvas.offsetLeft);
+				position.y = event.offsetY || (event.pageY - canvas.offsetTop);
+
+				dragStart = ctx.transformedPoint(position.x, position.y);
+				dragged = false;
+				break;
+
+			case 'mousemove':
+				mousePos.x = event.offsetX || (event.pageX - canvas.offsetLeft);
+				mousePos.y = event.offsetY || (event.pageY - canvas.offsetTop);
+
+				if (!dragStart || !dragEnabled) {
+					dragStart	= null;
+					dragged		= false;
+
+					return(true);
+				}
+
+				position.x = mousePos.x;
+				position.y = mousePos.y;
+
+				dragged = true;
+
+				var point = ctx.transformedPoint(position.x, position.y);
+
+				ctx.translate(point.x - dragStart.x, point.y - dragStart.y);
+				break;
+
+			case 'mouseup':
+				dragStart = null;
+
+				// Turn back on to allow click and shift click to zoom in and out...
+				if (false) {
+					if (!dragged) {
+						zoom(event.shiftKey ? -1 : 1 );
+					}
+				}
+				break;
+
+			case 'mousewheel':
+			case 'DOMMouseScroll':
+				var delta = event.wheelDelta ? event.wheelDelta/40 : event.detail ? -event.detail : 0;
+				if (delta) {
+					zoom(delta);
+				}
+
+				break;
 		}
 
-		position.x = e.offsetX || (e.pageX - canvas.offsetLeft);
-		position.y = e.offsetY || (e.pageY - canvas.offsetTop);
+		return event.preventDefault() && false;
+	};
 
-		dragStart = ctx.transformedPoint(position.x, position.y);
-		dragged = false;
-	}, false);
+	canvas.addEventListener('mousedown',		handleEvent, false);
+	canvas.addEventListener('mouseup',			handleEvent, false);
+	canvas.addEventListener('mousemove',		handleEvent, false);
 
-	canvas.addEventListener('mousemove',function(e)
-	{
-		mousePos.x = e.offsetX || (e.pageX - canvas.offsetLeft);
-		mousePos.y = e.offsetY || (e.pageY - canvas.offsetTop);
-
-		if (!dragStart) {
-			return;
-		}
-
-		position.x = mousePos.x;
-		position.y = mousePos.y;
-
-		dragged = true;
-
-		var point = ctx.transformedPoint(position.x, position.y);
-
-		ctx.translate(point.x - dragStart.x, point.y - dragStart.y);
-	}, false);
+	canvas.addEventListener('DOMMouseScroll',	handleEvent, false);
+	canvas.addEventListener('mousewheel',		handleEvent, false);
 
 	var zoom = function ctxZoom(clicks)
 	{
@@ -74,32 +109,6 @@ function makeCanvasZoomable(canvas, ctx)
 		ctx.scale(factor, factor);
 		ctx.translate(-point.x, -point.y);
 	};
-
-	canvas.addEventListener('mouseup',function(e)
-			{
-			dragStart = null;
-
-			if (false) {
-			// Turn back on to allow click and shift click to zoom in and out...
-			if (!dragged) {
-			zoom(e.shiftKey ? -1 : 1 );
-			}
-			}
-			}, false);
-
-	function handleScroll(e)
-	{
-		var delta = e.wheelDelta ? e.wheelDelta/40 : e.detail ? -e.detail : 0;
-		if (delta) {
-			zoom(delta);
-		}
-
-		return e.preventDefault() && false;
-	};
-
-	canvas.addEventListener('DOMMouseScroll',	handleScroll, false);
-	canvas.addEventListener('mousewheel',		handleScroll, false);
-
 
 	/*
 	   Wrap many of the canvas functions so that the transforms may be tracked
@@ -239,6 +248,16 @@ function makeCanvasZoomable(canvas, ctx)
 		}
 
 		zoom(clicks);
+	};
+
+	ctx.cleanupZoomEvents = function()
+	{
+		canvas.removeEventListener('mousedown',			handleEvent, false);
+		canvas.removeEventListener('mouseup',			handleEvent, false);
+		canvas.removeEventListener('mousemove',			handleEvent, false);
+
+		canvas.removeEventListener('DOMMouseScroll',	handleEvent, false);
+		canvas.removeEventListener('mousewheel',		handleEvent, false);
 	};
 }
 

@@ -55,10 +55,12 @@ a, a:visited {
 	top:				100px;
 }
 
-.menu a, .menu a:visited {
+.menu a, .menu a:visited,
+.popup a, .popup a:visited {
 	text-decoration:	none;
 }
-.menu a:hover {
+.menu a:hover,
+.popup a:hover {
 	color:				#E04421;
 }
 
@@ -78,6 +80,44 @@ a, a:visited {
 .content .center {
 	width:				100%;
 	text-align:			center;
+}
+
+.scrim {
+	position:			absolute;
+	top:				0px;
+	right:				0px;
+	bottom:				0px;
+	left:				0px;
+}
+
+.popup {
+	position:			absolute;
+	top:				0px;
+	right:				0px;
+	bottom:				0px;
+	left:				0px;
+
+	margin:				auto;
+	width:				300px;
+	height:				130px;
+
+	font-family:		'arial';
+	font-size:			18px;
+
+	color:				#000;
+	background:			rgba(136, 136, 136, 0.8);
+	padding:			10px;
+	text-align:			center;
+
+	-moz-border-radius:	10px;
+	-webkit-border-radius: 10px;
+	border-radius:		10px;
+}
+
+.popup p,
+.popup a {
+	color:				black;
+	padding:			10px;
 }
 
 canvas {

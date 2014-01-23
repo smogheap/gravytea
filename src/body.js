@@ -8,6 +8,7 @@ function Body(opts)
 
 	this.density	= opts.density	|| 0.01;
 	this.goal		= opts.goal		|| 0;
+	this.completed	= 0;
 
 	this.renderCB	= opts.renderCB;
 
@@ -227,8 +228,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 
 		/* Draw the goal on top of the planet */
-		// TODO	Decide how best to do this...
 		if (this.goal) {
+			this.completed = this.getOrbitCount();
+
 			ctx.save();
 
 			/*
@@ -241,7 +243,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			ctx.lineWidth	= 3 * scale;
 
 			for (var i = 0; i < this.goal; i++) {
-				if (i < this.getOrbitCount()) {
+				if (i < this.completed) {
 					ctx.strokeStyle = '#fff';
 				} else {
 					ctx.strokeStyle = '#333';
@@ -343,6 +345,8 @@ Body.prototype.inside = function checkPoint(ctx, point, vectorIndicator)
 	if (center.distance(point) <= radius) {
 		return(true);
 	}
+
+	return(false);
 };
 
 Body.prototype.getVelocity = function getVelocity(bodies, elapsed)

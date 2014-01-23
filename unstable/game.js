@@ -149,6 +149,53 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 	return true;
 };
 
+UnstableGame.prototype.popup = function popup(message, actions, cb)
+{
+	var scrim	= document.createElement('div');
+	var popup	= document.createElement('div');
+
+	popup.className = 'popup';
+
+	document.body.appendChild(scrim);
+	scrim.addEventListener('click', function(e)
+	{
+		return e.preventDefault() && false;
+	});
+
+	var p = document.createElement('p');
+	p.appendChild(document.createTextNode(message));
+	popup.appendChild(p);
+	popup.appendChild(document.createElement('br'));
+	document.body.appendChild(popup);
+
+	if (!actions || !actions.length) {
+		actions = 'Okay';
+	}
+
+	for (var i = 0; i < actions.length; i++) {
+		var a = document.createElement('a');
+
+		a.href = '#';
+		a.appendChild(document.createTextNode(actions[i]));
+
+		if (i > 0) {
+			popup.appendChild(document.createTextNode('  |  '));
+		}
+
+		(function(action) {
+			a.addEventListener('click', function(e)
+			{
+				document.body.removeChild(scrim);
+				document.body.removeChild(popup);
+
+				cb(action);
+			});
+		})(actions[i]);
+
+		popup.appendChild(a);
+	}
+};
+
 // TODO	Do not allow selecting a level that the player hasn't unlocked
 UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 {
@@ -319,25 +366,33 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 				{
 					position:	new V(-50, 0, true),
 					velocity:	new V(0, 7),
-					radius:		15
+					radius:		15,
+
+					goal:		5
 				},
 
 				{
 					position:	new V(50, 0, true),
 					velocity:	new V(0, 7),
-					radius:		15
+					radius:		15,
+
+					goal:		4
 				},
 
 				{
 					position:	new V(150, 0, true),
 					velocity:	new V(0, 7),
-					radius:		15
+					radius:		15,
+
+					goal:		3
 				},
 
 				{
 					position:	new V(250, 0, true),
 					velocity:	new V(0, 7),
-					radius:		15
+					radius:		15,
+
+					goal:		2
 				}
 			];
 			break;
@@ -362,14 +417,18 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 				{
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
-					radius:		25
+					radius:		25,
+
+					goal:		9
 				},
 
 				/* Another rocky planet */
 				{
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
-					radius:		15
+					radius:		15,
+
+					goal:		7
 				}
 			];
 			break;
@@ -388,19 +447,25 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 				{
 					position:	new V(0, 220),
 					velocity:	new V(-3, 0),
-					radius:		35
+					radius:		35,
+
+					goal:		7
 				},
 
 				{
 					position:	new V(300, 0),
 					velocity:	new V(5, 5),
-					radius:		15
+					radius:		15,
+
+					goal:		5
 				},
 
 				{
 					position:	new V(-350, -300),
 					velocity:	new V(2, 2),
-					radius:		20
+					radius:		20,
+
+					goal:		4
 				}
 			];
 			break;
@@ -435,18 +500,18 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 /* Let the solarsystem the user has built/fixed run */
 UnstableGame.prototype.go = function go()
 {
-	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
-		if (this.solarsys.options.paused) {
-			/* Save the state as the user had created it */
-			b.save();
-		} else {
-			/* Restore the state the user had */
-			b.restore();
-		}
+	if (!this.solarsys.options.paused) {
+		this.stop();
+		return;
 	}
 
-	this.solarsys.options.paused		= !this.solarsys.options.paused;
-	this.solarsys.options.showVelocity	= !this.solarsys.options.showVelocity;
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		/* Save the state as the user had created it */
+		b.save();
+	}
+
+	this.solarsys.options.paused		= false;
+	this.solarsys.options.showVelocity	= false;
 };
 
 UnstableGame.prototype.stop = function stop()
@@ -456,15 +521,24 @@ UnstableGame.prototype.stop = function stop()
 		b.restore();
 	}
 
+	/* Reset the canvas */
+	this.ctx.setTransform(1, 0, 0, 1,
+		window.innerWidth  / 2,
+		window.innerHeight / 2);
+
 	this.solarsys.options.paused		= true;
 	this.solarsys.options.showVelocity	= true;
 };
 
 UnstableGame.prototype.show = function showUnstableGame()
 {
+	var fresh	= false;
+
 	this.running = true;
 
 	if (!(this.canvas)) {
+		fresh = true;
+
 		this.canvas	= document.createElement('canvas');
 		this.ctx	= this.canvas.getContext('2d');
 
@@ -500,10 +574,12 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 	};
 
-	ctx.save();
-	makeBodiesDraggable(canvas, ctx, this.solarsys);
-	makeCanvasZoomable(canvas, ctx);
-	resizeCanvas();
+	if (fresh) {
+		ctx.save();
+		makeBodiesDraggable(canvas, ctx, this.solarsys);
+		makeCanvasZoomable(canvas, ctx);
+		resizeCanvas();
+	}
 
 	var render = function render(time)
 	{
@@ -525,19 +601,37 @@ UnstableGame.prototype.show = function showUnstableGame()
 		var b = ctx.transformedPoint(w, h);
 		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
-		/* Render the solar system */
-		ctx.save();
-
 		/* Advance the bodies to the current time */
+		var before = this.solarsys.getCenter();
 		if (this.solarsys.advance(time * this.speed)) {
 			/* Adjust the position of the canvas to keep the suns fixed */
-			var c = this.solarsys.getCenter();
-			ctx.translate(-c.x, -c.y);
+			var after = this.solarsys.getCenter();
+			ctx.translate(-(after.x - before.x), -(after.y - before.y));
 
 			/* Render the bodies */
+			ctx.save();
 			this.solarsys.render(ctx);
+			ctx.restore();
 		}
-		ctx.restore();
+
+		/* Has the user completed the level? */
+		var i, b;
+
+		for (i = 0; b = this.solarsys.bodies[i]; i++) {
+			if (b.completed < b.goal) {
+				break;
+			}
+		}
+
+		if (i == this.solarsys.bodies.length && !this.solarsys.options.paused) {
+			this.solarsys.options.paused = true;
+
+			this.popup("Success!", [ "Play Next Level" ], function(action) {
+				this.hide();
+				this.loadLevel(this.level + 1);
+				this.show();
+			}.bind(this));
+		}
 	};
 	requestAnimationFrame(render.bind(this));
 };
