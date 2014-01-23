@@ -112,7 +112,7 @@ a, a:visited {
 	font-size:			18px;
 
 	color:				#000;
-	background:			rgba(136, 136, 136, 0.8);
+	background:			url('static.gif'); /* rgba(136, 136, 136, 0.8); */
 	padding:			10px;
 	text-align:			center;
 

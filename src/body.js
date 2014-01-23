@@ -259,7 +259,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				if (i < this.completed) {
 					ctx.strokeStyle = '#fff';
 				} else {
-					ctx.strokeStyle = '#333';
+					ctx.strokeStyle = '#444';
 				}
 
 				ctx.beginPath();
