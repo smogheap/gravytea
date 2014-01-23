@@ -7,6 +7,8 @@ function Body(opts)
 	this.velocity	= new V(opts.velocity);
 
 	this.density	= opts.density	|| 0.01;
+	this.goal		= opts.goal		|| 0;
+	this.completed	= 0;
 
 	this.renderCB	= opts.renderCB;
 
@@ -138,8 +140,15 @@ Body.prototype.setRadius = function setRadius(radius)
 
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
+	var scale;
+
+	try {
+		scale = ctx.getScale();
+	} catch (e) {
+		scale = 1;
+	}
+
 	if (showTrajectory) {
-		var scale	= ctx.getScale();
 
 		ctx.save();
 
@@ -171,6 +180,30 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
+	if (showVelocity && !this.velocity.locked) {
+		/*
+			Show the line to the velocity indicator node. This line needs to be
+			under the body itself.
+		*/
+		var v		= new V(this.position);
+
+		v.tx(this.velocity.multiply(this.indicatorScale));
+
+		ctx.save();
+
+		ctx.lineWidth	= 1 * scale;
+		ctx.lineCap		= 'round';
+		ctx.strokeStyle	= 'rgba(255, 255, 255, 0.7)';
+
+		ctx.beginPath();
+		ctx.moveTo(this.position.x, this.position.y);
+		ctx.lineTo(v.x, v.y);
+		ctx.stroke();
+
+		ctx.restore();
+	}
+
+
 	if (showBody) {
 		if (this.renderCB) {
 			/* There is an overridden render function for this body */
@@ -188,6 +221,52 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.closePath();
 		ctx.fill();
 		ctx.restore();
+
+		/* Draw the goal on top of the planet */
+		// TODO	Decide how best to do this...
+		if (this.goal) {
+			ctx.save();
+
+			/*
+				Draw a line around the planet indicating how close to the goal
+				the player is.
+			*/
+			var segmentSize		= (Math.PI * 2) / this.goal;
+
+			ctx.lineWidth = 3 * scale;
+
+this.complete = 2;
+this.goal = 10;
+			for (var i = 0; i < this.goal; i++) {
+				if (i < this.complete) {
+					ctx.strokeStyle = '#fff';
+				} else {
+					ctx.strokeStyle = '#333';
+				}
+
+				ctx.beginPath();
+				ctx.arc(this.position.x, this.position.y, this.radius + 5,
+					(i       * segmentSize) + (segmentSize * 0.2),
+					((i + 1) * segmentSize) - (segmentSize * 0.2), false);
+
+				ctx.stroke();
+			}
+
+
+			/* Draw the number of required orbits on top of the planet */
+/*
+			ctx.textAlign		= 'center';
+			ctx.textBaseline	= 'middle';
+			ctx.font			= (12 * scale) + 'px Arial';
+			ctx.fillStyle		= 'white';
+
+			ctx.fillText(this.goal, this.position.x, this.position.y);
+*/
+
+
+
+			ctx.restore();
+		}
 	}
 
 	if (showVelocity && !this.velocity.locked) {
@@ -201,10 +280,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			known distance and use the resulting distance to determine the
 			current scale level.
 		*/
-		var scale	= ctx.getScale();
-
 		var s		= 7 * scale;
-		var t		= 3 * scale;
 		var v		= new V(this.position);
 
 		v.tx(this.velocity.multiply(this.indicatorScale));
@@ -214,13 +290,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.lineWidth	= 1 * scale;
 		ctx.lineCap		= 'round';
 		ctx.strokeStyle	= 'rgba(255, 255, 255, 1.0)';
-
-		// TODO	End this line before it gets into the indicator?
-
-		ctx.beginPath();
-		ctx.moveTo(this.position.x, this.position.y);
-		ctx.lineTo(v.x, v.y);
-		ctx.stroke();
 
 		/* Draw the velocity indicator circle */
 		for (var i = 0; i < 2; i++) {
