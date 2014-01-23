@@ -139,9 +139,12 @@ Body.prototype.setRadius = function setRadius(radius)
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
 	if (showTrajectory) {
+		var scale	= ctx.getScale();
+
 		ctx.save();
 
-		ctx.lineCap = 'round';
+		ctx.lineCap		= 'round';
+		ctx.lineWidth	= 1 * scale;
 
 		var p = this;
 		var n;
