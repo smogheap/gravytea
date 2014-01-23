@@ -69,6 +69,10 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			return event.preventDefault() && false;
 
 		case 'keydown':
+			if (this.popupdiv) {
+				return(true);
+			}
+
 			switch (event.keyCode) {
 				case 32: /* space	*/
 					this.go();
@@ -146,6 +150,8 @@ UnstableGame.prototype.popup = function popup(message, actions, cb)
 	popup.appendChild(document.createElement('br'));
 	document.body.appendChild(popup);
 
+	this.popupdiv = popup;
+
 	if (!actions || !actions.length) {
 		actions = 'Okay';
 	}
@@ -166,9 +172,10 @@ UnstableGame.prototype.popup = function popup(message, actions, cb)
 				document.body.removeChild(scrim);
 				document.body.removeChild(popup);
 
+				delete this.popupdiv;
 				cb(action);
-			});
-		})(actions[i]);
+			}.bind(this));
+		}.bind(this))(actions[i]);
 
 		popup.appendChild(a);
 	}
@@ -628,9 +635,22 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		this.solarsys.options.paused = true;
-		this.popup("Success!", [ "Play Next Level" ], function(action) {
+		this.popup("Success!", [ "Next Level", "Replay" ], function(action) {
+			var l;
+
+			switch (action) {
+				default:
+				case "Next Level":
+					l = this.level + 1;
+					break;
+
+				case "Replay":
+					l = this.level;
+					break;
+			}
+
 			this.hide();
-			this.loadLevel(this.level + 1);
+			this.loadLevel(l);
 			this.show();
 		}.bind(this));
 	};

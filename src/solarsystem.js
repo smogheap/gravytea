@@ -22,6 +22,11 @@ SolarSystem.prototype.setBodies = function setBodies(bodies)
 
 	this.bodies = bodies;
 	this.resetTrajectories();
+
+	/* Include the initial state in the stats */
+	for (var i = 0, body; body = this.bodies[i]; i++) {
+		body.updateStats(this.bodies);
+	}
 };
 
 SolarSystem.prototype.getBodies = function getBodies()
