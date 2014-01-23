@@ -22,11 +22,6 @@ SolarSystem.prototype.setBodies = function setBodies(bodies)
 
 	this.bodies = bodies;
 	this.resetTrajectories();
-
-	/* Include the initial state in the stats */
-	for (var i = 0, body; body = this.bodies[i]; i++) {
-		body.updateStats(this.bodies);
-	}
 };
 
 SolarSystem.prototype.getBodies = function getBodies()
@@ -46,14 +41,14 @@ SolarSystem.prototype.advanceBodies = function advanceBodies(elapsed)
 		body.predict(this.bodies, elapsed);
 	}
 
-	/* Move each body to the next calculated position */
-	for (var i = 0, body; body = this.bodies[i]; i++) {
-		body.advance(this.bodies, elapsed);
-	}
-
 	/* Keep track of how far each body has rotated around every other body */
 	for (var i = 0, body; body = this.bodies[i]; i++) {
 		body.updateStats(this.bodies);
+	}
+
+	/* Move each body to the next calculated position */
+	for (var i = 0, body; body = this.bodies[i]; i++) {
+		body.advance(this.bodies, elapsed);
 	}
 
 	/* Return the unused portion of the time */

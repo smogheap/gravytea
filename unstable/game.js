@@ -668,7 +668,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Check for end of level events... */
-		if (level < 0 || this.solarsys.options.paused) {
+		if (this.level < 0 || this.solarsys.options.paused) {
 			return;
 		}
 
