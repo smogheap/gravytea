@@ -488,7 +488,6 @@ UnstableGame.prototype.popup = function popup(message, actions, cb, className)
 	for (var i = 0; i < actions.length; i++) {
 		var a = document.createElement('a');
 
-		a.href = '#';
 		a.appendChild(document.createTextNode(actions[i]));
 
 		if (i > 0) {
@@ -520,7 +519,6 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 		var a = document.createElement('a');
 
 		(function(level) {
-			a.href = '#';
 			a.addEventListener('click', function(e)
 			{
 				cb(level);
@@ -548,7 +546,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		var a = document.createElement('a');
 
 		a.appendChild(document.createTextNode(name));
-		a.href = '#';
 		a.addEventListener('click', function(e) {
 			cb();
 			return e.preventDefault() && false;

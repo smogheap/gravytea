@@ -6,6 +6,7 @@ body {
 
 a, a:visited {
 	color:				white;
+	cursor:				pointer;
 }
 
 
@@ -26,7 +27,7 @@ a, a:visited {
 	position:			absolute;
 
 	left:				10px;
-	bottom:				20px;
+	top:				10px;
 	font-size:			14px;
 }
 
@@ -48,7 +49,6 @@ a, a:visited {
 .menu {
 	left:				30px;
 	right:				30px;
-	top:				10px;
 	font-size:			13px;
 }
 
@@ -63,6 +63,10 @@ a, a:visited {
 .menu a:hover,
 .popup a:hover {
 	color:				#E04421;
+}
+
+#game .menu {
+	bottom:				10px;
 }
 
 #gamebuttons {
