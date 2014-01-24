@@ -253,22 +253,6 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 
 		div.appendChild(document.createElement('br'));
 	}
-
-	// TODO	We may or may not want to hide this in release versions
-	div.appendChild(document.createElement('br'));
-
-	var a = document.createElement('a');
-
-	a.href = '#';
-	a.addEventListener('click', function(e)
-	{
-		cb(-1);
-
-		return e.preventDefault() && false;
-	});
-
-	a.appendChild(document.createTextNode('Level Editor'));
-	div.appendChild(a);
 };
 
 /* Return a list of bodies for the specified level */
@@ -294,12 +278,14 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 				Level editor mode, extra keystrokes are enabled allowing adding
 				or removing of bodies and allowing changing the size of bodies.
 			*/
+/*
 			hint = [
 				'Press + to create a planet under the mouse',
 				'Press - to remove the planet under the mouse',
 				'Scroll up/down to resize the planet under the mouse',
 				'Press enter to dump level data'
 			];
+*/
 			bodies = [
 				/* A Sun */
 				{
