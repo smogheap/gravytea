@@ -64,6 +64,185 @@ function UnstableGame(opts)
 	// this.speed = 0.2;
 }
 
+UnstableGame.prototype.levels = [
+	{
+		name: 'Get moving',
+		hint: [
+			'That planet looks like it is going to crash into the sun!',
+			'That could be bad.',
+			'Maybe you should move it a bit further away...'
+		],
+
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		50,
+				sun:		true,
+				density:	0.09
+			},
+
+			/* A planet */
+			{
+				position:	new V(140, 0),
+				velocity:	new V(0, 7, true),
+				radius:		15,
+
+				goal:		3
+			}
+		]
+	}, {
+		name: 'Getting up to speed',
+		hint: [
+			'Oh look, another planet about to crash into the sun!',
+			'This time try making it go a bit faster.',
+			'Drag the velocity indicator to change the speed of the planet.'
+		],
+
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		50,
+				sun:		true,
+				density:	0.09
+			},
+
+			/* A planet */
+			{
+				position:	new V(140, 0, true),
+				velocity:	new V(0, 7),
+				radius:		15,
+
+				goal:		3
+			}
+		]
+	}, {
+		name: 'Let\'s have a race',
+		hint: [
+			'These planets are identical, except for their position. The',
+			'closer a planet is to the sun the faster it needs to go to',
+			'get a stable orbit.'
+		],
+
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(-250, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		70,
+				sun:		true,
+				density:	0.09
+			},
+
+			{
+				position:	new V(-50, 0, true),
+				velocity:	new V(0, 7),
+				radius:		15,
+
+				goal:		5
+			},
+
+			{
+				position:	new V(50, 0, true),
+				velocity:	new V(0, 7),
+				radius:		15,
+
+				goal:		4
+			},
+
+			{
+				position:	new V(150, 0, true),
+				velocity:	new V(0, 7),
+				radius:		15,
+
+				goal:		3
+			},
+
+			{
+				position:	new V(250, 0, true),
+				velocity:	new V(0, 7),
+				radius:		15,
+
+				goal:		2
+			}
+		]
+	}, {
+		name: 'On your own',
+		hint: [
+			'Now you are on your own.',
+			'Good luck!'
+		],
+
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		50,
+				sun:		true,
+				density:	0.15
+			},
+
+			/* A bit larger rocky planet */
+			{
+				position:	new V(0, 220),
+				velocity:	new V(-3, 0),
+				radius:		25,
+
+				goal:		9
+			},
+
+			/* Another rocky planet */
+			{
+				position:	new V(300, 0),
+				velocity:	new V(5, 5),
+				radius:		15,
+
+				goal:		7
+			}
+		]
+	}, {
+		name: 'A bit of a challenge',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		50,
+				sun:		true,
+				density:	0.15
+			},
+
+			{
+				position:	new V(0, 220),
+				velocity:	new V(-3, 0),
+				radius:		35,
+
+				goal:		20
+			},
+
+			{
+				position:	new V(300, 0),
+				velocity:	new V(5, 5),
+				radius:		15,
+
+				goal:		5
+			},
+
+			{
+				position:	new V(-350, -300),
+				velocity:	new V(2, 2),
+				radius:		20,
+
+				goal:		4
+			}
+		]
+	}
+];
+
 UnstableGame.prototype.findBody = function findBody(point)
 {
 	var bodies	= this.solarsys.getBodies();
@@ -334,20 +513,11 @@ UnstableGame.prototype.popup = function popup(message, actions, cb, className)
 // TODO	Do not allow selecting a level that the player hasn't unlocked
 UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 {
-	var titles	= [
-		'Get moving',
-		'Getting up to speed',
-		'Let\'s have a race',
-		'On your own',
-		'A bit of a challenge'
-	];
-
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
-	for (var i = 0, title; title = titles[i]; i++) {
+	for (var i = 0, level; level = this.levels[i]; i++) {
 		var a = document.createElement('a');
-		var t = document.createTextNode(title);
 
 		(function(level) {
 			a.href = '#';
@@ -357,9 +527,13 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 
 				return e.preventDefault() && false;
 			});
-		})(i + 1);
+		})(i);
 
-		a.appendChild(t);
+		if (level.name) {
+			a.appendChild(document.createTextNode(level.name));
+		} else {
+			a.appendChild(document.createTextNode('Level ' + (i + 1)));
+		}
 		div.appendChild(a);
 
 		div.appendChild(document.createElement('br'));
@@ -479,9 +653,9 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 /* Return a list of bodies for the specified level */
 UnstableGame.prototype.loadLevel = function loadLevel(level)
 {
-	var bodies;
-	var hintDiv;
+	var bodies	= [];
 	var hint	= [];
+	var hintDiv;
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -493,20 +667,13 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 		This means the user will not be able to edit that vector.
 	*/
 	this.level = level;
+
 	switch (level) {
 		case -1:
 			/*
 				Level editor mode, extra keystrokes are enabled allowing adding
 				or removing of bodies and allowing changing the size of bodies.
 			*/
-/*
-			hint = [
-				'Press + to create a planet under the mouse',
-				'Press - to remove the planet under the mouse',
-				'Scroll up/down to resize the planet under the mouse',
-				'Press enter to dump level data'
-			];
-*/
 			bodies = [
 				/* A Sun */
 				{
@@ -520,203 +687,23 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 			break;
 
 		default:
-		case 1:
-			hint = [
-				'That planet looks like it is going to crash into the sun!',
-				'That could be bad.',
-				'Maybe you should move it a bit further away...'
-			];
-
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(0, 0, true),
-					velocity:	new V(0, 0, true),
-					radius:		50,
-					sun:		true,
-					density:	0.09
-				},
-
-				/* A planet */
-				{
-					position:	new V(140, 0),
-					velocity:	new V(0, 7, true),
-					radius:		15,
-
-					goal:		3
-				}
-			];
+			if (this.levels[level]) {
+				bodies	= this.levels[level].bodies;
+				hint	= this.levels[level].hint;
+			}
 			break;
-
-		case 2:
-			hint = [
-				'Oh look, another planet about to crash into the sun!',
-				'This time try making it go a bit faster.',
-				'Drag the velocity indicator to change the speed of the planet.'
-			];
-
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(0, 0, true),
-					velocity:	new V(0, 0, true),
-					radius:		50,
-					sun:		true,
-					density:	0.09
-				},
-
-				/* A planet */
-				{
-					position:	new V(140, 0, true),
-					velocity:	new V(0, 7),
-					radius:		15,
-
-					goal:		3
-				}
-			];
-			break;
-
-		case 3:
-			hint = [
-				'These planets are identical, except for their position. The',
-				'closer a planet is to the sun the faster it needs to go to',
-				'get a stable orbit.'
-			];
-
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(-250, 0, true),
-					velocity:	new V(0, 0, true),
-					radius:		70,
-					sun:		true,
-					density:	0.09
-				},
-
-				{
-					position:	new V(-50, 0, true),
-					velocity:	new V(0, 7),
-					radius:		15,
-
-					goal:		5
-				},
-
-				{
-					position:	new V(50, 0, true),
-					velocity:	new V(0, 7),
-					radius:		15,
-
-					goal:		4
-				},
-
-				{
-					position:	new V(150, 0, true),
-					velocity:	new V(0, 7),
-					radius:		15,
-
-					goal:		3
-				},
-
-				{
-					position:	new V(250, 0, true),
-					velocity:	new V(0, 7),
-					radius:		15,
-
-					goal:		2
-				}
-			];
-			break;
-
-		case 4:
-			hint = [
-				'Now you are on your own.',
-				'Good luck!'
-			];
-
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(0, 0, true),
-					velocity:	new V(0, 0, true),
-					radius:		50,
-					sun:		true,
-					density:	0.15
-				},
-
-				/* A bit larger rocky planet */
-				{
-					position:	new V(0, 220),
-					velocity:	new V(-3, 0),
-					radius:		25,
-
-					goal:		9
-				},
-
-				/* Another rocky planet */
-				{
-					position:	new V(300, 0),
-					velocity:	new V(5, 5),
-					radius:		15,
-
-					goal:		7
-				}
-			];
-			break;
-
-		case 5:
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(0, 0, true),
-					velocity:	new V(0, 0, true),
-					radius:		50,
-					sun:		true,
-					density:	0.15
-				},
-
-				{
-					position:	new V(0, 220),
-					velocity:	new V(-3, 0),
-					radius:		35,
-
-					goal:		20
-				},
-
-				{
-					position:	new V(300, 0),
-					velocity:	new V(5, 5),
-					radius:		15,
-
-					goal:		5
-				},
-
-				{
-					position:	new V(-350, -300),
-					velocity:	new V(2, 2),
-					radius:		20,
-
-					goal:		4
-				}
-			];
-			break;
-
-		// TODO	Add more levels
-	}
-
-	/*
-		The velocities of the bodies are scaled down to account for showing them
-		as larger than they are. This should allow finer control.
-	*/
-	for (var i = 0, b; b = bodies[i]; i++) {
-		b.velocityScale = 0.5;
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
-		hintDiv.innerHTML = hint.join('<br/>');
+		hintDiv.innerHTML = (hint || []).join('<br/>');
 	}
 
 
-	/* Assign a randomish color to any body that doesn't have one */
+	/*
+		Assign a number for the color of any body that doesn't have a color
+		assigned already. The body class will apply a color from it's index
+		based on this number.
+	*/
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
 			b.color = Math.pow(level, i);
