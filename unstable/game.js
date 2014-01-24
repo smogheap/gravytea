@@ -28,6 +28,15 @@
 //				No one liked that planet anyway
 //				Sucks to be you, you left your keys on that planet
 
+// TODO	Implement body grouping?!?
+//
+//		The idea is to somehow allow the user to select a group of planets and
+//		edit their layout and velocities relative to each other without the
+//		influence of any other bodies.
+//
+//		Once the user is happy with that grouping he/she can then return to the
+//		main level.
+
 function UnstableGame(opts)
 {
 	opts = opts || {};
@@ -164,13 +173,16 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 	return true;
 };
 
-UnstableGame.prototype.popup = function popup(message, actions, cb)
+UnstableGame.prototype.popup = function popup(message, actions, cb, className)
 {
 	var scrim	= document.createElement('div');
 	var popup	= document.createElement('div');
 
 	scrim.className = 'scrim';
 	popup.className = 'popup';
+	if(className) {
+		popup.className += ' ' + className;
+	}
 
 	document.body.appendChild(scrim);
 	var ignoreEvent = function(event)
@@ -642,7 +654,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Check for end of level events... */
-		if (level < 0 || this.solarsys.options.paused) {
+		if (this.level < 0 || this.solarsys.options.paused) {
 			return;
 		}
 
@@ -663,7 +675,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 							this.stop();
 							break;
 					}
-				}.bind(this));
+				}.bind(this), "fail");
 				return;
 			}
 		}
@@ -693,7 +705,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			this.hide();
 			this.loadLevel(l);
 			this.show();
-		}.bind(this));
+		}.bind(this), "success");
 	};
 	requestAnimationFrame(render.bind(this));
 };

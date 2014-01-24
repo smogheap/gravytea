@@ -259,13 +259,13 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				if (i < this.completed) {
 					ctx.strokeStyle = '#fff';
 				} else {
-					ctx.strokeStyle = '#333';
+					ctx.strokeStyle = '#444';
 				}
 
 				ctx.beginPath();
 				ctx.arc(this.position.x, this.position.y, this.radius + 5,
-					(i       * segmentSize) + (segmentSize * 0.2),
-					((i + 1) * segmentSize) - (segmentSize * 0.2), false);
+					(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+					((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
 
 				ctx.stroke();
 			}

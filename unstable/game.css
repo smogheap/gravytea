@@ -98,6 +98,8 @@ a, a:visited {
 }
 
 .popup {
+	color:				white;
+
 	position:			absolute;
 	top:				0px;
 	right:				0px;
@@ -111,19 +113,35 @@ a, a:visited {
 	font-family:		'arial';
 	font-size:			18px;
 
-	color:				#000;
-	background:			rgba(136, 136, 136, 0.8);
+	/* background:			url('static.gif'); */
+	background:			#000;
 	padding:			10px;
 	text-align:			center;
 
 	-moz-border-radius:	10px;
 	-webkit-border-radius: 10px;
 	border-radius:		10px;
+
+	box-shadow:			0px 0px 20px rgba(255, 255, 255, 0.5);
+	-moz-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
+	-webkit-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
+}
+
+.popup.fail {
+	box-shadow:			0px 0px 20px rgba(224, 68, 33, 0.75);
+	-moz-box-shadow:	0px 0px 20px rgba(224, 68, 33, 0.75);
+	-webkit-box-shadow:	0px 0px 20px rgba(224, 68, 33, 0.75);
+}
+
+.popup.success {
+	box-shadow:			0px 0px 20px rgba(108, 226, 64, 0.75);
+	-moz-box-shadow:	0px 0px 20px rgba(108, 226, 64, 0.75);
+	-webkit-box-shadow:	0px 0px 20px rgba(108, 226, 64, 0.75);
 }
 
 .popup p,
 .popup a {
-	color:				black;
+	color:				white;
 	padding:			10px;
 }
 
