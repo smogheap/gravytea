@@ -760,7 +760,15 @@ UnstableGame.prototype.stop = function stop()
 
 	/* Reset the canvas */
 	if (this.ctx) {
-		this.ctx.setTransform(1, 0, 0, 1,
+		var t;
+
+		if (this.ctx.getTransform) {
+			t = this.ctx.getTransform();
+		} else {
+			t = { a: 1, b: 0, c: 0, d: 1 };
+		}
+
+		this.ctx.setTransform(t.a, t.b, t.c, t.d,
 			window.innerWidth  / 2,
 			window.innerHeight / 2);
 	}
