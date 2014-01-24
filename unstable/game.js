@@ -32,6 +32,22 @@
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
 
+// TODO	When in the level editor go into "edit" mode just by clicking on a body
+
+// TODO	Move the "remove" button to the edit menu
+
+// TODO	If a planet is selected in the editor then keep it white
+
+// TODO	Implement level preview images by rendering a single frame to a canvas
+//		and pulling out the image data.
+
+// TODO	Create a level with 3 equally sized and spaced planets that need to
+//		share an orbit...
+
+// TODO	Create a level where the sun is locked and has velocity, and you have to
+//		get planets into orbit around it, accounting for that... This could even
+//		be a "hard mode" for most levels..
+
 function UnstableGame(opts)
 {
 	opts = opts || {};
