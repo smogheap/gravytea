@@ -64,11 +64,44 @@ function UnstableGame(opts)
 	// this.speed = 0.2;
 }
 
+UnstableGame.prototype.findBody = function findBody(point)
+{
+	var bodies	= this.solarsys.getBodies();
+
+	point		= point || this.ctx.getMouse();
+
+	for (var i = 0, b; b = bodies[i]; i++) {
+		if (b.inside(this.ctx, point)) {
+			return(b);
+		}
+	}
+
+	return(null);
+};
+
+UnstableGame.prototype.selectBody = function selectBody(body)
+{
+	if (this.selectedBody) {
+		this.selectedBody.selected = false;
+	}
+
+	this.selectedBody = body;
+
+	if (this.selectedBody) {
+		this.selectedBody.selected = true;
+	}
+};
+
 UnstableGame.prototype.handleEvent = function handleEvent(event)
 {
 	switch (event.type) {
-		case 'mousedown':
+		case 'click':
 			if (!this.nextClickAction) {
+				if (this.level < 0) {
+					this.selectBody(this.findBody());
+					this.loadLevelButtons();
+				}
+
 				return(true);
 			}
 
@@ -112,15 +145,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					break;
 
 				case 'Edit':
-					var bodies	= this.solarsys.getBodies();
-					var mouse	= this.ctx.getMouse();
-
-					for (var i = 0, b; b = bodies[i]; i++) {
-						if (b.inside(this.ctx, mouse)) {
-							this.edittingBody = b;
-							break;
-						}
-					}
+					this.selectBody(this.findBody());
 					break;
 			}
 
@@ -216,8 +241,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			var mouse	= this.ctx.getMouse();
 
 			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
-				delete b.selected;
 				delete b.velocity.selected;
+
+				if (b !== this.selectedBody) {
+					delete b.selected;
+				}
 			}
 
 			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
@@ -357,8 +385,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
-	if (this.edittingBody) {
-		var b = this.edittingBody;
+	if (this.selectedBody) {
+		var b = this.selectedBody;
 
 		div.appendChild(document.createTextNode('Size: '));
 
@@ -385,7 +413,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		addbtn('Done', function() {
 			this.solarsys.options.showVelocity = true;
 
-			delete this.edittingBody;
+			this.selectBody(null);
 			this.loadLevelButtons();
 		}.bind(this));
 
@@ -740,6 +768,8 @@ UnstableGame.prototype.stop = function stop()
 	this.solarsys.options.paused		= true;
 	this.solarsys.options.showVelocity	= true;
 
+	/* Renable displaying the selected body */
+	this.selectBody(this.selectedBody);
 	this.loadLevelButtons();
 };
 
@@ -768,8 +798,9 @@ UnstableGame.prototype.show = function showUnstableGame()
 	}
 
 	canvas.addEventListener('DOMMouseScroll',	this, false);
-	canvas.addEventListener('mousedown',		this, false);
 	canvas.addEventListener('mousewheel',		this, false);
+	canvas.addEventListener('click',			this, false);
+	canvas.addEventListener('mousedown',		this, false);
 	canvas.addEventListener('mousemove',		this, false);
 	window.addEventListener('keydown',			this, false);
 
@@ -894,8 +925,9 @@ UnstableGame.prototype.hide = function hideUnstableGame(level)
 {
 	if (this.running) {
 		this.canvas.removeEventListener('DOMMouseScroll',	this, false);
-		this.canvas.removeEventListener('mousedown',		this, false);
 		this.canvas.removeEventListener('mousewheel',		this, false);
+		this.canvas.removeEventListener('click',			this, false);
+		this.canvas.removeEventListener('mousedown',		this, false);
 		this.canvas.removeEventListener('mousemove',		this, false);
 		window.removeEventListener('keydown',				this, false);
 

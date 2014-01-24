@@ -230,7 +230,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		if (this.selected) {
 			/* Highlight the body */
 			ctx.save();
-			ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
 
 			ctx.beginPath();
 			ctx.arc(this.position.x, this.position.y, this.radius,
