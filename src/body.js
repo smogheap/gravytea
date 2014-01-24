@@ -263,9 +263,16 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				}
 
 				ctx.beginPath();
-				ctx.arc(this.position.x, this.position.y, this.radius + 5,
-					(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
-					((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+
+				if (this.goal > 1) {
+					ctx.arc(this.position.x, this.position.y, this.radius + 5,
+						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+				} else {
+					ctx.arc(this.position.x, this.position.y, this.radius + 5,
+						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
+				}
 
 				ctx.stroke();
 			}
