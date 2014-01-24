@@ -1,8 +1,3 @@
-// TODO	Update the buttons on the button bar based on current status
-//
-//		 > Play    |  Reset  |  Help
-//		<< Rewind  |  Reset  |  Help
-
 // TODO	Ignore keyboard input while a popup is up
 
 // TODO	Show a help dialog
@@ -56,6 +51,66 @@ function UnstableGame(opts)
 UnstableGame.prototype.handleEvent = function handleEvent(event)
 {
 	switch (event.type) {
+		case 'mousedown':
+			if (!this.nextClickAction) {
+				return(true);
+			}
+
+			var issun	= false;
+			var action	= this.nextClickAction;
+
+			this.solarsys.options.showVelocity = true;
+			delete this.nextClickAction;
+
+			switch (action) {
+				case 'Add Sun':
+					issun = true;
+					/* fallthrough */
+
+				case 'Add Planet':
+					var bodies = this.solarsys.getBodies();
+
+					bodies.push({
+						position:	new V(this.ctx.getMouse()),
+						velocity:	new V(0, 0),
+						radius:		issun ? 50 : 15,
+						density:	issun ? 0.09 : 0.01,
+						sun:		issun
+					});
+
+					this.solarsys.setBodies(bodies);
+					break;
+
+				case 'Remove':
+					var bodies	= this.solarsys.getBodies();
+					var mouse	= this.ctx.getMouse();
+
+					for (var i = 0, b; b = bodies[i]; i++) {
+						if (b.inside(this.ctx, mouse)) {
+							bodies.splice(i, 1);
+							break;
+						}
+					}
+
+					this.solarsys.setBodies(bodies);
+					break;
+
+				case 'Edit':
+					var bodies	= this.solarsys.getBodies();
+					var mouse	= this.ctx.getMouse();
+
+					for (var i = 0, b; b = bodies[i]; i++) {
+						if (b.inside(this.ctx, mouse)) {
+							this.edittingBody = b;
+							break;
+						}
+					}
+					break;
+			}
+
+			this.loadLevelButtons();
+			break;
+
 		case 'DOMMouseScroll':
 		case 'mousewheel':
 			var delta = event.wheelDelta ? event.wheelDelta / 40 : event.detail ? -event.detail : 0;
@@ -267,6 +322,116 @@ UnstableGame.prototype.loadLevelMenu = function loadLevelMenu(div, cb)
 	}
 };
 
+UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
+{
+	var div = document.getElementById('gamebuttons');
+
+	var addbtn = function(name, cb) {
+		var a = document.createElement('a');
+
+		a.appendChild(document.createTextNode(name));
+		a.href = '#';
+		a.addEventListener('click', function(e) {
+			cb();
+			return e.preventDefault() && false;
+		}.bind(this));
+		div.appendChild(a);
+	};
+
+	/* Clear it out (rather violently) */
+	div.innerHTML = '';
+
+	if (this.edittingBody) {
+		var b = this.edittingBody;
+
+		div.appendChild(document.createTextNode('Size: '));
+
+		addbtn('\u2191', function() {
+			b.setRadius(b.radius + 1);
+		}.bind(this));
+
+		addbtn('\u2193', function() {
+			b.setRadius(b.radius - 1);
+		}.bind(this));
+
+
+		div.appendChild(document.createTextNode('  |  Goal: '));
+
+		addbtn('\u2191', function() {
+			b.goal++;
+		}.bind(this));
+
+		addbtn('\u2193', function() {
+			if (b.goal > 0) b.goal--;
+		}.bind(this));
+
+		div.appendChild(document.createTextNode('  |  '));
+		addbtn('Done', function() {
+			this.solarsys.options.showVelocity = true;
+
+			delete this.edittingBody;
+			this.loadLevelButtons();
+		}.bind(this));
+
+		return;
+	}
+
+	if (this.nextClickAction) {
+		var msg;
+
+		switch (this.nextClickAction) {
+			case 'Add Sun':
+				msg = 'Select position for new sun';
+				break;
+
+			case 'Add Planet':
+				msg = 'Select position for new planet';
+				break;
+
+			case 'Remove':
+				msg = 'Select a planet or sun to remove';
+				this.solarsys.options.showVelocity = false;
+				break;
+
+			case 'Edit':
+				msg = 'Select a planet or sun to edit';
+				this.solarsys.options.showVelocity = false;
+				break;
+		}
+
+		div.appendChild(document.createTextNode(msg));
+		return;
+	}
+
+
+	/* These buttons are only used for the editor */
+	if (this.level < 0 && this.solarsys.options.paused) {
+		var actions = [
+			'Add Sun',
+			'Add Planet',
+			'Remove',
+			'Edit'
+		];
+
+		for (var i = 0, action; action = actions[i]; i++) {
+			(function(action, index) {
+				addbtn(action, function() {
+					this.nextClickAction = action;
+					this.loadLevelButtons();
+				}.bind(this));
+			}.bind(this))(action, i);
+
+			div.appendChild(document.createTextNode('  |  '));
+		}
+	}
+
+	if (this.solarsys.options.paused) {
+		addbtn('> Play',	this.go.bind(this));
+	} else {
+		addbtn('<< Rewind',	this.go.bind(this));
+	}
+};
+
 /* Return a list of bodies for the specified level */
 UnstableGame.prototype.loadLevel = function loadLevel(level)
 {
@@ -301,11 +466,10 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 			bodies = [
 				/* A Sun */
 				{
-					position:	new V(0, 0, true),
-					velocity:	new V(0, 0, true),
+					position:	new V(0, 0),
+					velocity:	new V(0, 0),
 					radius:		50,
-					sun:		true,
-					density:	0.09
+					sun:		true
 				}
 			];
 
@@ -516,6 +680,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 	}
 
 	this.solarsys.setBodies(bodies);
+	this.loadLevelButtons();
 };
 
 /* Let the solarsystem the user has built/fixed run */
@@ -531,11 +696,6 @@ UnstableGame.prototype.go = function go()
 		delete b.velocity.selected;
 	}
 
-	var btn = document.getElementById('gobtn');
-
-	btn.innerHTML = '';
-	btn.appendChild(document.createTextNode('<< Rewind'));
-
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 		/* Save the state as the user had created it */
 		b.save();
@@ -543,15 +703,12 @@ UnstableGame.prototype.go = function go()
 
 	this.solarsys.options.paused		= false;
 	this.solarsys.options.showVelocity	= false;
+
+	this.loadLevelButtons();
 };
 
 UnstableGame.prototype.stop = function stop()
 {
-	var btn = document.getElementById('gobtn');
-
-	btn.innerHTML = '';
-	btn.appendChild(document.createTextNode('> Play'));
-
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 		/* Restore the state the user had */
 		b.restore();
@@ -566,6 +723,8 @@ UnstableGame.prototype.stop = function stop()
 
 	this.solarsys.options.paused		= true;
 	this.solarsys.options.showVelocity	= true;
+
+	this.loadLevelButtons();
 };
 
 UnstableGame.prototype.show = function showUnstableGame()
@@ -593,6 +752,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 	}
 
 	canvas.addEventListener('DOMMouseScroll',	this, false);
+	canvas.addEventListener('mousedown',		this, false);
 	canvas.addEventListener('mousewheel',		this, false);
 	canvas.addEventListener('mousemove',		this, false);
 	window.addEventListener('keydown',			this, false);
@@ -654,7 +814,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Check for end of level events... */
-		if (this.level < 0 || this.solarsys.options.paused) {
+		if (this.solarsys.options.paused) {
 			return;
 		}
 
@@ -678,6 +838,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 				}.bind(this), "fail");
 				return;
 			}
+		}
+
+		if (this.level < 0) {
+			return;
 		}
 
 		/* Has the user completed the level? */
@@ -714,7 +878,9 @@ UnstableGame.prototype.hide = function hideUnstableGame(level)
 {
 	if (this.running) {
 		this.canvas.removeEventListener('DOMMouseScroll',	this, false);
+		this.canvas.removeEventListener('mousedown',		this, false);
 		this.canvas.removeEventListener('mousewheel',		this, false);
+		this.canvas.removeEventListener('mousemove',		this, false);
 		window.removeEventListener('keydown',				this, false);
 
 		this.running = false;

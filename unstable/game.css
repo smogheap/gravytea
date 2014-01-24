@@ -65,9 +65,10 @@ a, a:visited {
 	color:				#E04421;
 }
 
-#gobtn {
+#gamebuttons {
 	position:			absolute;
 	right:				0px;
+	top:				0px;
 }
 
 .content {

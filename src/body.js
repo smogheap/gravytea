@@ -6,15 +6,15 @@ function Body(opts)
 	this.position	= new V(opts.position);
 	this.velocity	= new V(opts.velocity);
 
-	this.density	= opts.density	|| 0.01;
 	this.goal		= opts.goal		|| 0;
 	this.completed	= 0;
 
 	this.renderCB	= opts.renderCB;
 
-	this.setRadius(opts.radius);
-
 	this.sun		= opts.sun || false;
+	this.density	= opts.density	|| (this.sun ? 0.09 : 0.01);
+
+	this.setRadius(opts.radius);
 
 	if (this.sun) {
 		this.setColor('sun');
