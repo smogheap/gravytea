@@ -106,6 +106,15 @@
 
 			function loadLevel(level)
 			{
+				var btn;
+
+				if ((btn = document.getElementById('playbtn'))) {
+					btn.innerHTML = '';
+					btn.appendChild(document.createTextNode('Resume'));
+				}
+
+
+
 				document.getElementById('menu').style.display = 'none';
 				document.getElementById('game').style.display = 'block';
 
@@ -137,9 +146,8 @@
 			<div class="title">Unstable</div>
 
 			<div class="menu">
-				<!-- TODO: Make this continue the last level the user was on -->
 				<!-- TODO: Change text to "Resume" if a level is loaded -->
-				<a onclick="loadLevel();">Play</a>
+				<a id="playbtn" onclick="loadLevel();">Play</a>
 
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('level'	);">Choose a Level</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="loadLevel(-1			);">Playground</a>
