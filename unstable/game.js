@@ -232,7 +232,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, true, 3)
 				) {
 					b.velocity.selected = true;
-					this.canvas.classList.add('mouse-move');
+					this.canvas.classList.add('mouse-grab');
 					return(true);
 				}
 			}
@@ -242,11 +242,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, false, 7)
 				) {
 					b.selected = true;
-					this.canvas.classList.add('mouse-move');
+					this.canvas.classList.add('mouse-grab');
 					return(true);
 				}
 			}
-			this.canvas.classList.remove('mouse-move');
+			this.canvas.classList.remove('mouse-grab');
 
 			break;
 	}
