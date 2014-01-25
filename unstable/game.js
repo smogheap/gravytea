@@ -1,16 +1,5 @@
 // TODO	Ignore keyboard input while a popup is up
 
-// TODO	Show a help dialog
-//
-//		This should be a large area of text that floats above the game (with a
-//		transparent background) that describes how the game works in detail.
-//
-//		It should include pictures of things like the velocity node, as examples
-//		for the user.
-//
-//		In the level editor this can show the extra keys as well. This should
-//		use a regular san-serif font, not the handwriting font.
-
 // TODO	Show a 60's batman style "Kaplow!" image at the location of a collision
 //		and show a dialog with funny text.
 //
@@ -32,21 +21,15 @@
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
 
-// TODO	When in the level editor go into "edit" mode just by clicking on a body
-
-// TODO	Move the "remove" button to the edit menu
-
-// TODO	If a planet is selected in the editor then keep it white
-
 // TODO	Implement level preview images by rendering a single frame to a canvas
 //		and pulling out the image data.
-
-// TODO	Create a level with 3 equally sized and spaced planets that need to
-//		share an orbit...
 
 // TODO	Create a level where the sun is locked and has velocity, and you have to
 //		get planets into orbit around it, accounting for that... This could even
 //		be a "hard mode" for most levels..
+//
+//		This may not make sense if I end up adjusting for the movement of the
+//		suns in the scene when rendering trajectories...
 
 function UnstableGame(opts)
 {
@@ -320,7 +303,7 @@ UnstableGame.prototype.levels = [
 				position:	new V(0, 0),
 				velocity:	new V(0, 0),
 				radius:		15,
-				goal:		10
+				goal:		7
 			}
 		]
 	}
