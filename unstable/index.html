@@ -153,6 +153,7 @@
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="loadLevel(-1			);">Playground</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('options'	);">Options</a>
 				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('about'	);">About</a>
+				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('help'		);">Help</a>
 			</div>
 
 			<!--
@@ -192,6 +193,10 @@
 				<p>Copyright (c) 2013, Micah N Gorrell</p>
 			</div>
 
+			<div id="help" class="content">
+				<p>At some point I should write some help to go here</p>
+			</div>
+
 			<div id="options" class="content">
 				<input type="checkbox" disabled id="fullscreen" />Fullscreen<br/>
 			</div>
@@ -201,19 +206,11 @@
 
 		<div id="game">
 			<div class="menu">
-				<a onclick="game.loadLevel(game.level);">Reset</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('help');">Help</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showMenu();">Menu</a>
-
+				<a onclick="showMenu();">Menu</a>
 				<div id="gamebuttons"></div>
 			</div>
 
 			<div id="hint" class="hint"></div>
-
-			<!-- Add some way to close the help... That would be nice -->
-			<div id="help" class="content">
-				HELP!
-			</div>
 		</div>
 	</body>
 </html>

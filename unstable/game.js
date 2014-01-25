@@ -645,6 +645,9 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	} else {
 		addbtn('<< Rewind',	this.go.bind(this));
 	}
+
+	div.appendChild(document.createTextNode('  |  '));
+	addbtn('Reset', this.reset.bind(this));
 };
 
 /* Return a list of bodies for the specified level */
@@ -701,13 +704,16 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 		assigned already. The body class will apply a color from it's index
 		based on this number.
 	*/
+	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
 			b.color = Math.pow(level, i);
 		}
+
+		newbodies.push(new Body(b));
 	}
 
-	this.solarsys.setBodies(bodies);
+	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();
 };
 
@@ -865,9 +871,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 				this.popup("BOOM! You crashed!", [ "Retry", "Reset" ], function(action) {
 					switch (action) {
 						case "Reset":
-							this.hide();
-							this.loadLevel(this.level);
-							this.show();
+							this.reset();
 							break;
 
 						default:
@@ -925,5 +929,12 @@ UnstableGame.prototype.hide = function hideUnstableGame(level)
 
 		this.running = false;
 	}
+};
+
+UnstableGame.prototype.reset = function reset()
+{
+	this.hide();
+	this.loadLevel(this.level);
+	this.show();
 };
 
