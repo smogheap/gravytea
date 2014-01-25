@@ -1,5 +1,3 @@
-// TODO	Ignore keyboard input while a popup is up
-
 // TODO	Show a 60's batman style "Kaplow!" image at the location of a collision
 //		and show a dialog with funny text.
 //
@@ -20,9 +18,6 @@
 //
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
-
-// TODO	Implement level preview images by rendering a single frame to a canvas
-//		and pulling out the image data.
 
 // TODO	Create a level where the sun is locked and has velocity, and you have to
 //		get planets into orbit around it, accounting for that... This could even
@@ -93,6 +88,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 			this.solarsys.options.showVelocity = true;
 			delete this.nextClickAction;
+			this.canvas.classList.remove('mouse-crosshair');
 
 			switch (action) {
 				case 'Add Sun':
@@ -236,6 +232,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, true, 3)
 				) {
 					b.velocity.selected = true;
+					this.canvas.classList.add('mouse-grab');
 					return(true);
 				}
 			}
@@ -245,9 +242,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, false, 7)
 				) {
 					b.selected = true;
+					this.canvas.classList.add('mouse-grab');
 					return(true);
 				}
 			}
+			this.canvas.classList.remove('mouse-grab');
 
 			break;
 	}
@@ -371,11 +370,11 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 		switch (this.nextClickAction) {
 			case 'Add Sun':
-				msg = 'Select position for new sun';
+				msg = 'Select a position for new sun';
 				break;
 
 			case 'Add Planet':
-				msg = 'Select position for new planet';
+				msg = 'Select a position for new planet';
 				break;
 
 			case 'Remove':
@@ -408,6 +407,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				addbtn(action, function() {
 					this.nextClickAction = action;
 					this.loadLevelButtons();
+
+					this.canvas.classList.add('mouse-crosshair');
 				}.bind(this));
 			}.bind(this))(action, i);
 

@@ -175,3 +175,16 @@ canvas {
 	z-index:			-1;
 }
 
+canvas.mouse-move {
+	cursor:				move;
+}
+canvas.mouse-grab {
+	cursor:				move;
+	cursor:				-webkit-grab;
+	cursor:				-moz-grab;
+	cursor:				grab;
+}
+canvas.mouse-crosshair {
+	cursor:				crosshair;
+}
+

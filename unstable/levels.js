@@ -254,7 +254,50 @@ UnstableLevels = [
 				position:	new V(0, 0),
 				velocity:	new V(0, 0),
 				radius:		15,
-				goal:		7
+				goal:		15
+			}
+		]
+	}, {
+		name: '5 is a party',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(-200, 0, true),
+				velocity:	new V(0, -20, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(200, 0, true),
+				velocity:	new V(0, 20, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(0, -200, true),
+				velocity:	new V(20, 0, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(0, 200, true),
+				velocity:	new V(-20, 0, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(0, 0),
+				velocity:	new V(0, 0),
+				radius:		15,
+				goal:		15
 			}
 		]
 	}
