@@ -79,14 +79,18 @@ a, a:visited {
 	color:				white;
 	position:			absolute;
 
-	left:				30px;
+	left:				0px;
+	right:				0px;
 	top:				200px;
-	bottom:				10px;
+	bottom:				0px;
+
+	padding-left:		40px;
+	padding-right:		40px;
+	padding-bottom:		10px;
 
 	font-family:		Arial;
 	display:			none;
 
-	max-width:			400px;
 	overflow:			auto;
 }
 
@@ -150,6 +154,15 @@ a, a:visited {
 .popup a {
 	color:				white;
 	padding:			10px;
+}
+
+#level img {
+	border:				1px solid #888;
+	background:			#000;
+}
+#level a {
+	margin:				10px;
+	display:			inline-block;
 }
 
 canvas {

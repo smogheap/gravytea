@@ -16,11 +16,10 @@
 		<script type="text/javascript" src="../src/zoom.js"			></script>
 		<script type="text/javascript" src="../src/drag-bodies.js"	></script>
 
-		<!-- Menu -->
-		<script type="text/javascript" src="menu.js"				></script>
-
-		<!-- Game -->
 		<script type="text/javascript" src="game.js"				></script>
+		<script type="text/javascript" src="levels.js"				></script>
+		<script type="text/javascript" src="menu.js"				></script>
+		<script type="text/javascript" src="preview.js"				></script>
 
 		<style tyle="text/css">
 			@import url('game.css');
@@ -29,8 +28,9 @@
 
 	<body>
 		<script>
-			var menubg	= new MenuBackdrop();
-			var game	= new UnstableGame();
+			var menubg			= new MenuBackdrop();
+			var game			= new UnstableGame();
+			var levelPreview	= new LevelPreview();
 
 			function showSection(name)
 			{
@@ -135,7 +135,7 @@
 				showSection(section);
 
 				/* Update the level list based on the player's progress */
-				game.loadLevelMenu(document.getElementById('level'), loadLevel);
+				levelPreview.getMenu(document.getElementById('level'), loadLevel);
 
 				game.hide();
 				menubg.show();
