@@ -240,6 +240,89 @@ UnstableGame.prototype.levels = [
 				goal:		4
 			}
 		]
+	}, {
+		name: 'A Trio',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(0, 0, true),
+				radius:		70,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(0, 300, true),
+				velocity:	new V(0, 0),
+				radius:		35,
+
+				goal:		10
+			},
+			{
+				position:	new V(-260, -150, true),
+				velocity:	new V(0, 0),
+				radius:		35,
+
+				goal:		10
+			},
+			{
+				position:	new V(260, -150, true),
+				velocity:	new V(0, 0),
+				radius:		35,
+
+				goal:		10
+			}
+		]
+	}, {
+		name: 'Binary',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(-200, 0, true),
+				velocity:	new V(0, 0),
+				radius:		35,
+				sun:		true,
+				density:	0.35,
+				goal:		10
+			},
+
+			{
+				position:	new V(200, 0, true),
+				velocity:	new V(0, 0),
+				radius:		35,
+				sun:		true,
+				density:	0.35,
+				goal:		10
+			}
+		]
+	}, {
+		name: '3 is a crowd',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(-200, 0, true),
+				velocity:	new V(0, -10, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(200, 0, true),
+				velocity:	new V(0, 10, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(0, 0),
+				velocity:	new V(0, 0),
+				radius:		15,
+				goal:		10
+			}
+		]
 	}
 ];
 
