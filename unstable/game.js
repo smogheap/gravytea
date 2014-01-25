@@ -426,10 +426,9 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 };
 
 /* Return a list of bodies for the specified level */
-UnstableGame.prototype.loadLevel = function loadLevel(level)
+UnstableGame.prototype.loadLevel = function loadLevel(level, hint)
 {
 	var bodies	= [];
-	var hint	= [];
 	var hintDiv;
 
 	/* Make sure the planets aren't moving when the new level is loaded */
@@ -464,7 +463,10 @@ UnstableGame.prototype.loadLevel = function loadLevel(level)
 		default:
 			if (UnstableLevels[level]) {
 				bodies	= UnstableLevels[level].bodies;
-				hint	= UnstableLevels[level].hint;
+
+				if (!hint) {
+					hint = UnstableLevels[level].hint;
+				}
 			}
 			break;
 	}
@@ -672,6 +674,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		this.solarsys.options.paused = true;
 		this.popup("Success!", [ "Next Level", "Replay" ], function(action) {
 			var l;
+			var hint	= null;
 
 			switch (action) {
 				default:
@@ -685,7 +688,16 @@ UnstableGame.prototype.show = function showUnstableGame()
 			}
 
 			this.hide();
-			this.loadLevel(l);
+
+			if (!UnstableLevels[l]) {
+				l = -1;
+				hint = [
+					'You finished all the levels!',
+					'Why don\'t you try to make your own now?'
+				];
+			}
+
+			this.loadLevel(l, hint);
 			this.show();
 		}.bind(this), "success");
 	};

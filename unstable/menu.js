@@ -29,35 +29,35 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 			position:	new V(0, 0),
 			radius:		50,
 			density:	0.09,
-			color:		'#888'
+			color:		'#666'
 		}),
 
 		new Body({
 			position:	new V(-100, 100),
 			velocity:	new V(12, 12),
 			radius:		10,
-			color:		'#888'
+			color:		'#666'
 		}),
 
 		new Body({
 			position:	new V(240, 0),
 			velocity:	new V(0, 15),
 			radius:		15,
-			color:		'#888'
+			color:		'#666'
 		}),
 
 		new Body({
 			position:	new V(0, 400),
 			velocity:	new V(11, 0),
 			radius:		35,
-			color:		'#888'
+			color:		'#666'
 		}),
 
 		new Body({
 			position:	new V(0, 320),
 			velocity:	new V(16, 0),
 			radius:		2,
-			color:		'#888'
+			color:		'#666'
 		})
 	]);
 
