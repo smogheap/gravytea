@@ -88,6 +88,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 			this.solarsys.options.showVelocity = true;
 			delete this.nextClickAction;
+			this.canvas.classList.remove('mouse-crosshair');
 
 			switch (action) {
 				case 'Add Sun':
@@ -231,6 +232,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, true, 3)
 				) {
 					b.velocity.selected = true;
+					this.canvas.classList.add('mouse-move');
 					return(true);
 				}
 			}
@@ -240,9 +242,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					b.inside(this.ctx, mouse, false, 7)
 				) {
 					b.selected = true;
+					this.canvas.classList.add('mouse-move');
 					return(true);
 				}
 			}
+			this.canvas.classList.remove('mouse-move');
 
 			break;
 	}
@@ -366,11 +370,11 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 		switch (this.nextClickAction) {
 			case 'Add Sun':
-				msg = 'Select position for new sun';
+				msg = 'Select a position for new sun';
 				break;
 
 			case 'Add Planet':
-				msg = 'Select position for new planet';
+				msg = 'Select a position for new planet';
 				break;
 
 			case 'Remove':
@@ -403,6 +407,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				addbtn(action, function() {
 					this.nextClickAction = action;
 					this.loadLevelButtons();
+
+					this.canvas.classList.add('mouse-crosshair');
 				}.bind(this));
 			}.bind(this))(action, i);
 
