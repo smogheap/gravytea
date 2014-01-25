@@ -300,6 +300,39 @@ UnstableLevels = [
 				goal:		15
 			}
 		]
+	}, {
+		name: 'I\'m outta here',
+		bodies: [
+			/* A Sun */
+			{
+				position:	new V(0, 0, true),
+				velocity:	new V(-5, -5, true),
+				radius:		35,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	new V(200, 0),
+				velocity:	new V(0, 0),
+				radius:		10,
+				goal:		8
+			},
+
+			{
+				position:	new V(0, -200),
+				velocity:	new V(0, 0),
+				radius:		15,
+				goal:		6
+			},
+
+			{
+				position:	new V(0, 200),
+				velocity:	new V(0, 0),
+				radius:		5,
+				goal:		10
+			}
+		]
 	}
 ];
 

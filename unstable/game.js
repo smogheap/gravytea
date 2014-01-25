@@ -19,13 +19,6 @@
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
 
-// TODO	Create a level where the sun is locked and has velocity, and you have to
-//		get planets into orbit around it, accounting for that... This could even
-//		be a "hard mode" for most levels..
-//
-//		This may not make sense if I end up adjusting for the movement of the
-//		suns in the scene when rendering trajectories...
-
 function UnstableGame(opts)
 {
 	opts = opts || {};
