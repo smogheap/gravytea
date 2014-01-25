@@ -27,7 +27,6 @@ LevelPreview.prototype.getMenu = function getMenu(div, cb)
 			a.appendChild(document.createTextNode('Level ' + (i + 1)));
 		}
 
-		// TODO	Add an image using this.get(level);
 		var img = document.createElement('img');
 
 		img.src = this.get(i, 250, 150, 0.3).toDataURL();
