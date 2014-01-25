@@ -1,5 +1,3 @@
-// TODO	Ignore keyboard input while a popup is up
-
 // TODO	Show a 60's batman style "Kaplow!" image at the location of a collision
 //		and show a dialog with funny text.
 //
@@ -20,9 +18,6 @@
 //
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
-
-// TODO	Implement level preview images by rendering a single frame to a canvas
-//		and pulling out the image data.
 
 // TODO	Create a level where the sun is locked and has velocity, and you have to
 //		get planets into orbit around it, accounting for that... This could even
