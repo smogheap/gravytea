@@ -462,7 +462,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	*/
 	this.level = num;
 
-	if (levelData) {
+	if (levelData && levelData.userCreated) {
 		this.levelData	= levelData;
 
 		bodies	= levelData.bodies;
@@ -486,15 +486,22 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
-		hint = hint || [];
+		hintDiv.innerHTML = '';
 
 		if (title) {
-			hint.unshift('<h3>' + title + '</h3>');
+			var h = document.createElement('h3');
+
+			h.appendChild(document.createTextNode(title));
+			hintDiv.appendChild(h);
 		}
 
-		hintDiv.innerHTML = hint.join('<br/>');
+		if (hint) {
+			for (var i = 0, h; h = hint[i]; i++) {
+				hintDiv.appendChild(document.createTextNode(h));
+				hintDiv.appendChild(document.createElement('br'));
+			}
+		}
 	}
-
 
 	/*
 		Assign a number for the color of any body that doesn't have a color
