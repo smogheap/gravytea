@@ -570,18 +570,8 @@ UnstableGame.prototype.stop = function stop()
 	}
 
 	/* Reset the canvas */
-	if (this.ctx) {
-		var t;
-
-		if (this.ctx.getTransform) {
-			t = this.ctx.getTransform();
-		} else {
-			t = { a: 1, b: 0, c: 0, d: 1 };
-		}
-
-		this.ctx.setTransform(t.a, t.b, t.c, t.d,
-			window.innerWidth  / 2,
-			window.innerHeight / 2);
+	if (this.ctx && this.ctx.center) {
+		this.ctx.center();
 	}
 
 	this.solarsys.options.paused		= true;
@@ -653,7 +643,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		*/
 		var nav = document.getElementById('navigation');
 
-		if (nav) {
+		if (false && nav) {
 			var btns = nav.getElementsByTagName('a');
 
 			/* up */
@@ -680,6 +670,35 @@ UnstableGame.prototype.show = function showUnstableGame()
 			btns[5].addEventListener('click', ctx.zoomOut);
 		}
 
+		if (nav) {
+			var btns = nav.getElementsByTagName('area');
+
+			for (var i = 0, b; b = btns[i]; i++) {
+				(function(action) {
+					b.addEventListener('click', function() {
+						switch(action) {
+							case 'center':	ctx.center();				break;
+
+							case 'left':	ctx.translate(-10,   0);	break;
+							case 'right':	ctx.translate( 10,   0);	break;
+							case 'up':		ctx.translate(  0, -10);	break;
+							case 'down':	ctx.translate(  0,  10);	break;
+
+							case 'zoomin':	ctx.zoomIn();				break;
+							case 'zoomout': ctx.zoomOut();				break;
+						}
+					});
+				})(b.alt);
+
+				/* Attempt to show the correct mouse cursor */
+				b.addEventListener('mouseover', function() {
+					document.body.classList.add('mouse-pointer');
+				});
+				b.addEventListener('mouseout', function() {
+					document.body.classList.remove('mouse-pointer');
+				});
+			}
+		}
 	}
 
 	var render = function render(time)

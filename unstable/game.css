@@ -9,7 +9,6 @@ a, a:visited {
 	cursor:				pointer;
 }
 
-
 @font-face {
 	font-family:		'vSHandprinted';
 	src:				url('../fonts/vSHandprinted.otf') format('opentype');
@@ -36,22 +35,9 @@ a, a:visited {
 }
 
 .navigation {
-	font-family:		'vSHandPrinted';
-	font-style:			normal;
-	font-size:			20px;
-
-	text-align:			center;
-	line-height:		0.9;
-
-	color:				white;
 	position:			absolute;
-
 	right:				10px;
 	top:				10px;
-}
-
-.navigation .zoom {
-	font-size:			30px;
 }
 
 .title, .menu {
@@ -200,16 +186,19 @@ canvas {
 	z-index:			-1;
 }
 
-canvas.mouse-move {
+.mouse-pointer {
+	cursor:				pointer;
+}
+.mouse-move {
 	cursor:				move;
 }
-canvas.mouse-grab {
+.mouse-grab {
 	cursor:				move;
 	cursor:				-webkit-grab;
 	cursor:				-moz-grab;
 	cursor:				grab;
 }
-canvas.mouse-crosshair {
+.mouse-crosshair {
 	cursor:				crosshair;
 }
 
