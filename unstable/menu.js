@@ -1,13 +1,128 @@
-function MenuBackdrop(opts)
+function UnstableGameMenu(opts)
 {
 	opts = opts || {};
 
 	this.debug = opts.debug || false;
 
 	this.running = false;
+
+	/* Initialize the various objects needed to show the game and the menus */
+	this.levelPreview	= new LevelPreview();
+	this.game			= new UnstableGame();
+
+	this.showMenu(window.location.hash.substring(1));
+	this.showSection('beta');
+
+	var menu;
+	var that = this;
+
+	/* Create the main menu */
+	if ((menu = document.getElementById('mainmenu'))) {
+		menu.innerHTML = '';
+
+		this.playbtn = this.addMenuItem(menu, 'Play',
+				function(a) { that.loadLevel();				});
+		this.addMenuItem(menu, 'Choose a Level',
+				function() { that.showSection('level');		});
+		this.addMenuItem(menu, 'Playground',
+				function() { that.loadLevel(-1);			});
+		this.addMenuItem(menu, 'Options',
+				function() { that.showSection('options');	});
+		this.addMenuItem(menu, 'About',
+				function() { that.showSection('about');		});
+		if (false)
+		this.addMenuItem(menu, 'Help',
+				function() { that.showSection('help');		});
+	}
+
+	/* Fill out the static game menu */
+	if ((menu = document.getElementById('gamemenu'))) {
+		menu.innerHTML = '';
+
+		this.addMenuItem(menu, 'Menu',
+				function() { that.showMenu();				});
+	}
 }
 
-MenuBackdrop.prototype.show = function showMenuBackdrop()
+UnstableGameMenu.prototype.addMenuItem = function addMenuItem(menudiv, name, cb)
+{
+	var a = document.createElement('a');
+
+	a.appendChild(document.createTextNode(name));
+	a.addEventListener('click', function(e) {
+		cb(a);
+		return e.preventDefault() && false;
+	}.bind(this));
+
+	if (menudiv.getElementsByTagName('a').length > 0) {
+		/* Add a seperator */
+		menudiv.appendChild(document.createTextNode('  |  '));
+	}
+
+	menudiv.appendChild(a);
+	return(a);
+};
+
+UnstableGameMenu.prototype.showSection = function showSection(name)
+{
+	var sections	= document.getElementsByClassName('content');
+	var section		= document.getElementById(name);
+
+	for (var i = 0, s; s = sections[i]; i++) {
+		s.style.display = 'none';
+	}
+
+	if (section) {
+		section.style.display = 'block';
+	}
+};
+
+UnstableGameMenu.prototype.loadLevel = function loadLevel(level)
+{
+	var btn;
+
+	if ((btn = document.getElementById('playbtn'))) {
+		btn.innerHTML = '';
+		btn.appendChild(document.createTextNode('Resume'));
+	}
+
+	document.getElementById('menu').style.display = 'none';
+	document.getElementById('game').style.display = 'block';
+
+	this.hide();
+
+	if (!isNaN(level)) {
+		/* Resume the level that is already running, or start the first level */
+		this.game.loadLevel(level);
+	}
+
+	/* Replace the name of the button */
+	if (this.playbtn) {
+		this.playbtn.innerHTML = '';
+		this.playbtn.appendChild(document.createTextNode('Resume'));
+
+		delete this.playbtn;
+	}
+
+	this.game.show();
+};
+
+/* Hide the game and show the menu again */
+UnstableGameMenu.prototype.showMenu = function showMenu(section)
+{
+	document.getElementById('menu').style.display = 'block';
+	document.getElementById('game').style.display = 'none';
+
+	// this.showSection(section);
+
+	/* Update the level list based on the player's progress */
+	this.levelPreview.getMenu(document.getElementById('level'), this.loadLevel.bind(this));
+
+	this.game.hide();
+	this.show();
+};
+
+UnstableGameMenu.prototype.show = function show()
 {
 	this.running = true;
 
@@ -115,8 +230,21 @@ MenuBackdrop.prototype.show = function showMenuBackdrop()
 	requestAnimationFrame(render.bind(this));
 };
 
-MenuBackdrop.prototype.hide = function hideMenuBackdrop()
+UnstableGameMenu.prototype.hide = function hide()
 {
 	this.running = false;
 };
+
+
+/*
+	Packaged chrome apps can not run inline javascript in the html document
+	so we need to initialize here instead of in the html.
+*/
+window.addEventListener('load', function() {
+	var options	= new UnstableGameOptions();
+
+	options.ready(function() {
+		(new UnstableGameMenu());
+	});
+}, false);
 

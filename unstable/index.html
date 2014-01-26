@@ -20,6 +20,7 @@
 
 		<script type="text/javascript" src="game.js"				></script>
 		<script type="text/javascript" src="levels.js"				></script>
+		<script type="text/javascript" src="options.js"				></script>
 		<script type="text/javascript" src="menu.js"				></script>
 		<script type="text/javascript" src="preview.js"				></script>
 
@@ -29,137 +30,9 @@
 	</head>
 
 	<body>
-		<script>
-			var menubg			= new MenuBackdrop();
-			var game			= new UnstableGame();
-			var levelPreview	= new LevelPreview();
-
-			function showSection(name)
-			{
-				var sections	= document.getElementsByClassName('content');
-				var section		= document.getElementById(name);
-
-				for (var i = 0, s; s = sections[i]; i++) {
-					s.style.display = 'none';
-				}
-
-				if (section) {
-					section.style.display = 'block';
-				}
-			}
-
-			window.addEventListener('load', function()
-			{
-				showMenu(window.location.hash.substring(1));
-				showSection('beta');
-
-				/* Enable some options */
-				if (document.body.requestFullScreen		||
-					document.body.msRequestFullScreen	||
-					document.body.mozRequestFullScreen	||
-					document.body.webkitRequestFullScreen
-				) {
-					var f = document.getElementById('fullscreen');
-
-					// TODO	Save this setting and apply it on startup
-
-					// TODO	Allow going fullscreen using a command line arg when
-					//		running with xulrunner
-
-					// TODO	Add options for mapping inputs with keyboard and/or
-					//		gamepads
-
-					f.disabled = false;
-					f.addEventListener('change', function()
-					{
-						if (f.checked) {
-							if (document.body.requestFullscreen) {
-								document.body.requestFullscreen();
-							} else if (document.body.msRequestFullscreen) {
-								document.body.msRequestFullscreen();
-							} else if (document.body.mozRequestFullScreen) {
-								document.body.mozRequestFullScreen();
-							} else if (document.body.webkitRequestFullscreen) {
-								document.body.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-							}
-
-							/* This is required when running in xulrunner */
-							setTimeout(function() {
-								window.fullScreen = true;
-							}, 1);
-						} else {
-							if (document.exitFullscreen) {
-								document.exitFullscreen();
-							} else if (document.msExitFullscreen) {
-								document.msExitFullscreen();
-							} else if (document.mozCancelFullScreen) {
-								document.mozCancelFullScreen();
-							} else if (document.webkitExitFullscreen) {
-								document.webkitExitFullscreen();
-							}
-
-							/* This is required when running in xulrunner */
-							setTimeout(function() {
-								window.fullScreen = false;
-							}, 1);
-						}
-					});
-				}
-			});
-
-			function loadLevel(level)
-			{
-				var btn;
-
-				if ((btn = document.getElementById('playbtn'))) {
-					btn.innerHTML = '';
-					btn.appendChild(document.createTextNode('Resume'));
-				}
-
-
-
-				document.getElementById('menu').style.display = 'none';
-				document.getElementById('game').style.display = 'block';
-
-				menubg.hide();
-
-				if (!isNaN(level)) {
-					game.loadLevel(level);
-				}
-
-				game.show();
-			}
-
-			function showMenu(section)
-			{
-				document.getElementById('menu').style.display = 'block';
-				document.getElementById('game').style.display = 'none';
-
-				showSection(section);
-
-				/* Update the level list based on the player's progress */
-				levelPreview.getMenu(document.getElementById('level'), loadLevel);
-
-				game.hide();
-				menubg.show();
-			}
-		</script>
-
 		<div id="menu">
 			<div class="title">Unstable</div>
-
-			<div class="menu">
-				<!-- Text changes to 'Resume' when a level is loaded -->
-				<a id="playbtn" onclick="loadLevel();">Play</a>
-
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('level'	);">Choose a Level</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="loadLevel(-1			);">Playground</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('options'	);">Options</a>
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('about'	);">About</a>
-<!--
-				&nbsp;&nbsp;|&nbsp;&nbsp;<a onclick="showSection('help'		);">Help</a>
--->
-			</div>
+			<div class="menu" id="mainmenu"></div>
 
 			<div id="beta" class="content">
 				<h3>Welcome to the beta of Unstable!</h3>
@@ -241,17 +114,15 @@
 			</div>
 
 			<div id="options" class="content">
-				<input type="checkbox" disabled id="fullscreen" />Fullscreen<br/>
+				<input type="checkbox" disabled id="fullscreen" />Start in fullscreen<br/>
 			</div>
 
 			<div id="level" class="content"></div>
 		</div>
 
 		<div id="game">
-			<div class="menu">
-				<a onclick="showMenu();">Menu</a>
-				<div id="gamebuttons"></div>
-			</div>
+			<div class="menu" id="gamemenu"></div>
+			<div class="menu" id="gamebuttons"></div>
 
 			<div id="hint" class="hint"></div>
 		</div>
