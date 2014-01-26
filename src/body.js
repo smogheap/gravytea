@@ -37,6 +37,8 @@ function Body(opts)
 	this.stats = { };
 };
 
+Body.prototype.period = 16;
+
 Body.prototype.toJSON = function toJSON()
 {
 	var j = {
@@ -410,10 +412,10 @@ Body.prototype.predict = function predict(bodies, elapsed)
 	}
 
 	if (isNaN(elapsed)) {
-		elapsed = 16;
+		elapsed = this.period;
 	}
 
-	if (elapsed < 16) {
+	if (elapsed < this.period) {
 		/* No time has elapsed; return the current value */
 		return(this);
 	}
@@ -422,7 +424,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 		Calculate the slot that this result should be stored in within the
 		trajectory array.
 	*/
-	var offset = Math.floor(elapsed / 16) - 1;
+	var offset = Math.floor(elapsed / this.period) - 1;
 
 	if (!this.trajectory) {
 		this.trajectory = [];
@@ -435,8 +437,8 @@ Body.prototype.predict = function predict(bodies, elapsed)
 		*/
 		for (var o = this.trajectory.length; o <= offset; o++) {
 			/* Get the values prior to the ones we are trying to calculate */
-			var pos		= this.getPosition(bodies, o * 16);
-			var vel		= this.getVelocity(bodies, o * 16);
+			var pos		= this.getPosition(bodies, o * this.period);
+			var vel		= this.getVelocity(bodies, o * this.period);
 			var col		= false;
 			var effect	= [];
 
@@ -446,7 +448,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 					continue;
 				}
 
-				var bp	= b.getPosition(bodies, o * 16);
+				var bp	= b.getPosition(bodies, o * this.period);
 				var a	= bp.angle(pos);
 				var d	= bp.distance(pos);
 				var g	= new V(b.mass / Math.pow(d, 2), 0);
@@ -485,13 +487,13 @@ Body.prototype.advance = function advance(bodies, elapsed)
 	var p;
 
 	if (isNaN(elapsed)) {
-		elapsed = 16;
+		elapsed = this.period;
 	}
 
-	var offset = Math.floor(elapsed / 16);
+	var offset = Math.floor(elapsed / this.period);
 
 	if (offset) {
-		if ((p = this.predict(bodies, offset * 16))) {
+		if ((p = this.predict(bodies, offset * this.period))) {
 			this.position		= p.position;
 			this.velocity		= p.velocity;
 			this.stats.effect	= p.effect;
