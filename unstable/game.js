@@ -563,7 +563,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 	var h		= -1;
 
 	if (isNaN(this.level)) {
-		this.loadLevel(1);
+		this.loadLevel(this.options.get('currentLevel'));
 	}
 
 	canvas.addEventListener('DOMMouseScroll',	this, false);

@@ -79,11 +79,6 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(level)
 {
 	var btn;
 
-	if ((btn = document.getElementById('playbtn'))) {
-		btn.innerHTML = '';
-		btn.appendChild(document.createTextNode('Resume'));
-	}
-
 	document.getElementById('menu').style.display = 'none';
 	document.getElementById('game').style.display = 'block';
 
