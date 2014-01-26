@@ -195,8 +195,25 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				case 33: /* Page Up */
 					this.ctx.zoom(1, true);
 					break;
+
 				case 34: /* Page Down */
 					this.ctx.zoom(-1, true);
+					break;
+
+				case 37: /* left */
+					this.ctx.translate(-10, 0);
+					break;
+
+				case 38: /* up */
+					this.ctx.translate(0, -10);
+					break;
+
+				case 39: /* right */
+					this.ctx.translate(10, 0);
+					break;
+
+				case 40: /* down */
+					this.ctx.translate(0, 10);
 					break;
 
 				default:
