@@ -96,7 +96,8 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						velocity:	new V(0, 0),
 						radius:		issun ? 50 : 15,
 						density:	issun ? 0.09 : 0.01,
-						sun:		issun
+						sun:		issun,
+						goal:		issun ? 0 : 3
 					});
 
 					this.solarsys.setBodies(bodies);
