@@ -28,7 +28,7 @@ LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, l
 
 	var img = document.createElement('img');
 
-	img.src = this.getImage(level, num, 250, 150, 0.3, locked).toDataURL();
+	img.src = this.getImage(level, num, 250, 250, 0.3, locked).toDataURL();
 
 	a.appendChild(document.createElement('br'));
 	a.appendChild(img);
