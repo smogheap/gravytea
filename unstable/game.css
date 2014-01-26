@@ -31,6 +31,29 @@ a, a:visited {
 	font-size:			14px;
 }
 
+.hint h3 {
+	font-family:		'vSHandPrinted';
+}
+
+.navigation {
+	font-family:		'vSHandPrinted';
+	font-style:			normal;
+	font-size:			20px;
+
+	text-align:			center;
+	line-height:		0.9;
+
+	color:				white;
+	position:			absolute;
+
+	right:				10px;
+	top:				10px;
+}
+
+.navigation .zoom {
+	font-size:			30px;
+}
+
 .title, .menu {
 	font-family:		'vSHandPrinted', 'sans-serif';
 	font-weight:		normal;

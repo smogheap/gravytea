@@ -250,6 +250,16 @@ function makeCanvasZoomable(canvas, ctx)
 		zoom(clicks);
 	};
 
+	ctx.zoomIn = function()
+	{
+		zoom(-1);
+	};
+
+	ctx.zoomOut = function()
+	{
+		zoom(1);
+	};
+
 	ctx.cleanupZoomEvents = function()
 	{
 		canvas.removeEventListener('mousedown',			handleEvent, false);

@@ -627,6 +627,42 @@ UnstableGame.prototype.show = function showUnstableGame()
 		makeBodiesDraggable(canvas, ctx, this.solarsys);
 		makeCanvasZoomable(canvas, ctx);
 		resizeCanvas();
+
+		/*
+			Setup the navigation buttons
+
+			The html for the navigation buttons is already setup. Just grab the
+			anchors and assign click actions to them.
+		*/
+		var nav = document.getElementById('navigation');
+
+		if (nav) {
+			var btns = nav.getElementsByTagName('a');
+
+			/* up */
+			btns[0].addEventListener('click', function() {
+				ctx.translate(0, -10);
+			});
+
+			/* left */
+			btns[1].addEventListener('click', function() {
+				ctx.translate(-10, 0);
+			});
+
+			/* right */
+			btns[2].addEventListener('click', function() {
+				ctx.translate(10, 0);
+			});
+
+			/* down */
+			btns[3].addEventListener('click', function() {
+				ctx.translate(0, 10);
+			});
+
+			btns[4].addEventListener('click', ctx.zoomIn);
+			btns[5].addEventListener('click', ctx.zoomOut);
+		}
+
 	}
 
 	var render = function render(time)
