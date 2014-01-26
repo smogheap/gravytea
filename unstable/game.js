@@ -446,6 +446,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	var hintDiv;
 
 	/* Reset a few things */
+	delete this.levelData;
 	delete this.playgroundID;
 	delete this.userCreated;
 
@@ -461,6 +462,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	this.level = num;
 
 	if (levelData) {
+		this.levelData	= levelData;
+
 		bodies = levelData.bodies;
 
 		if (this.level < 0) {
@@ -680,8 +683,13 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		this.solarsys.options.paused = true;
-		this.popup("Success!", [ "Next Level", "Replay" ], function(action) {
-			var l;
+		var options = [ 'Replay' ];
+
+		if (!this.userCreated) {
+			options.unshift('Next Level');
+		}
+
+		this.popup("Success!", options, function(action) {
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
 
@@ -697,8 +705,8 @@ UnstableGame.prototype.show = function showUnstableGame()
 					break;
 
 				case "Replay":
-					l = this.level;
-					break;
+					this.reset();
+					return;
 			}
 
 			this.hide();
@@ -735,7 +743,7 @@ UnstableGame.prototype.hide = function hideUnstableGame(level)
 UnstableGame.prototype.reset = function reset()
 {
 	this.hide();
-	this.loadLevel(this.level);
+	this.loadLevel(this.level, this.levelData);
 	this.show();
 };
 
