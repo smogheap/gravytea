@@ -189,23 +189,23 @@ UnstableLevels = [
 			{
 				position:	new V(0, 300, true),
 				velocity:	new V(0, 0),
-				radius:		35,
+				radius:		20,
 
-				goal:		10
+				goal:		7
 			},
 			{
 				position:	new V(-260, -150, true),
 				velocity:	new V(0, 0),
-				radius:		35,
+				radius:		20,
 
-				goal:		10
+				goal:		7
 			},
 			{
 				position:	new V(260, -150, true),
 				velocity:	new V(0, 0),
-				radius:		35,
+				radius:		20,
 
-				goal:		10
+				goal:		7
 			}
 		]
 	}, {
