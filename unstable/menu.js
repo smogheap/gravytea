@@ -23,7 +23,7 @@ function UnstableGameMenu(options)
 		this.addMenuItem(menu, 'Choose a Level',
 				function() { that.showSection('level');		});
 		this.addMenuItem(menu, 'Playground',
-				function() { that.loadLevel(-1);			});
+				function() { that.showSection('playground');});
 		this.addMenuItem(menu, 'Options',
 				function() { that.showSection('options');	});
 		this.addMenuItem(menu, 'About',
@@ -75,7 +75,7 @@ UnstableGameMenu.prototype.showSection = function showSection(name)
 	}
 };
 
-UnstableGameMenu.prototype.loadLevel = function loadLevel(level)
+UnstableGameMenu.prototype.loadLevel = function loadLevel(num, level, playground)
 {
 	var btn;
 
@@ -84,9 +84,8 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(level)
 
 	this.hide();
 
-	if (!isNaN(level)) {
-		/* Resume the level that is already running, or start the first level */
-		this.game.loadLevel(level);
+	if (!isNaN(num)) {
+		this.game.loadLevel(num, level);
 	}
 
 	/* Replace the name of the button */
@@ -110,7 +109,11 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 	// this.showSection(section);
 
 	/* Update the level list based on the player's progress */
-	this.levelPreview.getMenu(document.getElementById('level'), this.loadLevel.bind(this));
+	this.levelPreview.getMenu(document.getElementById('level'), false,
+			this.loadLevel.bind(this));
+
+	this.levelPreview.getMenu(document.getElementById('playground'), true,
+			this.loadLevel.bind(this));
 
 	this.game.hide();
 	this.show();

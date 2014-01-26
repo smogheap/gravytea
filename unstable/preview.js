@@ -4,45 +4,122 @@ function LevelPreview(options)
 	this.options	= options;
 }
 
-// TODO	Do not allow selecting a level that the player hasn't unlocked
-LevelPreview.prototype.getMenu = function getMenu(div, cb)
+LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, locked, playground)
+{
+	var a = document.createElement('a');
+
+	a.className = 'preview';
+
+	level.index = num;
+
+	if (!locked) {
+		a.addEventListener('click', function(e)
+		{
+			cb(num, level);
+			return e.preventDefault() && false;
+		});
+	}
+
+	if (level.name) {
+		a.appendChild(document.createTextNode(level.name));
+	} else {
+		a.appendChild(document.createTextNode('Level ' + (num + 1)));
+	}
+
+	var img = document.createElement('img');
+
+	img.src = this.getImage(level, num, 250, 150, 0.3, locked).toDataURL();
+
+	a.appendChild(document.createElement('br'));
+	a.appendChild(img);
+
+	if (playground && num >= 0) {
+		a.appendChild(document.createElement('br'));
+
+		/* Add a 'Edit' button */
+		var b = document.createElement('a');
+
+		b.addEventListener('click', function(e)
+		{
+			cb(-1, level);
+			e.stopPropagation();
+			return e.preventDefault() && false;
+		});
+
+		b.appendChild(document.createTextNode('Edit'));
+		a.appendChild(b);
+
+
+		a.appendChild(document.createTextNode('  |  '));
+
+		/* Add a 'Delete' button */
+		var b = document.createElement('a');
+
+		b.addEventListener('click', function(e)
+		{
+			this.options.set('levelUser-' + num, null);
+
+			div.removeChild(a);
+			e.stopPropagation();
+			return e.preventDefault() && false;
+		}.bind(this));
+
+		b.appendChild(document.createTextNode('Delete'));
+		a.appendChild(b);
+	}
+
+	return(a);
+};
+
+LevelPreview.prototype.getMenu = function getMenu(div, playground, cb)
 {
 	var currentLevel	= this.options.get('currentLevel');
+	var a;
 
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
-	for (var i = 0, level; level = UnstableLevels[i]; i++) {
-		var a = document.createElement('a');
-
-		if (i <= currentLevel) {
-			(function(level) {
-				a.addEventListener('click', function(e)
+	if (!playground) {
+		for (var i = 0, level; level = UnstableLevels[i]; i++) {
+			if ((a = this.getMenuItem(div, cb, level, i, i > currentLevel ? true : false))) {
+				div.appendChild(a);
+			}
+		}
+	} else {
+		/* Insert a fake item to create a new level */
+		if ((a = this.getMenuItem(div, cb, {
+			name:			'New level',
+			userCreated:	true,
+			bodies: [
+				/* A Sun */
 				{
-					cb(level);
-
-					return e.preventDefault() && false;
-				});
-			})(i);
+					position:	new V(0, 0),
+					velocity:	new V(0, 0),
+					radius:		50,
+					sun:		true
+				}
+			]
+		}, -1, false, true))) {
+			div.appendChild(a);
 		}
 
-		if (level.name) {
-			a.appendChild(document.createTextNode(level.name));
-		} else {
-			a.appendChild(document.createTextNode('Level ' + (i + 1)));
+		var nextID = this.options.get('nextPlaygroundID');
+		for (var i = 0; i < nextID;i ++) {
+			var data;
+
+			if (!(data = this.options.get('levelUser-' + i))) {
+				/* This level is no longer there */
+				continue;
+			}
+
+			if ((a = this.getMenuItem(div, cb, data, i, false, playground))) {
+				div.appendChild(a);
+			}
 		}
-
-		var img = document.createElement('img');
-
-		img.src = this.get(i, 250, 150, 0.3, i > currentLevel).toDataURL();
-
-		a.appendChild(document.createElement('br'));
-		a.appendChild(img);
-		div.appendChild(a);
 	}
 };
 
-LevelPreview.prototype.get = function get(level, width, height, scale, locked)
+LevelPreview.prototype.getImage = function getImage(level, num, width, height, scale, locked)
 {
 	var solarsys	= new SolarSystem({
 		showVelocity:	false,
@@ -56,17 +133,22 @@ LevelPreview.prototype.get = function get(level, width, height, scale, locked)
 	canvas.setAttribute('height', height);
 
 	/* Load a level */
-	solarsys.setBodies(UnstableLevels[level].bodies);
+	solarsys.setBodies(level.bodies);
 
-	/* Dim the preview if this level is locked */
-	if (locked) {
-		var bodies	= solarsys.getBodies();
+	var bodies	= solarsys.getBodies();
 
-		for (var i = 0, b; b = bodies[i]; i++) {
+	for (var i = 0, b; b = bodies[i]; i++) {
+		if (locked) {
+			/* Dim the preview if this level is locked */
 			b.setColor('#666');
+		} else {
+			/* Match the colors used in the game */
+			if (!b.color) {
+				b.color = Math.pow(num, i);
+			}
 		}
-		solarsys.setBodies(bodies);
 	}
+	solarsys.setBodies(bodies);
 
 	ctx.translate(width / 2, height / 2);
 	ctx.scale(scale, scale);

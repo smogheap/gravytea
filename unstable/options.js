@@ -1,8 +1,13 @@
 function UnstableGameOptions()
 {
 	this.defaults = {
-		currentLevel:	0,
-		fullscreen:		false
+		/* The highest level that the user has unlocked */
+		currentLevel:		0,
+
+		/* The next ID to use when saving playground levels */
+		nextPlaygroundID:	0,
+
+		fullscreen:			false
 	};
 
 	// TODO	Add options for mapping inputs with keyboard and/or gamepads

@@ -407,6 +407,25 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 			div.appendChild(document.createTextNode('  |  '));
 		}
+
+		addbtn('Save', function() {
+			if (isNaN(this.playgroundID)) {
+				this.playgroundID = this.options.get('nextPlaygroundID');
+
+				this.options.set('nextPlaygroundID', this.playgroundID + 1);
+
+				this.options.set('levelUser-' + this.playgroundID, {
+					name:			(new Date()).toLocaleString(),
+					bodies:			this.solarsys.getBodies(),
+					userCreated:	true
+				});
+
+				this.popup('Saved', [ 'Okay' ], function(action) { });
+			} else {
+				this.popup('Could not save', [ 'Okay' ], function(action) { });
+			}
+		}.bind(this));
+		div.appendChild(document.createTextNode('  |  '));
 	}
 
 	if (this.solarsys.options.paused) {
@@ -419,11 +438,16 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	addbtn('Reset', this.reset.bind(this));
 };
 
+// TODO	Allow passing in a playground level to either play or edit
 /* Return a list of bodies for the specified level */
-UnstableGame.prototype.loadLevel = function loadLevel(level, hint)
+UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 {
 	var bodies	= [];
 	var hintDiv;
+
+	/* Reset a few things */
+	delete this.playgroundID;
+	delete this.userCreated;
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -434,35 +458,25 @@ UnstableGame.prototype.loadLevel = function loadLevel(level, hint)
 
 		This means the user will not be able to edit that vector.
 	*/
-	this.level = level;
+	this.level = num;
 
-	switch (level) {
-		case -1:
-			/*
-				Level editor mode, extra keystrokes are enabled allowing adding
-				or removing of bodies and allowing changing the size of bodies.
-			*/
-			bodies = [
-				/* A Sun */
-				{
-					position:	new V(0, 0),
-					velocity:	new V(0, 0),
-					radius:		50,
-					sun:		true
-				}
-			];
+	if (levelData) {
+		bodies = levelData.bodies;
 
-			break;
+		if (this.level < 0) {
+			/* Save it in the same spot */
+			this.playgroundID = level.index;
+		}
 
-		default:
-			if (UnstableLevels[level]) {
-				bodies	= UnstableLevels[level].bodies;
+		this.userCreated = levelData.userCreated;
+	} else {
+		if (UnstableLevels[num]) {
+			bodies	= UnstableLevels[num].bodies;
 
-				if (!hint) {
-					hint = UnstableLevels[level].hint;
-				}
+			if (!hint) {
+				hint = UnstableLevels[num].hint;
 			}
-			break;
+		}
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
@@ -478,7 +492,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(level, hint)
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
-			b.color = Math.pow(level, i);
+			b.color = Math.pow(num, i);
 		}
 
 		newbodies.push(new Body(b));
@@ -671,7 +685,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
 
-			if (this.level + 1 > currentLevel) {
+			if (!this.userCreated && (this.level + 1 > currentLevel)) {
 				/* Remember that the user is allowed to play the next level */
 				this.options.set('currentLevel', this.level + 1);
 			}
@@ -697,7 +711,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 				];
 			}
 
-			this.loadLevel(l, hint);
+			this.loadLevel(l, null, hint);
 			this.show();
 		}.bind(this), "success");
 	};
