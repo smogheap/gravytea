@@ -5,4 +5,5 @@ pref("javascript.options.strict",			false);
 pref("nglayout.debug.disable_xul_cache",	true);
 pref("nglayout.debug.disable_xul_fastload",	true);
 pref("devtools.debugger.remote-enabled",	true);
+pref("dom.storage.enabled",					true);
 

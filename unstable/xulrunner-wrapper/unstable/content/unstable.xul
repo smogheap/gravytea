@@ -11,7 +11,7 @@
 >
 	<browser
 		type="content-primary"
-		src="app/unstable/index.html"
+		src="chrome://unstable/content/app/unstable/index.html"
 		flex="1"
 		disablehistory="true"
 	/>

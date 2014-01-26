@@ -101,6 +101,7 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(level)
 		this.playbtn.innerHTML = '';
 		this.playbtn.appendChild(document.createTextNode('Resume'));
 
+		/* This only needs to be done once */
 		delete this.playbtn;
 	}
 
@@ -247,4 +248,3 @@ window.addEventListener('load', function() {
 		(new UnstableGameMenu());
 	});
 }, false);
-

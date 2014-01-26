@@ -173,3 +173,4 @@ if (objCtr.defineProperty) {
 
 }(self));
 
+}
