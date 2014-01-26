@@ -439,11 +439,11 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	addbtn('Reset', this.reset.bind(this));
 };
 
-// TODO	Allow passing in a playground level to either play or edit
 /* Return a list of bodies for the specified level */
 UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 {
 	var bodies	= [];
+	var title	= null;
 	var hintDiv;
 
 	/* Reset a few things */
@@ -465,7 +465,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	if (levelData) {
 		this.levelData	= levelData;
 
-		bodies = levelData.bodies;
+		bodies	= levelData.bodies;
+		title	= levelData.name;
 
 		if (this.level < 0) {
 			/* Save it in the same spot */
@@ -476,6 +477,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	} else {
 		if (UnstableLevels[num]) {
 			bodies	= UnstableLevels[num].bodies;
+			title	= UnstableLevels[num].name;
 
 			if (!hint) {
 				hint = UnstableLevels[num].hint;
@@ -484,7 +486,13 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
-		hintDiv.innerHTML = (hint || []).join('<br/>');
+		hint = hint || [];
+
+		if (title) {
+			hint.unshift('<h3>' + title + '</h3>');
+		}
+
+		hintDiv.innerHTML = hint.join('<br/>');
 	}
 
 
