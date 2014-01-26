@@ -19,11 +19,11 @@
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
 
-function UnstableGame(opts)
+function UnstableGame(options)
 {
-	opts = opts || {};
-
-	this.running = false;
+	/* Use this.options to access saved user data */
+	this.options	= options;
+	this.running	= false;
 
 	this.solarsys	= new SolarSystem({
 		showVelocity:	true,
@@ -668,7 +668,13 @@ UnstableGame.prototype.show = function showUnstableGame()
 		this.solarsys.options.paused = true;
 		this.popup("Success!", [ "Next Level", "Replay" ], function(action) {
 			var l;
-			var hint	= null;
+			var hint			= null;
+			var currentLevel	= this.options.get('currentLevel');
+
+			if (this.level + 1 > currentLevel) {
+				/* Remember that the user is allowed to play the next level */
+				this.options.set('currentLevel', this.level + 1);
+			}
 
 			switch (action) {
 				default:

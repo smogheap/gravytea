@@ -1,8 +1,8 @@
 function UnstableGameOptions()
 {
 	this.defaults = {
-		fullscreen:		false,
-foo: 1
+		currentLevel:	0,
+		fullscreen:		false
 	};
 
 	// TODO	Add options for mapping inputs with keyboard and/or gamepads

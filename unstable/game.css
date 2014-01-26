@@ -166,6 +166,10 @@ a, a:visited {
 	display:			inline-block;
 }
 
+#level .locked {
+	color:				#888;
+}
+
 canvas {
 	position:			absolute;
 	top:				0px;

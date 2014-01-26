@@ -1,14 +1,12 @@
-function UnstableGameMenu(opts)
+function UnstableGameMenu(options)
 {
-	opts = opts || {};
-
-	this.debug = opts.debug || false;
-
-	this.running = false;
+	/* Use this.options to access saved user data */
+	this.options		= options;
+	this.running		= false;
 
 	/* Initialize the various objects needed to show the game and the menus */
-	this.levelPreview	= new LevelPreview();
-	this.game			= new UnstableGame();
+	this.levelPreview	= new LevelPreview(options);
+	this.game			= new UnstableGame(options);
 
 	this.showMenu(window.location.hash.substring(1));
 	this.showSection('beta');
@@ -245,6 +243,6 @@ window.addEventListener('load', function() {
 	var options	= new UnstableGameOptions();
 
 	options.ready(function() {
-		(new UnstableGameMenu());
+		(new UnstableGameMenu(options));
 	});
 }, false);
