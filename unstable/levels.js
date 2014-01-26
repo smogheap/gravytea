@@ -297,7 +297,7 @@ UnstableLevels = [
 				position:	new V(0, 0),
 				velocity:	new V(0, 0),
 				radius:		15,
-				goal:		15
+				goal:		5
 			}
 		]
 	}, {
