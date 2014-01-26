@@ -151,6 +151,16 @@ UnstableGameOptions.prototype.getStorage = function getStorage(name)
 		this.storage = window.localStorage;
 	}
 
+	if (!this.storage) {
+		console.log('Could not find any storage');
+	} else {
+		var test = this.set('foo', 'bar');
+
+		if ('bar' != this.get('foo')) {
+			console.log('Storage is not functioning');
+		}
+	}
+
 	return(this.storage);
 };
 
