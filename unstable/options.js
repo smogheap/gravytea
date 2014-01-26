@@ -36,6 +36,10 @@ UnstableGameOptions.prototype.addFullscreenOption = function addFullscreenOption
 	}
 
 	if (this.get('fullscreen')) {
+		/*
+			This won't work in most browsers, but attempt it anyway. It will
+			work in xulrunner.
+		*/
 		this.setFullscreen(true);
 	}
 };
