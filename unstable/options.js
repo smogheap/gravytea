@@ -129,33 +129,49 @@ UnstableGameOptions.prototype.getStorage = function getStorage()
 		return(this.storage);
 	}
 
-	var validate = function(storage, name) {
+	var testStorage = function(storage, name) {
 		if (!storage) {
 			return(null);
 		}
 
 		var date = new Date().toString();
 
-		storage.setItem('test', date);
-		if (date != storage.getItem('test')) {
+		try {
+			storage.setItem('test', date);
+			if (date != storage.getItem('test')) {
+				return(null);
+			}
+		} catch (e) {
 			return(null);
 		}
 
 		if (storage && name) {
-			console.log('Using storage: ' + name);
+			try {
+				dump('Using storage: ' + name + '\n');
+			} catch (e) {
+				console.log('Using storage: ' + name);
+			}
 		}
 
 		return(storage);
 	};
 
 	if (window.globalStorage) {
-		this.storage = this.storage || validate(globalStorage['minego.net'],
+		this.storage = this.storage || testStorage(globalStorage['minego.net'],
 							'minego.net global storage');
-		this.storage = this.storage || validate(globalStorage[location.hostname],
+		this.storage = this.storage || testStorage(globalStorage[location.hostname],
 							'global storage for location');
 	}
 
-	this.storage = this.storage || validate(window.localStorage, 'local storage');
+	/*
+		Any attempt to access window.localStorage causes problems in xulrunner
+		so this try block is needed.
+	*/
+	try {
+		this.storage = this.storage || testStorage(window.localStorage, 'local storage');
+	} catch (e) {
+		this.storage = null;
+	}
 
 	if (!this.storage) {
 		try {
@@ -175,11 +191,18 @@ UnstableGameOptions.prototype.getStorage = function getStorage()
 			var principal = ssm.getCodebasePrincipal(uri);
 			var storage = dsm.getLocalStorageForPrincipal(principal, "");
 
-			this.storage = validate(storage, 'xulrunner work around');
+			this.storage = testStorage(storage, 'xulrunner work around');
 		} catch (e) {
 		}
 	}
 
+	if (!this.storage) {
+		try {
+			dump('Could not find working storage\n');
+		} catch (e) {
+			console.log('Could not find working storage');
+		}
+	}
 	return(this.storage);
 };
 
