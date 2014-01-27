@@ -55,7 +55,7 @@ SolarSystem.prototype.advanceBodies = function advanceBodies(elapsed)
 	}
 
 	/* Return the unused portion of the time */
-	return(elapsed - (Math.floor(elapsed / 16) * 16));
+	return(elapsed - (Math.floor(elapsed / Body.prototype.period) * Body.prototype.period));
 };
 
 SolarSystem.prototype.advance = function advance(time)

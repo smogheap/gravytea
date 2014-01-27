@@ -37,6 +37,8 @@ function Body(opts)
 	this.stats = { };
 };
 
+Body.prototype.period = 16;
+
 Body.prototype.toJSON = function toJSON()
 {
 	var j = {
@@ -106,27 +108,51 @@ Body.prototype.setColor = function setColor(color)
 	this.orgColor = color;
 
 	switch (typeof color) {
-		case 'string':
-			if (color == 'sun') {
-				// this.color = '#DFCE3B';
-				this.color = '#CAEC33';
-			} else {
-				this.color = color;
-			}
-
-			break;
-
 		case 'number':
 			color = Math.floor(color);
 
 			this.color = this.colors[color % this.colors.length];
 			break;
 
+		case 'string':
+			if (color == 'sun') {
+				// this.color = '#DFCE3B';
+				this.color = '#CAEC33';
+				break;
+			} else if (0 == color.indexOf('#')) {
+				this.color = color;
+				break;
+			} else {
+				/* Fallthrough - This color isn't supported */
+				;
+			}
+
 		default:
 			var c = Body.prototype.nextcolor++;
 
 			this.color = this.colors[c % this.colors.length];
 			break;
+	}
+
+	/*
+		There are many spots where we need the color of this body, but with the
+		opacity set differently. Generate the start of the rgba() string here
+		so that we can easy add the opacity later.
+	*/
+	var c		= this.color;
+	this.rgb	= '';
+
+	switch (c.length) {
+		case 4:
+			this.rgb += parseInt('0x' + c.slice(1, 2) + c.slice(1, 2)) + ',';
+			this.rgb += parseInt('0x' + c.slice(2, 3) + c.slice(2, 3)) + ',';
+			this.rgb += parseInt('0x' + c.slice(3, 4) + c.slice(3, 4));
+			break;
+
+		case 7:
+			this.rgb += parseInt('0x' + c.slice(1, 3)) + ',';
+			this.rgb += parseInt('0x' + c.slice(3, 5)) + ',';
+			this.rgb += parseInt('0x' + c.slice(5, 7));
 	}
 };
 
@@ -169,7 +195,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 			}
 
-			ctx.strokeStyle = 'rgba(128, 128, 128, ' +
+			ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
 								((this.trajectory.length - (i + 1)) * 0.01) + ')';
 
 			ctx.beginPath();
@@ -256,9 +282,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 			for (var i = 0; i < this.goal; i++) {
 				if (i < this.completed) {
-					ctx.strokeStyle = '#fff';
+					ctx.strokeStyle = 'rgba(' + this.rgb + ',1.0)';
 				} else {
-					ctx.strokeStyle = '#444';
+					ctx.strokeStyle = 'rgba(' + this.rgb + ',0.3)';
 				}
 
 				ctx.beginPath();
@@ -409,10 +435,10 @@ Body.prototype.predict = function predict(bodies, elapsed)
 	}
 
 	if (isNaN(elapsed)) {
-		elapsed = 16;
+		elapsed = this.period;
 	}
 
-	if (elapsed < 16) {
+	if (elapsed < this.period) {
 		/* No time has elapsed; return the current value */
 		return(this);
 	}
@@ -421,7 +447,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 		Calculate the slot that this result should be stored in within the
 		trajectory array.
 	*/
-	var offset = Math.floor(elapsed / 16) - 1;
+	var offset = Math.floor(elapsed / this.period) - 1;
 
 	if (!this.trajectory) {
 		this.trajectory = [];
@@ -434,8 +460,8 @@ Body.prototype.predict = function predict(bodies, elapsed)
 		*/
 		for (var o = this.trajectory.length; o <= offset; o++) {
 			/* Get the values prior to the ones we are trying to calculate */
-			var pos		= this.getPosition(bodies, o * 16);
-			var vel		= this.getVelocity(bodies, o * 16);
+			var pos		= this.getPosition(bodies, o * this.period);
+			var vel		= this.getVelocity(bodies, o * this.period);
 			var col		= false;
 			var effect	= [];
 
@@ -445,7 +471,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 					continue;
 				}
 
-				var bp	= b.getPosition(bodies, o * 16);
+				var bp	= b.getPosition(bodies, o * this.period);
 				var a	= bp.angle(pos);
 				var d	= bp.distance(pos);
 				var g	= new V(b.mass / Math.pow(d, 2), 0);
@@ -484,13 +510,13 @@ Body.prototype.advance = function advance(bodies, elapsed)
 	var p;
 
 	if (isNaN(elapsed)) {
-		elapsed = 16;
+		elapsed = this.period;
 	}
 
-	var offset = Math.floor(elapsed / 16);
+	var offset = Math.floor(elapsed / this.period);
 
 	if (offset) {
-		if ((p = this.predict(bodies, offset * 16))) {
+		if ((p = this.predict(bodies, offset * this.period))) {
 			this.position		= p.position;
 			this.velocity		= p.velocity;
 			this.stats.effect	= p.effect;

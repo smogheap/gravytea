@@ -9,7 +9,6 @@ a, a:visited {
 	cursor:				pointer;
 }
 
-
 @font-face {
 	font-family:		'vSHandprinted';
 	src:				url('../fonts/vSHandprinted.otf') format('opentype');
@@ -29,6 +28,16 @@ a, a:visited {
 	left:				10px;
 	top:				10px;
 	font-size:			14px;
+}
+
+.hint h3 {
+	font-family:		'vSHandPrinted';
+}
+
+.navigation {
+	position:			absolute;
+	right:				10px;
+	top:				10px;
 }
 
 .title, .menu {
@@ -177,16 +186,19 @@ canvas {
 	z-index:			-1;
 }
 
-canvas.mouse-move {
+.mouse-pointer {
+	cursor:				pointer;
+}
+.mouse-move {
 	cursor:				move;
 }
-canvas.mouse-grab {
+.mouse-grab {
 	cursor:				move;
 	cursor:				-webkit-grab;
 	cursor:				-moz-grab;
 	cursor:				grab;
 }
-canvas.mouse-crosshair {
+.mouse-crosshair {
 	cursor:				crosshair;
 }
 

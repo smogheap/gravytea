@@ -250,6 +250,31 @@ function makeCanvasZoomable(canvas, ctx)
 		zoom(clicks);
 	};
 
+	ctx.zoomIn = function()
+	{
+		zoom(1);
+	};
+
+	ctx.zoomOut = function()
+	{
+		zoom(-1);
+	};
+
+	ctx.center = function()
+	{
+		var t;
+
+		if (ctx.getTransform) {
+			t = ctx.getTransform();
+		} else {
+			t = { a: 1, b: 0, c: 0, d: 1 };
+		}
+
+		ctx.setTransform(t.a, t.b, t.c, t.d,
+			canvas.width  / 2,
+			canvas.height / 2);
+	};
+
 	ctx.cleanupZoomEvents = function()
 	{
 		canvas.removeEventListener('mousedown',			handleEvent, false);

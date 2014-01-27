@@ -195,8 +195,25 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				case 33: /* Page Up */
 					this.ctx.zoom(1, true);
 					break;
+
 				case 34: /* Page Down */
 					this.ctx.zoom(-1, true);
+					break;
+
+				case 37: /* left */
+					this.ctx.translate(-10, 0);
+					break;
+
+				case 38: /* up */
+					this.ctx.translate(0, -10);
+					break;
+
+				case 39: /* right */
+					this.ctx.translate(10, 0);
+					break;
+
+				case 40: /* down */
+					this.ctx.translate(0, 10);
 					break;
 
 				default:
@@ -439,11 +456,11 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	addbtn('Reset', this.reset.bind(this));
 };
 
-// TODO	Allow passing in a playground level to either play or edit
 /* Return a list of bodies for the specified level */
 UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 {
 	var bodies	= [];
+	var title	= null;
 	var hintDiv;
 
 	/* Reset a few things */
@@ -462,10 +479,11 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	*/
 	this.level = num;
 
-	if (levelData) {
+	if (levelData && levelData.userCreated) {
 		this.levelData	= levelData;
 
-		bodies = levelData.bodies;
+		bodies	= levelData.bodies;
+		title	= levelData.name;
 
 		if (this.level < 0) {
 			/* Save it in the same spot */
@@ -476,6 +494,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	} else {
 		if (UnstableLevels[num]) {
 			bodies	= UnstableLevels[num].bodies;
+			title	= UnstableLevels[num].name;
 
 			if (!hint) {
 				hint = UnstableLevels[num].hint;
@@ -484,9 +503,22 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
-		hintDiv.innerHTML = (hint || []).join('<br/>');
-	}
+		hintDiv.innerHTML = '';
 
+		if (title) {
+			var h = document.createElement('h3');
+
+			h.appendChild(document.createTextNode(title));
+			hintDiv.appendChild(h);
+		}
+
+		if (hint) {
+			for (var i = 0, h; h = hint[i]; i++) {
+				hintDiv.appendChild(document.createTextNode(h));
+				hintDiv.appendChild(document.createElement('br'));
+			}
+		}
+	}
 
 	/*
 		Assign a number for the color of any body that doesn't have a color
@@ -538,18 +570,8 @@ UnstableGame.prototype.stop = function stop()
 	}
 
 	/* Reset the canvas */
-	if (this.ctx) {
-		var t;
-
-		if (this.ctx.getTransform) {
-			t = this.ctx.getTransform();
-		} else {
-			t = { a: 1, b: 0, c: 0, d: 1 };
-		}
-
-		this.ctx.setTransform(t.a, t.b, t.c, t.d,
-			window.innerWidth  / 2,
-			window.innerHeight / 2);
+	if (this.ctx && this.ctx.center) {
+		this.ctx.center();
 	}
 
 	this.solarsys.options.paused		= true;
@@ -612,6 +634,71 @@ UnstableGame.prototype.show = function showUnstableGame()
 		makeBodiesDraggable(canvas, ctx, this.solarsys);
 		makeCanvasZoomable(canvas, ctx);
 		resizeCanvas();
+
+		/*
+			Setup the navigation buttons
+
+			The html for the navigation buttons is already setup. Just grab the
+			anchors and assign click actions to them.
+		*/
+		var nav = document.getElementById('navigation');
+
+		if (false && nav) {
+			var btns = nav.getElementsByTagName('a');
+
+			/* up */
+			btns[0].addEventListener('click', function() {
+				ctx.translate(0, -10);
+			});
+
+			/* left */
+			btns[1].addEventListener('click', function() {
+				ctx.translate(-10, 0);
+			});
+
+			/* right */
+			btns[2].addEventListener('click', function() {
+				ctx.translate(10, 0);
+			});
+
+			/* down */
+			btns[3].addEventListener('click', function() {
+				ctx.translate(0, 10);
+			});
+
+			btns[4].addEventListener('click', ctx.zoomIn);
+			btns[5].addEventListener('click', ctx.zoomOut);
+		}
+
+		if (nav) {
+			var btns = nav.getElementsByTagName('area');
+
+			for (var i = 0, b; b = btns[i]; i++) {
+				(function(action) {
+					b.addEventListener('click', function() {
+						switch(action) {
+							case 'center':	ctx.center();				break;
+
+							case 'left':	ctx.translate(-10,   0);	break;
+							case 'right':	ctx.translate( 10,   0);	break;
+							case 'up':		ctx.translate(  0, -10);	break;
+							case 'down':	ctx.translate(  0,  10);	break;
+
+							case 'zoomin':	ctx.zoomIn();				break;
+							case 'zoomout': ctx.zoomOut();				break;
+						}
+					});
+				})(b.alt);
+
+				/* Attempt to show the correct mouse cursor */
+				b.addEventListener('mouseover', function() {
+					document.body.classList.add('mouse-pointer');
+				});
+				b.addEventListener('mouseout', function() {
+					document.body.classList.remove('mouse-pointer');
+				});
+			}
+		}
 	}
 
 	var render = function render(time)

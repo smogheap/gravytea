@@ -123,32 +123,61 @@ UnstableGameOptions.prototype.ready = function ready(cb)
 	}
 };
 
-UnstableGameOptions.prototype.getStorage = function getStorage(name)
+UnstableGameOptions.prototype.getStorage = function getStorage()
 {
 	if (this.storage) {
 		return(this.storage);
 	}
 
-	try {
-		/*
-			Attempt to provide an alternate location for the storage when
-			running in xulrunner
-		*/
-		var url	= "http://minego.net";
-		var ios	= Components.classes["@mozilla.org/network/io-service;1"]
-					.getService(Components.interfaces.nsIIOService);
-		var ssm	= Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-					.getService(Components.interfaces.nsIScriptSecurityManager);
-		var dsm	= Components.classes["@mozilla.org/dom/storagemanager;1"]
-					.getService(Components.interfaces.nsIDOMStorageManager);
+	var validate = function(storage, name) {
+		if (!storage) {
+			return(null);
+		}
 
-		var uri	= ios.newURI(url, "", null);
-		var principal = ssm.getCodebasePrincipal(uri);
-		var storage = dsm.getLocalStorageForPrincipal(principal, "");
+		var date = new Date().toString();
 
-		this.storage = storage;
-	} catch (e) {
-		this.storage = window.localStorage;
+		storage.setItem('test', date);
+		if (date != storage.getItem('test')) {
+			return(null);
+		}
+
+		if (storage && name) {
+			console.log('Using storage: ' + name);
+		}
+
+		return(storage);
+	};
+
+	if (window.globalStorage) {
+		this.storage = this.storage || validate(globalStorage['minego.net'],
+							'minego.net global storage');
+		this.storage = this.storage || validate(globalStorage[location.hostname],
+							'global storage for location');
+	}
+
+	this.storage = this.storage || validate(window.localStorage, 'local storage');
+
+	if (!this.storage) {
+		try {
+			/*
+				Attempt to provide an alternate location for the storage when
+				running in xulrunner
+			*/
+			var url	= "http://minego.net";
+			var ios	= Components.classes["@mozilla.org/network/io-service;1"]
+						.getService(Components.interfaces.nsIIOService);
+			var ssm	= Components.classes["@mozilla.org/scriptsecuritymanager;1"]
+						.getService(Components.interfaces.nsIScriptSecurityManager);
+			var dsm	= Components.classes["@mozilla.org/dom/storagemanager;1"]
+						.getService(Components.interfaces.nsIDOMStorageManager);
+
+			var uri	= ios.newURI(url, "", null);
+			var principal = ssm.getCodebasePrincipal(uri);
+			var storage = dsm.getLocalStorageForPrincipal(principal, "");
+
+			this.storage = validate(storage, 'xulrunner work around');
+		} catch (e) {
+		}
 	}
 
 	return(this.storage);
