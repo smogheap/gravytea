@@ -154,7 +154,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	}
 
 	if (showTrajectory) {
-
 		ctx.save();
 
 		ctx.lineCap		= 'round';
