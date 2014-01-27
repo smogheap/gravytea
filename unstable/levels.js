@@ -231,7 +231,7 @@ UnstableLevels = [
 			}
 		]
 	}, {
-		name: '3 is a crowd',
+		name: 'Three is a crowd',
 		bodies: [
 			/* A Sun */
 			{
@@ -258,7 +258,7 @@ UnstableLevels = [
 			}
 		]
 	}, {
-		name: '5 is a party',
+		name: 'Five is a party',
 		bodies: [
 			/* A Sun */
 			{
