@@ -56,9 +56,13 @@ Body.prototype.toJSON = function toJSON()
 	if (this.density != 0.01) {
 		j.density = this.density;
 	}
-	if (this.orgColor) {
+	if (this.sun) {
+		j.sun = true;
+	} else if (this.orgColor) {
 		j.color = this.orgColor;
 	}
+
+	j.goal = this.goal;
 
 	return(j);
 };
