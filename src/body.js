@@ -113,7 +113,7 @@ Body.prototype.setColor = function setColor(color)
 
 	switch (typeof color) {
 		case 'number':
-			color = Math.floor(color);
+			color = Math.abs(Math.floor(color));
 
 			this.color = this.colors[color % this.colors.length];
 			break;

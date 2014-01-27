@@ -97,7 +97,8 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						radius:		issun ? 50 : 15,
 						density:	issun ? 0.09 : 0.01,
 						sun:		issun,
-						goal:		issun ? 0 : 3
+						goal:		issun ? 0 : 3,
+						color:		Math.pow(this.playgroundID, bodies.length)
 					});
 
 					this.solarsys.setBodies(bodies);
@@ -427,21 +428,15 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		}
 
 		addbtn('Save', function() {
-			if (isNaN(this.playgroundID)) {
-				this.playgroundID = this.options.get('nextPlaygroundID');
+			this.options.set('nextPlaygroundID', this.playgroundID + 1);
 
-				this.options.set('nextPlaygroundID', this.playgroundID + 1);
+			this.options.set('levelUser-' + this.playgroundID, {
+				name:			(new Date()).toLocaleString(),
+				bodies:			this.solarsys.getBodies(),
+				userCreated:	true
+			});
 
-				this.options.set('levelUser-' + this.playgroundID, {
-					name:			(new Date()).toLocaleString(),
-					bodies:			this.solarsys.getBodies(),
-					userCreated:	true
-				});
-
-				this.popup('Saved', [ 'Okay' ], function(action) { });
-			} else {
-				this.popup('Could not save', [ 'Okay' ], function(action) { });
-			}
+			this.popup('Saved', [ 'Okay' ], function(action) { });
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
 	}
@@ -471,12 +466,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
 
-	/*
-		When creating a body the position or velocity may be 'locked' by passing
-		a 3rd argument of true. For example, new V(0, 0, true)
-
-		This means the user will not be able to edit that vector.
-	*/
+	/* If num is < 0 then we will be in editor mode */
 	this.level = num;
 
 	if (levelData && levelData.userCreated) {
@@ -485,12 +475,10 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		bodies	= levelData.bodies;
 		title	= levelData.name;
 
-		if (this.level < 0) {
+		if (num < 0) {
 			/* Save it in the same spot */
-			this.playgroundID = level.index;
+			this.playgroundID = levelData.index;
 		}
-
-		this.userCreated = levelData.userCreated;
 	} else {
 		if (UnstableLevels[num]) {
 			bodies	= UnstableLevels[num].bodies;
@@ -519,6 +507,18 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 			}
 		}
 	}
+
+	if (this.level < 0) {
+		/* Ensure there is a playground ID for this level */
+		if (isNaN(this.playgroundID)) {
+			this.playgroundID = this.options.get('nextPlaygroundID');
+		}
+
+		/* Use the playground ID for generating the colors */
+		num = this.playgroundID;
+		this.userCreated = levelData.userCreated;
+	}
+
 
 	/*
 		Assign a number for the color of any body that doesn't have a color
