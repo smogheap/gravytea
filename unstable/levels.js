@@ -333,6 +333,29 @@ UnstableLevels = [
 				goal:		10
 			}
 		]
+	}, {
+		name: 'Stitching', // Level provided by Anthony Howe
+		bodies: [
+			{
+				"position":{"x":-198,"y":16},
+				"velocity":{"x":12.875,"y":-9.625},
+				"radius":59,
+				"sun":true
+			},
+
+			{
+				"position":{"x":6,"y":6},
+				"velocity":{"x":13.125,"y":-27.375},
+				"radius":32,
+				"sun":true
+			},
+			{
+				"position":{"x":-69.87227630615234,"y":147.25770568847656},
+				"velocity":{"x":0,"y":0},
+				"radius":15,
+				goal: 6
+			}
+		]
 	}
 ];
 
