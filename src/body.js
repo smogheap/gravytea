@@ -282,13 +282,13 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			var segmentSize	= (Math.PI * 2) / this.goal;
 
 			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= 3;
+			ctx.lineWidth	= 4;
 
 			for (var i = 0; i < this.goal; i++) {
 				if (i < this.completed) {
-					ctx.strokeStyle = 'rgba(' + this.rgb + ',1.0)';
+					ctx.strokeStyle = '#fff';
 				} else {
-					ctx.strokeStyle = 'rgba(' + this.rgb + ',0.3)';
+					ctx.strokeStyle = '#666';
 				}
 
 				ctx.beginPath();
