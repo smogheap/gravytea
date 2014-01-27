@@ -516,7 +516,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 
 		/* Use the playground ID for generating the colors */
 		num = this.playgroundID;
-		this.userCreated = levelData.userCreated;
+		this.userCreated = true;
 	}
 
 

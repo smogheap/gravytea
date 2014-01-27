@@ -337,15 +337,15 @@ UnstableLevels = [
 		name: 'Stitching', // Level provided by Anthony Howe
 		bodies: [
 			{
-				"position":{"x":-198,"y":16},
-				"velocity":{"x":12.875,"y":-9.625},
+				"position":{"x":-198,"y":16, locked: true},
+				"velocity":{"x":12.875,"y":-9.625, locked: true},
 				"radius":59,
 				"sun":true
 			},
 
 			{
-				"position":{"x":6,"y":6},
-				"velocity":{"x":13.125,"y":-27.375},
+				"position":{"x":6,"y":6, locked: true},
+				"velocity":{"x":13.125,"y":-27.375, locked: true},
 				"radius":32,
 				"sun":true
 			},
@@ -354,6 +354,39 @@ UnstableLevels = [
 				"velocity":{"x":0,"y":0},
 				"radius":15,
 				goal: 6
+			}
+		]
+	}, {
+		name: 'Buddies',
+		bodies: [
+			{
+				"position":{"x":0,"y":0, locked: true},
+				"velocity":{"x":0,"y":0, locked: true},
+				"radius":50,
+				"density":0.09,
+				"sun":true,
+				"goal":0
+			},
+			{
+				"position":{"x":84,"y":115, locked: true},
+				"velocity":{"x":0,"y":0},
+				"radius":15,
+				"color":5,
+				"goal":3
+			},
+			{
+				"position":{ "x":22, "y":136, locked:true},
+				"velocity":{"x":0,"y":0},
+				"radius":15,
+				"color":25,
+				"goal":3
+			},
+			{
+				"position":{"x":-45,"y":134, locked:true},
+				"velocity":{"x":0,"y":0},
+				"radius":15,
+				"color":125,
+				"goal":3
 			}
 		]
 	}
