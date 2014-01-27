@@ -108,27 +108,51 @@ Body.prototype.setColor = function setColor(color)
 	this.orgColor = color;
 
 	switch (typeof color) {
-		case 'string':
-			if (color == 'sun') {
-				// this.color = '#DFCE3B';
-				this.color = '#CAEC33';
-			} else {
-				this.color = color;
-			}
-
-			break;
-
 		case 'number':
 			color = Math.floor(color);
 
 			this.color = this.colors[color % this.colors.length];
 			break;
 
+		case 'string':
+			if (color == 'sun') {
+				// this.color = '#DFCE3B';
+				this.color = '#CAEC33';
+				break;
+			} else if (0 == color.indexOf('#')) {
+				this.color = color;
+				break;
+			} else {
+				/* Fallthrough - This color isn't supported */
+				;
+			}
+
 		default:
 			var c = Body.prototype.nextcolor++;
 
 			this.color = this.colors[c % this.colors.length];
 			break;
+	}
+
+	/*
+		There are many spots where we need the color of this body, but with the
+		opacity set differently. Generate the start of the rgba() string here
+		so that we can easy add the opacity later.
+	*/
+	var c		= this.color;
+	this.rgb	= '';
+
+	switch (c.length) {
+		case 4:
+			this.rgb += parseInt('0x' + c.slice(1, 2) + c.slice(1, 2)) + ',';
+			this.rgb += parseInt('0x' + c.slice(2, 3) + c.slice(2, 3)) + ',';
+			this.rgb += parseInt('0x' + c.slice(3, 4) + c.slice(3, 4));
+			break;
+
+		case 7:
+			this.rgb += parseInt('0x' + c.slice(1, 3)) + ',';
+			this.rgb += parseInt('0x' + c.slice(3, 5)) + ',';
+			this.rgb += parseInt('0x' + c.slice(5, 7));
 	}
 };
 
@@ -156,7 +180,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	}
 
 	if (showTrajectory) {
-
 		ctx.save();
 
 		ctx.lineCap		= 'round';
@@ -172,7 +195,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 			}
 
-			ctx.strokeStyle = 'rgba(128, 128, 128, ' +
+			ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
 								((this.trajectory.length - (i + 1)) * 0.01) + ')';
 
 			ctx.beginPath();
