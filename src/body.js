@@ -289,7 +289,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 			var g = ctx.createRadialGradient(
 						this.position.x, this.position.y, this.radius,
-						this.position.x, this.position.y, this.radius + 20);
+						this.position.x, this.position.y, this.radius * 1.5);
 
 			g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
 			g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
@@ -297,7 +297,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			ctx.fillStyle = g;
 
 			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, this.radius + 25,
+			ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
 					0, Math.PI * 2, false);
 			ctx.closePath();
 			ctx.fill();
