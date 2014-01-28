@@ -465,6 +465,25 @@ UnstableLevels = [
 			{"position":{"x":121,"y":-8},"velocity":{"x":-3.839487075805664,"y":6.34871768951416},"radius":32,"density":0.09,"sun":true,"goal":0},
 			{"position":{"x":203.5505828857422,"y":-295.1242980957031},"velocity":{"x":4.71589469909668,"y":6.484357833862305},"radius":18,"color":"#A9DE9C","goal":5}
 		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Bad Dog',
+		bodies: [
+			{"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"radius":50,"density":0.09,"type":"sun","color":"#4E89D5","goal":0},
+			{"position":{"x":-70,"y":-90,"locked":true},"velocity":{"x":-18,"y":-12},"radius":25,"type":"planet","color":"#6CE240","goal":3},
+			{"position":{"x":70,"y":-90},"velocity":{"x":18,"y":-12},"radius":25,"type":"planet","color":"#549075","goal":3},
+			{"position":{"x":-155,"y":145},"velocity":{"x":0,"y":9},"radius":15,"type":"planet","color":"#66DFCC","goal":3},
+			{"position":{"x":155,"y":145,"locked":true},"velocity":{"x":0,"y":9},"radius":15,"type":"planet","color":"#D9E27A","goal":3}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Twelve Angry Orbits',
+		bodies: [
+			{"position":{"x":0,"y":0,"locked":true},"velocity":{"x":0,"y":0,"locked":true},"radius":50,"density":0.09,"type":"sun","color":"#4E89D5","goal":0},
+			{"position":{"x":-50,"y":-200},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","color":"#E04421","goal":4},
+			{"position":{"x":50,"y":-200},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","color":4,"goal":4},
+			{"position":{"x":-220,"y":-33},"velocity":{"x":-5.25,"y":-7.75,"locked":true},"radius":10,"type":"planet","color":8,"goal":4}
+		]
 	}
 ];
 

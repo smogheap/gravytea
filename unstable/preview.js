@@ -124,7 +124,7 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 	var solarsys	= new SolarSystem({
 		showVelocity:	false,
 		paused:			true,
-		trajectory:		300
+		trajectory:		3000
 	});
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
