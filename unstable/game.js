@@ -21,13 +21,6 @@
 
 // TODO	Add support for time based levels (must be stable for at least x sec)
 
-// TODO	Move popups into the menu class
-
-// TODO	Improve dialogs in the editor, including a planet properties dialog
-
-// TODO	Replave the play and reset buttons in the editor with a "try it" button
-//		that lets you play the game like a normal level.
-
 // TODO	Replace the add buttons with a single button and show type as an option
 //		in the planet properties dialog
 
@@ -70,12 +63,32 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 {
 	if (this.selectedBody) {
 		this.selectedBody.selected = false;
+
+		if (this.bodyPropertiesDialog) {
+			this.menu.hideDialog();
+			delete this.bodyPropertiesDialog;
+		}
 	}
 
 	this.selectedBody = body;
 
 	if (this.selectedBody) {
 		this.selectedBody.selected = true;
+
+		if (this.level < 0) {
+			/*
+				Show a dialog allowing the user to edit the properties of this
+				body.
+
+				The first callback is hit when a value is changed by the dialog
+				and the second to close the dialog.
+			*/
+			this.bodyPropertiesDialog = this.selectedBody.getPropertiesDialog(
+				function() { this.solarsys.resetTrajectories(); }.bind(this),
+				function() { this.selectBody(null); }.bind(this));
+
+			this.menu.showDialog(this.bodyPropertiesDialog, false, 'bodyProperties');
+		}
 	}
 };
 
@@ -85,8 +98,9 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 		case 'click':
 			if (!this.nextClickAction) {
 				if (this.level < 0) {
-					this.selectBody(this.findBody());
-					this.loadLevelButtons();
+					var b = this.findBody();
+
+					if (b) this.selectBody(b);
 				}
 
 				return(true);
@@ -165,6 +179,10 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 		case 'keydown':
 			if (this.menu.checkScrim()) {
+				return(true);
+			}
+
+			if (this.bodyPropertiesDialog) {
 				return(true);
 			}
 
@@ -320,43 +338,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
-	if (this.selectedBody && this.level < 0) {
-		var b = this.selectedBody;
-
-		// TODO Replace this with a dialog. That will make more sense.
-
-		div.appendChild(document.createTextNode('Size: '));
-
-		addbtn('\u2191', function() {
-			b.setRadius(b.radius + 1);
-		}.bind(this));
-
-		addbtn('\u2193', function() {
-			b.setRadius(b.radius - 1);
-		}.bind(this));
-
-
-		div.appendChild(document.createTextNode('  |  Goal: '));
-
-		addbtn('\u2191', function() {
-			b.goal++;
-		}.bind(this));
-
-		addbtn('\u2193', function() {
-			if (b.goal > 0) b.goal--;
-		}.bind(this));
-
-		div.appendChild(document.createTextNode('  |  '));
-		addbtn('Done', function() {
-			this.solarsys.options.showVelocity = true;
-
-			this.selectBody(null);
-			this.loadLevelButtons();
-		}.bind(this));
-
-		return;
-	}
-
 	if (this.nextClickAction) {
 		var msg;
 
@@ -415,7 +396,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				userCreated:	true
 			});
 
-			this.menu.promptUser('Saved', [ 'Okay' ], function(action) { });
+			this.menu.askUser('Saved', [ 'Okay' ], function(action) { });
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
 
@@ -460,6 +441,9 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.selectedBody;
 	delete this.nextClickAction;
 	delete this.testing;
+
+	/* Hide any dialogs that may still be open */
+	this.menu.hideDialog();
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -731,7 +715,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 					options.push('Back to editor');
 				}
 
-				this.menu.promptUser("BOOM! You crashed!", options, function(action) {
+				this.menu.askUser("BOOM! You crashed!", options, function(action) {
 					switch (action) {
 						case "Reset":
 							this.reset();
@@ -786,7 +770,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			options.push('Back to editor');
 		}
 
-		this.menu.promptUser("Success!", options, function(action) {
+		this.menu.askUser("Success!", options, function(action) {
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
 

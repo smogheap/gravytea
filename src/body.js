@@ -164,6 +164,30 @@ Body.prototype.setColor = function setColor(color)
 	}
 };
 
+Body.prototype.setType = function setColor(value)
+{
+	switch (value) {
+		case 'sun':
+			this.sun = true;
+			this.setColor('sun');
+
+			this.density = 0.09;
+			break;
+
+		default:
+		case 'planet':
+			this.sun = false;
+
+			if ('sun' != this.orgColor) {
+				this.setColor(this.orgColor);
+			} else {
+				this.setColor(null);
+			}
+			this.density = 0.01;
+			break;
+	}
+};
+
 Body.prototype.setRadius = function setRadius(radius)
 {
 	this.radius		= radius || 5;
@@ -186,6 +210,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	} catch (e) {
 		scale = 1;
 	}
+
+	/* Update any properties being displayed */
+	this.updateProperties();
 
 	if (showTrajectory) {
 		ctx.save();
@@ -643,5 +670,152 @@ Body.prototype.getOrbitCount = function getOrbitCount()
 	}
 
 	return(0);
+};
+
+/* Return an Dom element that contains modifyable properties for this body */
+Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, closecb)
+{
+	var that		= this;
+	var txt			= function(value) {
+		return(document.createTextNode(value));
+	};
+	var lbl			= function(value) {
+		var l = document.createElement('label');
+
+		l.className = 'label';
+		l.appendChild(document.createTextNode(value));
+		return(l);
+	};
+	var opt			= function(select, label, selected) {
+		var o = document.createElement('option');
+
+		o.selected = selected;
+		o.appendChild(document.createTextNode(label));
+		select.appendChild(o);
+	};
+	var wrap		= function(elements, className) {
+		var p = document.createElement('p');
+
+		if (className) {
+			p.className = className;
+		}
+
+		for (var i = 0, e; e = elements[i]; i++) {
+			p.appendChild(e);
+		}
+		return(p);
+	};
+	var content		= document.createElement('div');
+	var e;
+	var i;
+
+
+	/* Add a close button */
+	e = document.createElement('a');
+
+	e.appendChild(document.createTextNode('x'));
+	e.className = 'value';
+	content.appendChild(wrap([ e ], 'closebtn'));
+	e.addEventListener('click', function(e) {
+		closecb();
+
+		delete that.propertyCBs;
+	});
+
+
+	/* Allow selecting the body type */
+	e			= document.createElement('select');
+	e.className	= 'value';
+	e.addEventListener('change', function() {
+		that.setType(e.value);
+		changecb();
+	});
+	opt(e, 'sun',	this.sun);
+	opt(e, 'planet',!this.sun);
+	content.appendChild(wrap([ lbl('type:'), e ]));
+
+
+	this.propertyCBs = [];
+
+	var vectors = [ 'position', 'velocity' ];
+	for (var i = 0; i < vectors.length; i++) {
+		(function(v) {
+			var e		= document.createElement('input');
+			e.type		= 'text';
+			e.className	= 'value';
+
+			e.addEventListener('change', function() {
+				var parts = e.value.split(',');
+
+				if (parts.length == 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+					that[v] = new V(parseInt(parts[0]), parseInt(parts[1]));
+
+					changecb();
+				}
+				e.value = '' + that[v].x + ',' + that[v].y;
+			});
+
+			var l = document.createElement('img');
+			l.style.width = '16px';
+			l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
+
+			l.addEventListener('click', function(e) {
+				that[v].locked = !that[v].locked;
+
+				l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
+				changecb();
+			});
+
+			content.appendChild(wrap([ lbl(v + ':'), e, l ]));
+
+			that.propertyCBs.push(function() {
+				if (e != document.activeElement) {
+					e.value = '' + that[v].x + ',' + that[v].y;
+				}
+			});
+		})(vectors[i]);
+	}
+
+	var properties = [ 'radius', 'goal', 'density' ];
+	for (var i = 0; i < properties.length; i++) {
+		(function(v) {
+			var e		= document.createElement('input');
+			e.type		= 'text';
+			e.className	= 'value';
+
+			e.addEventListener('change', function() {
+				if (!isNaN(e.value)) {
+					var setter = v.charAt(0).toUpperCase() + v.slice(1);
+
+					if (that[setter]) {
+						that[setter](parseInt(e.value));
+					} else {
+						that[v] = parseInt(e.value);
+					}
+					changecb();
+				}
+				e.value = that[v];
+			});
+
+			content.appendChild(wrap([ lbl(v + ':'), e ]));
+
+			that.propertyCBs.push(function() {
+				if (e != document.activeElement) {
+					e.value = that[v];
+				}
+			});
+		})(properties[i]);
+	}
+
+	return(content);
+};
+
+Body.prototype.updateProperties = function updateProperties()
+{
+	if (this.propertyCBs) {
+		for (var i = 0, cb; cb = this.propertyCBs[i]; i++) {
+			cb();
+		}
+	}
 };
 

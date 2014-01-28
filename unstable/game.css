@@ -148,6 +148,53 @@ a, a:visited {
 	-webkit-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
 }
 
+.popup.bodyProperties {
+	/* Move to the bottom right corner */
+	left:				inherit;
+	bottom:				inherit;
+	top:				-5px;;
+	right:				-5px;
+	height:				auto;
+	width:				250px;
+}
+
+.popup .closebtn {
+	margin:				0px;
+	padding:			0px;
+}
+
+.popup .closebtn a {
+	border:				1px solid #333;
+	padding:			3px 8px 3px 8px;
+}
+
+.popup p {
+	clear:				both;
+	margin:				0px;
+	padding:			5px;
+}
+
+.popup .label {
+	font-size:			14px;
+	float:				left;
+	line-height:		2em;
+}
+
+.popup .value {
+	float:				right;
+}
+
+.popup select,
+.popup input[type=text] {
+	background:			#000;
+	color:				white;
+	text-align:			right;
+
+	border:				0px;
+	border-bottom:		1px solid #888;
+	width:				150px;
+}
+
 .popup.fail {
 	box-shadow:			0px 0px 20px rgba(224, 68, 33, 0.75);
 	-moz-box-shadow:	0px 0px 20px rgba(224, 68, 33, 0.75);

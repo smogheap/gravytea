@@ -232,38 +232,18 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
-UnstableGameMenu.prototype.promptUser = function promptUser(message, actions, cb, className)
+UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className)
 {
-	var scrim	= document.createElement('div');
-	var popup	= document.createElement('div');
+	var that	= this;
+	var content	= document.createElement('div');
+	var p		= document.createElement('p');
 
-	scrim.className = 'scrim';
-	popup.className = 'popup';
-	if(className) {
-		popup.className += ' ' + className;
-	}
-
-	document.body.appendChild(scrim);
-	var ignoreEvent = function(event)
-	{
-		return event.preventDefault() && false;
-	};
-
-	scrim.addEventListener('click',		ignoreEvent);
-	scrim.addEventListener('mousedown',	ignoreEvent);
-	scrim.addEventListener('mouseup',	ignoreEvent);
-
-	var p = document.createElement('p');
 	p.appendChild(document.createTextNode(message));
-	popup.appendChild(p);
-	popup.appendChild(document.createElement('br'));
-
-	document.body.appendChild(popup);
-
-	this.scrimShowing = true;
+	content.appendChild(p);
+	content.appendChild(document.createElement('br'));
 
 	if (!actions || !actions.length) {
-		actions = 'Okay';
+		actions = [ 'Okay' ];
 	}
 
 	for (var i = 0; i < actions.length; i++) {
@@ -272,21 +252,86 @@ UnstableGameMenu.prototype.promptUser = function promptUser(message, actions, cb
 		a.appendChild(document.createTextNode(actions[i]));
 
 		if (i > 0) {
-			popup.appendChild(document.createTextNode('  |  '));
+			content.appendChild(document.createTextNode('  |  '));
 		}
 
 		(function(action) {
 			a.addEventListener('click', function(e)
 			{
-				document.body.removeChild(scrim);
-				document.body.removeChild(popup);
+				that.hideDialog();
 
-				delete this.scrimShowing;
 				cb(action);
-			}.bind(this));
-		}.bind(this))(actions[i]);
+			});
+		})(actions[i]);
 
-		popup.appendChild(a);
+		content.appendChild(a);
+	}
+
+	this.showDialog(content, true, className);
+};
+
+UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, className)
+{
+	var scrim	= modal ? document.createElement('div') : null;
+	var popup	= document.createElement('div');
+
+	popup.className = 'popup';
+	if (className) {
+		popup.className += ' ' + className;
+	}
+
+	if (scrim) {
+		var ignoreEvent = function(event)
+		{
+			return event.preventDefault() && false;
+		};
+
+		document.body.appendChild(scrim);
+
+		scrim.className = 'scrim';
+
+		scrim.addEventListener('click',		ignoreEvent);
+		scrim.addEventListener('mousedown',	ignoreEvent);
+		scrim.addEventListener('mouseup',	ignoreEvent);
+
+		this.scrimShowing = true;
+	} else {
+		delete this.scrimShowing;
+	}
+
+	switch (typeof content) {
+		case 'object':
+			/* Assume it is a DOM element */
+			popup.appendChild(content);
+			break;
+
+		case 'string':
+			popup.appendChild(document.CreateTextNode(content));
+			break;
+	}
+
+	this.closePopup = function() {
+		if (scrim) {
+			scrim.removeEventListener('click',		ignoreEvent);
+			scrim.removeEventListener('mousedown',	ignoreEvent);
+			scrim.removeEventListener('mouseup',	ignoreEvent);
+
+			document.body.removeChild(scrim);
+		}
+
+		document.body.removeChild(popup);
+
+		delete this.scrimShowing;
+		delete this.closePopup;
+	};
+
+	document.body.appendChild(popup);
+};
+
+UnstableGameMenu.prototype.hideDialog = function showDialog()
+{
+	if (this.closePopup) {
+		this.closePopup();
 	}
 };
 
