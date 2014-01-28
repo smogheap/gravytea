@@ -132,6 +132,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					});
 
 					this.solarsys.setBodies(bodies);
+					this.selectBody(this.solarsys.bodies[this.solarsys.bodies.length - 1]);
 					break;
 
 				case 'Remove':
