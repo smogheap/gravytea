@@ -122,19 +122,19 @@ a, a:visited {
 	color:				white;
 
 	position:			absolute;
-	top:				0px;
+	top:				30px;
 	right:				0px;
 	bottom:				0px;
 	left:				0px;
 
-	margin:				auto;
+	margin-left:		auto;
+	margin-right:		auto;
 	width:				300px;
 	height:				130px;
 
 	font-family:		'arial';
 	font-size:			18px;
 
-	/* background:			url('static.gif'); */
 	background:			#000;
 	padding:			10px;
 	text-align:			center;
@@ -146,6 +146,57 @@ a, a:visited {
 	box-shadow:			0px 0px 20px rgba(255, 255, 255, 0.5);
 	-moz-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
 	-webkit-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
+}
+
+.popup.bodyProperties {
+	/* Move to the bottom right corner */
+	left:				inherit;
+	bottom:				inherit;
+	top:				-5px;;
+	right:				0px;
+	height:				auto;
+	width:				175px;
+}
+
+.popup .closebtn {
+	margin:				0px;
+	padding:			0px;
+}
+
+.popup .closebtn a {
+	border:				1px solid #333;
+	padding:			3px 8px 3px 8px;
+}
+
+.popup p {
+	clear:				both;
+	margin:				0px;
+	padding:			5px;
+}
+
+.popup .label {
+	font-size:			14px;
+	float:				left;
+	line-height:		2em;
+}
+
+.popup h3.label {
+	line-height:		initial;
+}
+
+.popup .value {
+	float:				right;
+}
+
+.popup select,
+.popup input[type=text] {
+	background:			#000;
+	color:				white;
+	text-align:			right;
+
+	border:				0px;
+	border-bottom:		1px solid #888;
+	width:				75px;
 }
 
 .popup.fail {

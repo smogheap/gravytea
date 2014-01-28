@@ -6,7 +6,7 @@ function UnstableGameMenu(options)
 
 	/* Initialize the various objects needed to show the game and the menus */
 	this.levelPreview	= new LevelPreview(options);
-	this.game			= new UnstableGame(options);
+	this.game			= new UnstableGame(options, this);
 
 	this.showMenu(window.location.hash.substring(1));
 	this.showSection('beta');
@@ -105,6 +105,8 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 {
 	document.getElementById('menu').style.display = 'block';
 	document.getElementById('game').style.display = 'none';
+
+	this.hideDialog();
 
 	// this.showSection(section);
 
@@ -232,6 +234,114 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
+UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className)
+{
+	var that	= this;
+	var content	= document.createElement('div');
+	var p		= document.createElement('p');
+
+	p.appendChild(document.createTextNode(message));
+	content.appendChild(p);
+	content.appendChild(document.createElement('br'));
+
+	if (!actions || !actions.length) {
+		actions = [ 'Okay' ];
+	}
+
+	for (var i = 0; i < actions.length; i++) {
+		var a = document.createElement('a');
+
+		a.appendChild(document.createTextNode(actions[i]));
+
+		if (i > 0) {
+			content.appendChild(document.createTextNode('  |  '));
+		}
+
+		(function(action) {
+			a.addEventListener('click', function(e)
+			{
+				that.hideDialog();
+
+				cb(action);
+			});
+		})(actions[i]);
+
+		content.appendChild(a);
+	}
+
+	this.showDialog(content, true, className);
+};
+
+UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, className)
+{
+	var scrim	= modal ? document.createElement('div') : null;
+	var popup	= document.createElement('div');
+
+	popup.className = 'popup';
+	if (className) {
+		popup.className += ' ' + className;
+	}
+
+	if (scrim) {
+		var ignoreEvent = function(event)
+		{
+			return event.preventDefault() && false;
+		};
+
+		document.body.appendChild(scrim);
+
+		scrim.className = 'scrim';
+
+		scrim.addEventListener('click',		ignoreEvent);
+		scrim.addEventListener('mousedown',	ignoreEvent);
+		scrim.addEventListener('mouseup',	ignoreEvent);
+
+		this.scrimShowing = true;
+	} else {
+		delete this.scrimShowing;
+	}
+
+	switch (typeof content) {
+		case 'object':
+			/* Assume it is a DOM element */
+			popup.appendChild(content);
+			break;
+
+		case 'string':
+			popup.appendChild(document.CreateTextNode(content));
+			break;
+	}
+
+	this.closePopup = function() {
+		if (scrim) {
+			scrim.removeEventListener('click',		ignoreEvent);
+			scrim.removeEventListener('mousedown',	ignoreEvent);
+			scrim.removeEventListener('mouseup',	ignoreEvent);
+
+			document.body.removeChild(scrim);
+		}
+
+		document.body.removeChild(popup);
+
+		delete this.scrimShowing;
+		delete this.closePopup;
+	};
+
+	document.body.appendChild(popup);
+};
+
+UnstableGameMenu.prototype.hideDialog = function showDialog()
+{
+	if (this.closePopup) {
+		this.closePopup();
+	}
+};
+
+/* Return true if a modal popup is visible */
+UnstableGameMenu.prototype.checkScrim = function checkScrim()
+{
+	return(this.scrimShowing || false);
+};
 
 /*
 	Packaged chrome apps can not run inline javascript in the html document

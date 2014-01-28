@@ -21,20 +21,19 @@
 
 // TODO	Add support for time based levels (must be stable for at least x sec)
 
-// TODO	Move popups into the menu class
-
-// TODO	Improve dialogs in the editor, including a planet properties dialog
-
-// TODO	Replave the play and reset buttons in the editor with a "try it" button
-//		that lets you play the game like a normal level.
-
 // TODO	Replace the add buttons with a single button and show type as an option
 //		in the planet properties dialog
 
-function UnstableGame(options)
+// TODO	Allow editting properties of the level itself
+
+function UnstableGame(options, menu)
 {
+	/* Use this.menu to interact with the UI */
+	this.menu		= menu;
+
 	/* Use this.options to access saved user data */
 	this.options	= options;
+
 	this.running	= false;
 
 	this.solarsys	= new SolarSystem({
@@ -66,12 +65,32 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 {
 	if (this.selectedBody) {
 		this.selectedBody.selected = false;
+
+		if (this.bodyPropertiesDialog) {
+			this.menu.hideDialog();
+			delete this.bodyPropertiesDialog;
+		}
 	}
 
 	this.selectedBody = body;
 
 	if (this.selectedBody) {
 		this.selectedBody.selected = true;
+
+		if (this.level < 0) {
+			/*
+				Show a dialog allowing the user to edit the properties of this
+				body.
+
+				The first callback is hit when a value is changed by the dialog
+				and the second to close the dialog.
+			*/
+			this.bodyPropertiesDialog = this.selectedBody.getPropertiesDialog(
+				function() { this.solarsys.resetTrajectories(); }.bind(this),
+				function() { this.selectBody(null); }.bind(this));
+
+			this.menu.showDialog(this.bodyPropertiesDialog, false, 'bodyProperties');
+		}
 	}
 };
 
@@ -81,8 +100,9 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 		case 'click':
 			if (!this.nextClickAction) {
 				if (this.level < 0) {
-					this.selectBody(this.findBody());
-					this.loadLevelButtons();
+					var b = this.findBody();
+
+					if (b) this.selectBody(b);
 				}
 
 				return(true);
@@ -114,6 +134,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					});
 
 					this.solarsys.setBodies(bodies);
+					this.selectBody(this.solarsys.bodies[this.solarsys.bodies.length - 1]);
 					break;
 
 				case 'Remove':
@@ -160,7 +181,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			return event.preventDefault() && false;
 
 		case 'keydown':
-			if (this.popupdiv) {
+			if (this.menu.checkScrim()) {
+				return(true);
+			}
+
+			if (this.bodyPropertiesDialog) {
 				return(true);
 			}
 
@@ -278,64 +303,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 	return true;
 };
 
-UnstableGame.prototype.popup = function popup(message, actions, cb, className)
-{
-	var scrim	= document.createElement('div');
-	var popup	= document.createElement('div');
-
-	scrim.className = 'scrim';
-	popup.className = 'popup';
-	if(className) {
-		popup.className += ' ' + className;
-	}
-
-	document.body.appendChild(scrim);
-	var ignoreEvent = function(event)
-	{
-		return event.preventDefault() && false;
-	};
-
-	scrim.addEventListener('click',		ignoreEvent);
-	scrim.addEventListener('mousedown',	ignoreEvent);
-	scrim.addEventListener('mouseup',	ignoreEvent);
-
-	var p = document.createElement('p');
-	p.appendChild(document.createTextNode(message));
-	popup.appendChild(p);
-	popup.appendChild(document.createElement('br'));
-
-	document.body.appendChild(popup);
-
-	this.popupdiv = popup;
-
-	if (!actions || !actions.length) {
-		actions = 'Okay';
-	}
-
-	for (var i = 0; i < actions.length; i++) {
-		var a = document.createElement('a');
-
-		a.appendChild(document.createTextNode(actions[i]));
-
-		if (i > 0) {
-			popup.appendChild(document.createTextNode('  |  '));
-		}
-
-		(function(action) {
-			a.addEventListener('click', function(e)
-			{
-				document.body.removeChild(scrim);
-				document.body.removeChild(popup);
-
-				delete this.popupdiv;
-				cb(action);
-			}.bind(this));
-		}.bind(this))(actions[i]);
-
-		popup.appendChild(a);
-	}
-};
-
 /*
 	If a user created level is being tested, this will return the user to the
 	editor.
@@ -373,43 +340,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
-
-	if (this.selectedBody && this.level < 0) {
-		var b = this.selectedBody;
-
-		// TODO Replace this with a dialog. That will make more sense.
-
-		div.appendChild(document.createTextNode('Size: '));
-
-		addbtn('\u2191', function() {
-			b.setRadius(b.radius + 1);
-		}.bind(this));
-
-		addbtn('\u2193', function() {
-			b.setRadius(b.radius - 1);
-		}.bind(this));
-
-
-		div.appendChild(document.createTextNode('  |  Goal: '));
-
-		addbtn('\u2191', function() {
-			b.goal++;
-		}.bind(this));
-
-		addbtn('\u2193', function() {
-			if (b.goal > 0) b.goal--;
-		}.bind(this));
-
-		div.appendChild(document.createTextNode('  |  '));
-		addbtn('Done', function() {
-			this.solarsys.options.showVelocity = true;
-
-			this.selectBody(null);
-			this.loadLevelButtons();
-		}.bind(this));
-
-		return;
-	}
 
 	if (this.nextClickAction) {
 		var msg;
@@ -469,7 +399,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				userCreated:	true
 			});
 
-			this.popup('Saved', [ 'Okay' ], function(action) { });
+			this.menu.askUser('Saved', [ 'Okay' ], function(action) { });
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
 
@@ -507,7 +437,11 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	var title	= null;
 	var hintDiv;
 
+	/* Hide any dialogs that may still be open */
+	this.menu.hideDialog();
+
 	/* Reset a few things */
+	delete this.bodyPropertiesDialog;
 	delete this.levelData;
 	delete this.playgroundID;
 	delete this.userCreated;
@@ -697,41 +631,22 @@ UnstableGame.prototype.show = function showUnstableGame()
 		*/
 		var nav = document.getElementById('navigation');
 
-		if (false && nav) {
-			var btns = nav.getElementsByTagName('a');
-
-			/* up */
-			btns[0].addEventListener('click', function() {
-				ctx.translate(0, -10);
-			});
-
-			/* left */
-			btns[1].addEventListener('click', function() {
-				ctx.translate(-10, 0);
-			});
-
-			/* right */
-			btns[2].addEventListener('click', function() {
-				ctx.translate(10, 0);
-			});
-
-			/* down */
-			btns[3].addEventListener('click', function() {
-				ctx.translate(0, 10);
-			});
-
-			btns[4].addEventListener('click', ctx.zoomIn);
-			btns[5].addEventListener('click', ctx.zoomOut);
-		}
-
 		if (nav) {
-			var btns = nav.getElementsByTagName('area');
+			var btns	= nav.getElementsByTagName('area');
+			var that	= this;
 
 			for (var i = 0, b; b = btns[i]; i++) {
 				(function(action) {
 					b.addEventListener('click', function() {
 						switch(action) {
-							case 'center':	ctx.center();				break;
+							case 'center':
+								ctx.center();
+								if (!that.solarsys.options.paused) {
+									var center = that.solarsys.getCenter();
+
+									ctx.translate(-center.x, -center.y);
+								}
+								break;
 
 							case 'left':	ctx.translate(-10,   0);	break;
 							case 'right':	ctx.translate( 10,   0);	break;
@@ -804,7 +719,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 					options.push('Back to editor');
 				}
 
-				this.popup("BOOM! You crashed!", options, function(action) {
+				this.menu.askUser("BOOM! You crashed!", options, function(action) {
 					switch (action) {
 						case "Reset":
 							this.reset();
@@ -859,7 +774,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			options.push('Back to editor');
 		}
 
-		this.popup("Success!", options, function(action) {
+		this.menu.askUser("Success!", options, function(action) {
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
 

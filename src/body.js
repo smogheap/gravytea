@@ -12,6 +12,10 @@ function Body(opts)
 	this.renderCB	= opts.renderCB;
 
 	this.sun		= opts.sun || false;
+	if (opts.color == 'sun') {
+		this.sun	= true;
+	}
+
 	this.density	= opts.density	|| (this.sun ? 0.09 : 0.01);
 
 	this.setRadius(opts.radius);
@@ -160,6 +164,30 @@ Body.prototype.setColor = function setColor(color)
 	}
 };
 
+Body.prototype.setType = function setColor(value)
+{
+	switch (value) {
+		case 'sun':
+			this.sun = true;
+			this.setColor('sun');
+
+			this.density = 0.09;
+			break;
+
+		default:
+		case 'planet':
+			this.sun = false;
+
+			if ('sun' != this.orgColor) {
+				this.setColor(this.orgColor);
+			} else {
+				this.setColor(null);
+			}
+			this.density = 0.01;
+			break;
+	}
+};
+
 Body.prototype.setRadius = function setRadius(radius)
 {
 	this.radius		= radius || 5;
@@ -173,6 +201,14 @@ Body.prototype.setRadius = function setRadius(radius)
 	this.mass		= this.volume * this.density;
 };
 
+Body.prototype.setDensity = function setDensity(density)
+{
+	this.density = density;
+
+	/* Update the volume and the mass */
+	this.setRadius(this.radius);
+};
+
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
 	var scale;
@@ -182,6 +218,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	} catch (e) {
 		scale = 1;
 	}
+
+	/* Update any properties being displayed */
+	this.updateProperties();
 
 	if (showTrajectory) {
 		ctx.save();
@@ -243,6 +282,27 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			/* There is an overridden render function for this body */
 			this.renderCB(ctx, this);
 			return;
+		}
+
+		if (this.sun) {
+			ctx.save();
+
+			var g = ctx.createRadialGradient(
+						this.position.x, this.position.y, this.radius,
+						this.position.x, this.position.y, this.radius * 1.5);
+
+			g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+			g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+
+			ctx.fillStyle = g;
+
+			ctx.beginPath();
+			ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
+					0, Math.PI * 2, false);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.restore();
 		}
 
 		/* Render as a generic simple planet, nothing fancy */
@@ -639,5 +699,168 @@ Body.prototype.getOrbitCount = function getOrbitCount()
 	}
 
 	return(0);
+};
+
+/* Return an Dom element that contains modifyable properties for this body */
+Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, closecb)
+{
+	var that		= this;
+	var txt			= function(value) {
+		return(document.createTextNode(value));
+	};
+	var lbl			= function(value, type) {
+		var l = document.createElement(type || 'label');
+
+		l.className = 'label';
+		l.appendChild(document.createTextNode(value));
+		return(l);
+	};
+	var opt			= function(select, label, selected) {
+		var o = document.createElement('option');
+
+		o.selected = selected;
+		o.appendChild(document.createTextNode(label));
+		select.appendChild(o);
+	};
+	var wrap		= function(elements, className) {
+		var p = document.createElement('p');
+
+		if (className) {
+			p.className = className;
+		}
+
+		for (var i = 0, e; e = elements[i]; i++) {
+			p.appendChild(e);
+		}
+		return(p);
+	};
+	var content		= document.createElement('div');
+	var e;
+	var i;
+
+
+	/* Add a close button */
+	e = document.createElement('a');
+
+	e.appendChild(document.createTextNode('x'));
+	e.className = 'value';
+	content.appendChild(wrap([ lbl('Body Properties', 'h3'), e ], 'closebtn'));
+	e.addEventListener('click', function(e) {
+		closecb();
+
+		delete that.propertyCBs;
+	});
+
+
+	/* Allow selecting the body type */
+	e			= document.createElement('select');
+	e.className	= 'value';
+	e.addEventListener('change', function() {
+		that.setType(e.value);
+		changecb();
+	});
+	opt(e, 'sun',	this.sun);
+	opt(e, 'planet',!this.sun);
+	content.appendChild(wrap([ lbl('type:'), e ]));
+
+
+	this.propertyCBs = [];
+
+	var vectors = [ 'position', 'velocity' ];
+	for (var i = 0; i < vectors.length; i++) {
+		(function(v) {
+			var e		= document.createElement('input');
+			e.type		= 'text';
+			e.className	= 'value';
+
+			e.addEventListener('change', function() {
+				var parts = e.value.split(',');
+
+				if (parts.length == 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+					that[v] = new V(parseInt(parts[0]), parseInt(parts[1]));
+
+					changecb();
+				}
+				e.value = '' + that[v].x + ',' + that[v].y;
+			});
+
+			var l = document.createElement('img');
+			l.style.width = '16px';
+			l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
+
+			l.addEventListener('click', function(e) {
+				that[v].locked = !that[v].locked;
+
+				l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
+				changecb();
+			});
+
+			content.appendChild(wrap([ lbl(v + ':'), e, l ]));
+
+			that.propertyCBs.push(function() {
+				if (e != document.activeElement) {
+					e.value = '' + that[v].x + ',' + that[v].y;
+				}
+			});
+		})(vectors[i]);
+	}
+
+	var properties = [ 'radius', 'goal', 'density' ];
+	for (var i = 0; i < properties.length; i++) {
+		(function(v) {
+			var e		= document.createElement('input');
+			e.type		= 'text';
+			e.className	= 'value';
+
+			e.addEventListener('change', function() {
+				if (!isNaN(e.value)) {
+					that.setProperty(v, 1 * e.value);
+					changecb();
+				}
+				e.value = that[v];
+			});
+
+			content.appendChild(wrap([ lbl(v + ':'), e ]));
+
+			that.propertyCBs.push(function() {
+				if (e != document.activeElement) {
+					e.value = that.getProperty(v);
+				}
+			});
+		})(properties[i]);
+	}
+
+	return(content);
+};
+
+Body.prototype.updateProperties = function updateProperties()
+{
+	if (this.propertyCBs) {
+		for (var i = 0, cb; cb = this.propertyCBs[i]; i++) {
+			cb();
+		}
+	}
+};
+
+Body.prototype.setProperty = function setProperty(name, value)
+{
+	var funcname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
+
+	if (this[funcname]) {
+		this[funcname](value);
+	} else {
+		this[name] = value;
+	}
+};
+
+Body.prototype.getProperty = function setProperty(name)
+{
+	var funcname = 'get' + name.charAt(0).toUpperCase() + name.slice(1);
+
+	if (this[funcname]) {
+		return(this[funcname]());
+	} else {
+		return(this[name]);
+	}
 };
 
