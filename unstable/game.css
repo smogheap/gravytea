@@ -155,7 +155,7 @@ a, a:visited {
 	top:				-5px;;
 	right:				-5px;
 	height:				auto;
-	width:				250px;
+	width:				175px;
 }
 
 .popup .closebtn {
@@ -196,7 +196,7 @@ a, a:visited {
 
 	border:				0px;
 	border-bottom:		1px solid #888;
-	width:				150px;
+	width:				75px;
 }
 
 .popup.fail {
