@@ -828,10 +828,24 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Has the user completed the level? */
+		var havegoal = false;
 		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 			if (b.completed < b.goal) {
+				/* The user has not completed the level */
 				return;
 			}
+
+			if (b.goal) {
+				havegoal = true;
+			}
+		}
+
+		/*
+			If there are no goals, then the level never ends (useful for the
+			editor and possibly other stuff in the future).
+		*/
+		if (!havegoal) {
+			return;
 		}
 
 		this.solarsys.options.paused = true;
