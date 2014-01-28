@@ -284,6 +284,27 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			return;
 		}
 
+		if (this.sun) {
+			ctx.save();
+
+			var g = ctx.createRadialGradient(
+						this.position.x, this.position.y, this.radius,
+						this.position.x, this.position.y, this.radius + 20);
+
+			g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+			g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+
+			ctx.fillStyle = g;
+
+			ctx.beginPath();
+			ctx.arc(this.position.x, this.position.y, this.radius + 25,
+					0, Math.PI * 2, false);
+			ctx.closePath();
+			ctx.fill();
+
+			ctx.restore();
+		}
+
 		/* Render as a generic simple planet, nothing fancy */
 		ctx.save();
 		ctx.fillStyle = this.color || 'red';
