@@ -551,7 +551,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 
 	if (this.level < 0) {
 		/* Ensure there is a playground ID for this level */
-		if (isNaN(this.playgroundID)) {
+		if (isNaN(this.playgroundID) || this.playgroundID < 0) {
 			this.playgroundID = this.options.get('nextPlaygroundID');
 		}
 
