@@ -212,6 +212,10 @@ UnstableGameOptions.prototype.get = function get(name)
 	var result	= null;
 	var json	= null;
 
+	if (name == 'currentLevel' && window.location.hash == '#cheater') {
+		return(99999);
+	}
+
 	if (typeof(chrome) !== "undefined" && chrome.storage) {
 		/* Chrome storage is synced at load time */
 		if ('undefined' != typeof(this.local[key])) {
@@ -249,6 +253,11 @@ UnstableGameOptions.prototype.get = function get(name)
 UnstableGameOptions.prototype.set = function set(name, value)
 {
 	var restore;
+
+	if (name == 'currentLevel' && window.location.hash == '#cheater') {
+		/* Don't save the current level if in cheater mode */
+		return;
+	}
 
 	if (typeof(chrome) !== "undefined" && chrome.storage) {
 		var data = {};

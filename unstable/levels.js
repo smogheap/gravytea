@@ -457,6 +457,14 @@ UnstableLevels = [
 				goal: 7
 			}
 		]
+	}, {
+		author: 'Anthony Howe',
+		name: 'Lemon Twist',
+		bodies: [
+			{"position":{"x":-345,"y":-8},"velocity":{"x":-0.75,"y":-3.75},"radius":53,"density":0.09,"sun":true,"goal":0},
+			{"position":{"x":121,"y":-8},"velocity":{"x":-3.839487075805664,"y":6.34871768951416},"radius":32,"density":0.09,"sun":true,"goal":0},
+			{"position":{"x":203.5505828857422,"y":-295.1242980957031},"velocity":{"x":4.71589469909668,"y":6.484357833862305},"radius":18,"color":"#A9DE9C","goal":5}
+		]
 	}
 ];
 
