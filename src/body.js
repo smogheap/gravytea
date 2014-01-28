@@ -847,14 +847,17 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 			e.addEventListener('change', function() {
 				if (!isNaN(e.value)) {
+					var value = e.value * 1;
+
 					if (v == 'density') {
-						that.setProperty(v, (1 * e.value) / 100);
-					} else {
-						that.setProperty(v, 1 * e.value);
+						value = value / 100;
 					}
-					changecb();
+
+					if (that.getProperty(v) !== value) {
+						that.setProperty(v, value);
+						changecb();
+					}
 				}
-				e.value = that[v];
 			});
 
 			content.appendChild(wrap([ lbl(v + ':'), e ]));
@@ -877,8 +880,8 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 Body.prototype.updateProperties = function updateProperties()
 {
 	if (this.propertyCBs) {
-		for (var i = 0, cb; cb = this.propertyCBs[i]; i++) {
-			cb();
+		for (var i = 0; i < this.propertyCBs.length; i++) {
+			this.propertyCBs[i]();
 		}
 	}
 };
