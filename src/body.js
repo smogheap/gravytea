@@ -12,6 +12,10 @@ function Body(opts)
 	this.renderCB	= opts.renderCB;
 
 	this.sun		= opts.sun || false;
+	if (opts.color == 'sun') {
+		this.sun	= true;
+	}
+
 	this.density	= opts.density	|| (this.sun ? 0.09 : 0.01);
 
 	this.setRadius(opts.radius);
