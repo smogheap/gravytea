@@ -180,6 +180,10 @@ a, a:visited {
 	line-height:		2em;
 }
 
+.popup h3.label {
+	line-height:		initial;
+}
+
 .popup .value {
 	float:				right;
 }

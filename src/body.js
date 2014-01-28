@@ -679,8 +679,8 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 	var txt			= function(value) {
 		return(document.createTextNode(value));
 	};
-	var lbl			= function(value) {
-		var l = document.createElement('label');
+	var lbl			= function(value, type) {
+		var l = document.createElement(type || 'label');
 
 		l.className = 'label';
 		l.appendChild(document.createTextNode(value));
@@ -715,7 +715,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 	e.appendChild(document.createTextNode('x'));
 	e.className = 'value';
-	content.appendChild(wrap([ e ], 'closebtn'));
+	content.appendChild(wrap([ lbl('Body Properties', 'h3'), e ], 'closebtn'));
 	e.addEventListener('click', function(e) {
 		closecb();
 

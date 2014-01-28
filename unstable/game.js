@@ -24,6 +24,8 @@
 // TODO	Replace the add buttons with a single button and show type as an option
 //		in the planet properties dialog
 
+// TODO	Allow editting properties of the level itself
+
 function UnstableGame(options, menu)
 {
 	/* Use this.menu to interact with the UI */
