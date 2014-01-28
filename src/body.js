@@ -182,8 +182,8 @@ Body.prototype.setType = function setType(value)
 			break;
 
 		case 'blackhole':
-			this.setRadius(15);
-			this.setDensity(1.0);
+			this.setRadius(25);
+			this.setDensity(1.5);
 			this.goal = 0;
 			break;
 
@@ -844,7 +844,11 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 			e.addEventListener('change', function() {
 				if (!isNaN(e.value)) {
-					that.setProperty(v, 1 * e.value);
+					if (v == 'density') {
+						that.setProperty(v, (1 * e.value) / 100);
+					} else {
+						that.setProperty(v, 1 * e.value);
+					}
 					changecb();
 				}
 				e.value = that[v];
@@ -854,7 +858,11 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 			that.propertyCBs.push(function() {
 				if (e != document.activeElement) {
-					e.value = that.getProperty(v);
+					if (v == 'density') {
+						e.value = that.getProperty(v) * 100;
+					} else {
+						e.value = that.getProperty(v);
+					}
 				}
 			});
 		})(properties[i]);
