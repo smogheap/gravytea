@@ -444,6 +444,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.selectedBody;
 	delete this.nextClickAction;
 	delete this.testing;
+	delete this.bodyPropertiesDialog;
 
 	/* Hide any dialogs that may still be open */
 	this.menu.hideDialog();
