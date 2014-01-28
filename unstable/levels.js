@@ -435,6 +435,28 @@ UnstableLevels = [
 			{"position":{"x":-150,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#A9DE9C","goal":3},
 			{"position":{"x":-50,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#45843E","goal":3}
 		]
+	}, {
+		name: 'Lopsided',
+		bodies: [
+			{
+				position: { x: 0, y: 0, locked: true },
+				velocity: { x: 0, y: 0, locked: true },
+				radius: 25,
+				density: 1.5,
+				type: 'blackhole',
+				goal: 0
+			}, {
+				position: { x: -150, y: 0, locked: true },
+				velocity: { x: 0, y: 0 },
+				radius: 35,
+				goal: 7
+			}, {
+				position: { x: 150, y: 0, locked: true },
+				velocity: { x: 0, y: 0 },
+				radius: 5,
+				goal: 7
+			}
+		]
 	}
 ];
 

@@ -122,7 +122,8 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					bodies.push({
 						position:	new V(this.ctx.getMouse()),
 						velocity:	new V(0, 0),
-						color:		Math.pow(this.playgroundID + 2, bodies.length)
+						color:		Math.pow(this.playgroundID + 2, bodies.length),
+						goal:		3
 					});
 
 					this.solarsys.setBodies(bodies);

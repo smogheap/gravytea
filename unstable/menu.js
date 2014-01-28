@@ -277,6 +277,8 @@ UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, clas
 	var scrim	= modal ? document.createElement('div') : null;
 	var popup	= document.createElement('div');
 
+	this.hideDialog();
+
 	popup.className = 'popup';
 	if (className) {
 		popup.className += ' ' + className;
@@ -330,7 +332,7 @@ UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, clas
 	document.body.appendChild(popup);
 };
 
-UnstableGameMenu.prototype.hideDialog = function showDialog()
+UnstableGameMenu.prototype.hideDialog = function hideDialog()
 {
 	if (this.closePopup) {
 		this.closePopup();

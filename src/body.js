@@ -57,9 +57,7 @@ Body.prototype.toJSON = function toJSON()
 		j.angle = this.angle;
 	}
 
-	if (this.radius != 5) {
-		j.radius = this.radius;
-	}
+	j.radius = this.radius;
 	if (this.density != 0.01) {
 		j.density = this.density;
 	}
