@@ -389,6 +389,31 @@ UnstableLevels = [
 				"goal":3
 			}
 		]
+	}, {
+		name: 'Going Surfing',
+		bodies: [
+			{
+				"position":{ "x":203, "y":-268, locked: true },
+				"velocity":{ "x":0, "y":0, locked: true },
+				"radius":24,
+				"color":"#D28D5E",
+				"goal":8
+			},
+			{
+				"position":{ "x":305, "y":-359, locked:true },
+				"velocity":{ "x":1.375000e+00, "y":2.125000e+00, locked:true },
+				"radius":12,
+				"color":"#6CE240",
+				"goal":8
+			},
+			{
+				"position":{ "x":-71, "y":77 },
+				"velocity":{ "x":0, "y":0 },
+				"radius":65,
+				"sun":true,
+				"goal":0
+			}
+		]
 	}
 ];
 
