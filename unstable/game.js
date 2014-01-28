@@ -336,6 +336,26 @@ UnstableGame.prototype.popup = function popup(message, actions, cb, className)
 	}
 };
 
+/*
+	If a user created level is being tested, this will return the user to the
+	editor.
+*/
+UnstableGame.prototype.returnToEditor = function returnToEditor()
+{
+	if (!this.testing) {
+		return(false);
+	}
+
+	this.loadLevel(-1, {
+		bodies:			this.levelData.bodies,
+		index:			this.levelData.index,
+		testing:		false,
+		userCreated:	true
+	});
+
+	return(true);
+};
+
 UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 {
 	var div = document.getElementById('gamebuttons');
@@ -465,14 +485,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	} else {
 		if (this.testing) {
 			/* Return to the editor after testing a user created level */
-			addbtn('Back', function() {
-				this.loadLevel(-1, {
-					bodies:			this.levelData.bodies,
-					index:			this.levelData.index,
-					testing:		false,
-					userCreated:	true
-				});
-			}.bind(this));
+			addbtn('Back', this.returnToEditor.bind(this));
 			div.appendChild(document.createTextNode('  |  '));
 		}
 
@@ -785,7 +798,13 @@ UnstableGame.prototype.show = function showUnstableGame()
 			if (b.collision) {
 				this.solarsys.options.paused = true;
 
-				this.popup("BOOM! You crashed!", [ "Retry", "Reset" ], function(action) {
+				var options = [ 'Retry', 'Reset' ];
+
+				if (this.testing) {
+					options.push('Back to editor');
+				}
+
+				this.popup("BOOM! You crashed!", options, function(action) {
 					switch (action) {
 						case "Reset":
 							this.reset();
@@ -794,6 +813,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 						default:
 							this.stop();
 							break;
+
+						case "Back to editor":
+							this.returnToEditor();
+							return;
 					}
 				}.bind(this), "fail");
 				return;
@@ -814,8 +837,12 @@ UnstableGame.prototype.show = function showUnstableGame()
 		this.solarsys.options.paused = true;
 		var options = [ 'Replay' ];
 
-		if (!this.userCreated) {
+		if (!this.userCreated && !this.testing) {
 			options.unshift('Next Level');
+		}
+
+		if (this.testing) {
+			options.push('Back to editor');
 		}
 
 		this.popup("Success!", options, function(action) {
@@ -835,6 +862,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 				case "Replay":
 					this.reset();
+					return;
+
+				case "Back to editor":
+					this.returnToEditor();
 					return;
 			}
 
