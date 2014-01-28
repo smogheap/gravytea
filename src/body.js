@@ -201,6 +201,14 @@ Body.prototype.setRadius = function setRadius(radius)
 	this.mass		= this.volume * this.density;
 };
 
+Body.prototype.setDensity = function setDensity(density)
+{
+	this.density = density;
+
+	/* Update the volume and the mass */
+	this.setRadius(this.radius);
+};
+
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
 {
 	var scale;
@@ -785,13 +793,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 			e.addEventListener('change', function() {
 				if (!isNaN(e.value)) {
-					var setter = v.charAt(0).toUpperCase() + v.slice(1);
-
-					if (that[setter]) {
-						that[setter](parseInt(e.value));
-					} else {
-						that[v] = parseInt(e.value);
-					}
+					that.setProperty(v, 1 * e.value);
 					changecb();
 				}
 				e.value = that[v];
@@ -801,7 +803,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 
 			that.propertyCBs.push(function() {
 				if (e != document.activeElement) {
-					e.value = that[v];
+					e.value = that.getProperty(v);
 				}
 			});
 		})(properties[i]);
@@ -816,6 +818,28 @@ Body.prototype.updateProperties = function updateProperties()
 		for (var i = 0, cb; cb = this.propertyCBs[i]; i++) {
 			cb();
 		}
+	}
+};
+
+Body.prototype.setProperty = function setProperty(name, value)
+{
+	var funcname = 'set' + name.charAt(0).toUpperCase() + name.slice(1);
+
+	if (this[funcname]) {
+		this[funcname](value);
+	} else {
+		this[name] = value;
+	}
+};
+
+Body.prototype.getProperty = function setProperty(name)
+{
+	var funcname = 'get' + name.charAt(0).toUpperCase() + name.slice(1);
+
+	if (this[funcname]) {
+		return(this[funcname]());
+	} else {
+		return(this[name]);
 	}
 };
 
