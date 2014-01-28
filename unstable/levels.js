@@ -414,6 +414,15 @@ UnstableLevels = [
 				"goal":0
 			}
 		]
+	}, {
+		name: 'Eye of the Storm', // Level provided by Anthony Howe
+		bodies: [
+			{"position":{"x":0,"y":0, locked: true},"velocity":{"x":0,"y":0, locked: true},"radius":50,"density":0.09,"sun":true,"goal":0},
+			{"position":{"x":-207,"y":-158},"velocity":{"x":10,"y":-5},"radius":15,"color":"#6CE240","goal":4},
+			{"position":{"x":204,"y":-156},"velocity":{"x":6.125,"y":7.125},"radius":15,"color":"#549075","goal":4},
+			{"position":{"x":-201,"y":163},"velocity":{"x":-8.125,"y":- 9.125},"radius":28,"color":"#66DFCC","goal":5},
+			{"position":{"x":212,"y":158},"velocity":{"x":-7.375,"y":4.875},"radius":15,"color":"#D9E27A","goal":4}
+		]
 	}
 ];
 
