@@ -2,6 +2,7 @@ body {
 	margin:				0px;
 	background:			black;
 	overflow:			hidden;
+	background:			url('images/stars.png');
 }
 
 a, a:visited {
