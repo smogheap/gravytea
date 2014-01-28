@@ -13,7 +13,7 @@ UnstableLevels = [
 				position:	new V(0, 0, true),
 				velocity:	new V(0, 0, true),
 				radius:		50,
-				sun:		true,
+				type:		'sun',
 				density:	0.09
 			},
 
@@ -40,7 +40,7 @@ UnstableLevels = [
 				position:	new V(0, 0, true),
 				velocity:	new V(0, 0, true),
 				radius:		50,
-				sun:		true,
+				type:		'sun',
 				density:	0.09
 			},
 
@@ -67,7 +67,7 @@ UnstableLevels = [
 				position:	new V(-250, 0, true),
 				velocity:	new V(0, 0, true),
 				radius:		70,
-				sun:		true,
+				type:		'sun',
 				density:	0.09
 			},
 
@@ -116,7 +116,7 @@ UnstableLevels = [
 				position:	new V(0, 0, true),
 				velocity:	new V(0, 0, true),
 				radius:		50,
-				sun:		true,
+				type:		'sun',
 				density:	0.15
 			},
 
@@ -146,7 +146,7 @@ UnstableLevels = [
 				position:	new V(0, 0, true),
 				velocity:	new V(0, 0, true),
 				radius:		50,
-				sun:		true,
+				type:		'sun',
 				density:	0.15
 			},
 
@@ -334,20 +334,21 @@ UnstableLevels = [
 			}
 		]
 	}, {
-		name: 'Stitching', // Level provided by Anthony Howe
+		author: 'Anthony Howe',
+		name: 'Stitching',
 		bodies: [
 			{
 				"position":{"x":-198,"y":16, locked: true},
 				"velocity":{"x":12.875,"y":-9.625, locked: true},
 				"radius":59,
-				"sun":true
+				"type": 'sun'
 			},
 
 			{
 				"position":{"x":6,"y":6, locked: true},
 				"velocity":{"x":13.125,"y":-27.375, locked: true},
 				"radius":32,
-				"sun":true
+				"type": 'sun'
 			},
 			{
 				"position":{"x":-69.87227630615234,"y":147.25770568847656},
@@ -364,7 +365,7 @@ UnstableLevels = [
 				"velocity":{"x":0,"y":0, locked: true},
 				"radius":50,
 				"density":0.09,
-				"sun":true,
+				"type": 'sun',
 				"goal":0
 			},
 			{
@@ -410,18 +411,29 @@ UnstableLevels = [
 				"position":{ "x":-71, "y":77 },
 				"velocity":{ "x":0, "y":0 },
 				"radius":65,
-				"sun":true,
+				"type": 'sun',
 				"goal":0
 			}
 		]
 	}, {
-		name: 'Eye of the Storm', // Level provided by Anthony Howe
+		author: 'Anthony Howe',
+		name: 'Eye of the Storm',
 		bodies: [
-			{"position":{"x":0,"y":0, locked: true},"velocity":{"x":0,"y":0, locked: true},"radius":50,"density":0.09,"sun":true,"goal":0},
+			{"position":{"x":0,"y":0, locked: true},"velocity":{"x":0,"y":0, locked: true},"radius":50,"density":0.09,"type":'sun',"goal":0},
 			{"position":{"x":-207,"y":-158},"velocity":{"x":10,"y":-5},"radius":15,"color":"#6CE240","goal":4},
 			{"position":{"x":204,"y":-156},"velocity":{"x":6.125,"y":7.125},"radius":15,"color":"#549075","goal":4},
 			{"position":{"x":-201,"y":163},"velocity":{"x":-8.125,"y":- 9.125},"radius":28,"color":"#66DFCC","goal":5},
 			{"position":{"x":212,"y":158},"velocity":{"x":-7.375,"y":4.875},"radius":15,"color":"#D9E27A","goal":4}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Cradle Robber',
+		bodies: [
+			{"position":{"x":0,"y":0, locked: true},"velocity":{"x":0,"y":0, locked:true },"radius":50,"density":0.09,"type":'sun',"goal":0},
+			{"position":{"x":150,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#E04421","goal":3},
+			{"position":{"x":50,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#66DFCC","goal":3},
+			{"position":{"x":-150,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#A9DE9C","goal":3},
+			{"position":{"x":-50,"y":200, locked: true},"velocity":{"x":0,"y":0},"radius":15,"color":"#45843E","goal":3}
 		]
 	}
 ];

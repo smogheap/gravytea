@@ -331,8 +331,13 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			// TODO	Remove this and assign colors for suns from a list that
 			//		works well for suns.
 			case 'sun':
-				ctx.fillStyle = '#CAEC33';
-				break;
+				if (this.orgColor && 'string' == typeof this.orgColor) {
+					/* fallthrough */
+				} else {
+					/* Default sun color */
+					ctx.fillStyle = '#CAEC33';
+					break;
+				}
 
 			default:
 				ctx.fillStyle = this.color || 'red';
