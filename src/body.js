@@ -11,20 +11,18 @@ function Body(opts)
 
 	this.renderCB	= opts.renderCB;
 
-	this.sun		= opts.sun || false;
-	if (opts.color == 'sun') {
-		this.sun	= true;
+	if (opts.type) {
+		this.setType(opts.type);
+	} else if (opts.color == 'sun' || opts.sun) {
+		this.setType('sun');
+	} else {
+		this.setType(null);
 	}
 
-	this.density	= opts.density	|| (this.sun ? 0.09 : 0.01);
-
+	this.setDensity(opts.density);
 	this.setRadius(opts.radius);
 
-	if (this.sun) {
-		this.setColor('sun');
-	} else {
-		this.setColor(opts.color);
-	}
+	this.setColor(opts.color);
 
 	/*
 		Indicator scale
@@ -60,9 +58,12 @@ Body.prototype.toJSON = function toJSON()
 	if (this.density != 0.01) {
 		j.density = this.density;
 	}
-	if (this.sun) {
-		j.sun = true;
-	} else if (this.orgColor) {
+
+	if (this.type) {
+		j.type = this.type;
+	}
+
+	if (this.orgColor) {
 		j.color = this.orgColor;
 	}
 
@@ -164,25 +165,21 @@ Body.prototype.setColor = function setColor(color)
 	}
 };
 
-Body.prototype.setType = function setColor(value)
+Body.prototype.setType = function setType(value)
 {
-	switch (value) {
-		case 'sun':
-			this.sun = true;
-			this.setColor('sun');
+	this.type = value || this.type || 'planet';
 
+	switch (this.type) {
+		case 'sun':
 			this.density = 0.09;
+			break;
+
+		case 'blackhole':
+			this.density = 1.0;
 			break;
 
 		default:
 		case 'planet':
-			this.sun = false;
-
-			if ('sun' != this.orgColor) {
-				this.setColor(this.orgColor);
-			} else {
-				this.setColor(null);
-			}
 			this.density = 0.01;
 			break;
 	}
@@ -190,7 +187,7 @@ Body.prototype.setType = function setColor(value)
 
 Body.prototype.setRadius = function setRadius(radius)
 {
-	this.radius		= radius || 5;
+	this.radius		= radius || this.radius || 5;
 
 	if (this.radius < 1) {
 		this.radius = 1;
@@ -203,7 +200,7 @@ Body.prototype.setRadius = function setRadius(radius)
 
 Body.prototype.setDensity = function setDensity(density)
 {
-	this.density = density;
+	this.density = density || this.density || 0.01;
 
 	/* Update the volume and the mass */
 	this.setRadius(this.radius);
@@ -284,30 +281,52 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			return;
 		}
 
-		if (this.sun) {
-			ctx.save();
+		switch (this.type) {
+			case 'sun':
+			case 'black hole':
+				/* Render a halo/glow effect */
+				ctx.save();
 
-			var g = ctx.createRadialGradient(
-						this.position.x, this.position.y, this.radius,
-						this.position.x, this.position.y, this.radius * 1.5);
+				var g = ctx.createRadialGradient(
+							this.position.x, this.position.y, this.radius,
+							this.position.x, this.position.y, this.radius * 1.5);
 
-			g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
-			g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+				g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
 
-			ctx.fillStyle = g;
+				ctx.fillStyle = g;
 
-			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
-					0, Math.PI * 2, false);
-			ctx.closePath();
-			ctx.fill();
+				ctx.beginPath();
+				ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
+						0, Math.PI * 2, false);
+				ctx.closePath();
+				ctx.fill();
 
-			ctx.restore();
+				ctx.restore();
+				break;
+
+			default:
+				break;
 		}
 
 		/* Render as a generic simple planet, nothing fancy */
 		ctx.save();
-		ctx.fillStyle = this.color || 'red';
+
+		switch (this.type) {
+			case 'black hole':
+				ctx.fillStyle = '#000';
+				break;
+
+			// TODO	Remove this and assign colors for suns from a list that
+			//		works well for suns.
+			case 'sun':
+				ctx.fillStyle = '#CAEC33';
+				break;
+
+			default:
+				ctx.fillStyle = this.color || 'red';
+				break;
+		}
 
 		ctx.beginPath();
 		ctx.arc(this.position.x, this.position.y, this.radius,
@@ -759,10 +778,10 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 		that.setType(e.value);
 		changecb();
 	});
-	opt(e, 'sun',	this.sun);
-	opt(e, 'planet',!this.sun);
+	opt(e, 'sun',			this.type == 'sun');
+	opt(e, 'planet',		this.type == 'planet');
+	opt(e, 'black hole',	this.type == 'black hole');
 	content.appendChild(wrap([ lbl('type:'), e ]));
-
 
 	this.propertyCBs = [];
 
