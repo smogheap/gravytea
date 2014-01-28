@@ -19,6 +19,18 @@
 //		Once the user is happy with that grouping he/she can then return to the
 //		main level.
 
+// TODO	Add support for time based levels (must be stable for at least x sec)
+
+// TODO	Move popups into the menu class
+
+// TODO	Improve dialogs in the editor, including a planet properties dialog
+
+// TODO	Replave the play and reset buttons in the editor with a "try it" button
+//		that lets you play the game like a normal level.
+
+// TODO	Replace the add buttons with a single button and show type as an option
+//		in the planet properties dialog
+
 function UnstableGame(options)
 {
 	/* Use this.options to access saved user data */
@@ -342,8 +354,10 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
-	if (this.selectedBody) {
+	if (this.selectedBody && this.level < 0) {
 		var b = this.selectedBody;
+
+		// TODO Replace this with a dialog. That will make more sense.
 
 		div.appendChild(document.createTextNode('Size: '));
 
@@ -404,7 +418,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		return;
 	}
 
-
 	/* These buttons are only used for the editor */
 	if (this.level < 0 && this.solarsys.options.paused) {
 		var actions = [
@@ -439,12 +452,35 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 			this.popup('Saved', [ 'Okay' ], function(action) { });
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
-	}
 
-	if (this.solarsys.options.paused) {
-		addbtn('> Play',	this.go.bind(this));
+		addbtn('Try it', function() {
+			this.loadLevel(this.playgroundID, {
+				name:			'Testing playground level',
+				index:			this.playgroundID,
+				bodies:			this.solarsys.getBodies(),
+				testing:		true,
+				userCreated:	true
+			});
+		}.bind(this));
 	} else {
-		addbtn('<< Rewind',	this.go.bind(this));
+		if (this.testing) {
+			/* Return to the editor after testing a user created level */
+			addbtn('Back', function() {
+				this.loadLevel(-1, {
+					bodies:			this.levelData.bodies,
+					index:			this.levelData.index,
+					testing:		false,
+					userCreated:	true
+				});
+			}.bind(this));
+			div.appendChild(document.createTextNode('  |  '));
+		}
+
+		if (this.solarsys.options.paused) {
+			addbtn('> Play',	this.go.bind(this));
+		} else {
+			addbtn('<< Rewind',	this.go.bind(this));
+		}
 	}
 
 	div.appendChild(document.createTextNode('  |  '));
@@ -462,6 +498,9 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.levelData;
 	delete this.playgroundID;
 	delete this.userCreated;
+	delete this.selectedBody;
+	delete this.nextClickAction;
+	delete this.testing;
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -479,6 +518,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 			/* Save it in the same spot */
 			this.playgroundID = levelData.index;
 		}
+
+		this.testing	= levelData.testing;
 	} else {
 		if (UnstableLevels[num]) {
 			bodies	= UnstableLevels[num].bodies;
