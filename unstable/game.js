@@ -697,41 +697,22 @@ UnstableGame.prototype.show = function showUnstableGame()
 		*/
 		var nav = document.getElementById('navigation');
 
-		if (false && nav) {
-			var btns = nav.getElementsByTagName('a');
-
-			/* up */
-			btns[0].addEventListener('click', function() {
-				ctx.translate(0, -10);
-			});
-
-			/* left */
-			btns[1].addEventListener('click', function() {
-				ctx.translate(-10, 0);
-			});
-
-			/* right */
-			btns[2].addEventListener('click', function() {
-				ctx.translate(10, 0);
-			});
-
-			/* down */
-			btns[3].addEventListener('click', function() {
-				ctx.translate(0, 10);
-			});
-
-			btns[4].addEventListener('click', ctx.zoomIn);
-			btns[5].addEventListener('click', ctx.zoomOut);
-		}
-
 		if (nav) {
-			var btns = nav.getElementsByTagName('area');
+			var btns	= nav.getElementsByTagName('area');
+			var that	= this;
 
 			for (var i = 0, b; b = btns[i]; i++) {
 				(function(action) {
 					b.addEventListener('click', function() {
 						switch(action) {
-							case 'center':	ctx.center();				break;
+							case 'center':
+								ctx.center();
+								if (!that.solarsys.options.paused) {
+									var center = that.solarsys.getCenter();
+
+									ctx.translate(-center.x, -center.y);
+								}
+								break;
 
 							case 'left':	ctx.translate(-10,   0);	break;
 							case 'right':	ctx.translate( 10,   0);	break;
