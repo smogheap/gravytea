@@ -6,7 +6,7 @@ function UnstableGameMenu(options)
 
 	/* Initialize the various objects needed to show the game and the menus */
 	this.levelPreview	= new LevelPreview(options);
-	this.game			= new UnstableGame(options);
+	this.game			= new UnstableGame(options, this);
 
 	this.showMenu(window.location.hash.substring(1));
 	this.showSection('beta');
@@ -232,6 +232,69 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
+UnstableGameMenu.prototype.promptUser = function promptUser(message, actions, cb, className)
+{
+	var scrim	= document.createElement('div');
+	var popup	= document.createElement('div');
+
+	scrim.className = 'scrim';
+	popup.className = 'popup';
+	if(className) {
+		popup.className += ' ' + className;
+	}
+
+	document.body.appendChild(scrim);
+	var ignoreEvent = function(event)
+	{
+		return event.preventDefault() && false;
+	};
+
+	scrim.addEventListener('click',		ignoreEvent);
+	scrim.addEventListener('mousedown',	ignoreEvent);
+	scrim.addEventListener('mouseup',	ignoreEvent);
+
+	var p = document.createElement('p');
+	p.appendChild(document.createTextNode(message));
+	popup.appendChild(p);
+	popup.appendChild(document.createElement('br'));
+
+	document.body.appendChild(popup);
+
+	this.scrimShowing = true;
+
+	if (!actions || !actions.length) {
+		actions = 'Okay';
+	}
+
+	for (var i = 0; i < actions.length; i++) {
+		var a = document.createElement('a');
+
+		a.appendChild(document.createTextNode(actions[i]));
+
+		if (i > 0) {
+			popup.appendChild(document.createTextNode('  |  '));
+		}
+
+		(function(action) {
+			a.addEventListener('click', function(e)
+			{
+				document.body.removeChild(scrim);
+				document.body.removeChild(popup);
+
+				delete this.scrimShowing;
+				cb(action);
+			}.bind(this));
+		}.bind(this))(actions[i]);
+
+		popup.appendChild(a);
+	}
+};
+
+/* Return true if a modal popup is visible */
+UnstableGameMenu.prototype.checkScrim = function checkScrim()
+{
+	return(this.scrimShowing || false);
+};
 
 /*
 	Packaged chrome apps can not run inline javascript in the html document

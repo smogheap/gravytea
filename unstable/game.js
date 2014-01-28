@@ -31,10 +31,14 @@
 // TODO	Replace the add buttons with a single button and show type as an option
 //		in the planet properties dialog
 
-function UnstableGame(options)
+function UnstableGame(options, menu)
 {
+	/* Use this.menu to interact with the UI */
+	this.menu		= menu;
+
 	/* Use this.options to access saved user data */
 	this.options	= options;
+
 	this.running	= false;
 
 	this.solarsys	= new SolarSystem({
@@ -160,7 +164,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			return event.preventDefault() && false;
 
 		case 'keydown':
-			if (this.popupdiv) {
+			if (this.menu.checkScrim()) {
 				return(true);
 			}
 
@@ -276,64 +280,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 	}
 
 	return true;
-};
-
-UnstableGame.prototype.popup = function popup(message, actions, cb, className)
-{
-	var scrim	= document.createElement('div');
-	var popup	= document.createElement('div');
-
-	scrim.className = 'scrim';
-	popup.className = 'popup';
-	if(className) {
-		popup.className += ' ' + className;
-	}
-
-	document.body.appendChild(scrim);
-	var ignoreEvent = function(event)
-	{
-		return event.preventDefault() && false;
-	};
-
-	scrim.addEventListener('click',		ignoreEvent);
-	scrim.addEventListener('mousedown',	ignoreEvent);
-	scrim.addEventListener('mouseup',	ignoreEvent);
-
-	var p = document.createElement('p');
-	p.appendChild(document.createTextNode(message));
-	popup.appendChild(p);
-	popup.appendChild(document.createElement('br'));
-
-	document.body.appendChild(popup);
-
-	this.popupdiv = popup;
-
-	if (!actions || !actions.length) {
-		actions = 'Okay';
-	}
-
-	for (var i = 0; i < actions.length; i++) {
-		var a = document.createElement('a');
-
-		a.appendChild(document.createTextNode(actions[i]));
-
-		if (i > 0) {
-			popup.appendChild(document.createTextNode('  |  '));
-		}
-
-		(function(action) {
-			a.addEventListener('click', function(e)
-			{
-				document.body.removeChild(scrim);
-				document.body.removeChild(popup);
-
-				delete this.popupdiv;
-				cb(action);
-			}.bind(this));
-		}.bind(this))(actions[i]);
-
-		popup.appendChild(a);
-	}
 };
 
 /*
@@ -469,7 +415,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				userCreated:	true
 			});
 
-			this.popup('Saved', [ 'Okay' ], function(action) { });
+			this.menu.promptUser('Saved', [ 'Okay' ], function(action) { });
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
 
@@ -785,7 +731,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 					options.push('Back to editor');
 				}
 
-				this.popup("BOOM! You crashed!", options, function(action) {
+				this.menu.promptUser("BOOM! You crashed!", options, function(action) {
 					switch (action) {
 						case "Reset":
 							this.reset();
@@ -840,7 +786,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			options.push('Back to editor');
 		}
 
-		this.popup("Success!", options, function(action) {
+		this.menu.promptUser("Success!", options, function(action) {
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
 
