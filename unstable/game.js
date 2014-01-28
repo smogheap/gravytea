@@ -130,7 +130,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						density:	issun ? 0.09 : 0.01,
 						sun:		issun,
 						goal:		issun ? 0 : 3,
-						color:		Math.pow(this.playgroundID + 1, bodies.length)
+						color:		Math.pow(this.playgroundID + 2, bodies.length)
 					});
 
 					this.solarsys.setBodies(bodies);
@@ -516,7 +516,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
-			b.color = Math.pow(num + 1, i);
+			b.color = Math.pow(num + 2, i);
 		}
 
 		newbodies.push(new Body(b));
