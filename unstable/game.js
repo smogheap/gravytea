@@ -437,17 +437,17 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	var title	= null;
 	var hintDiv;
 
+	/* Hide any dialogs that may still be open */
+	this.menu.hideDialog();
+
 	/* Reset a few things */
+	delete this.bodyPropertiesDialog;
 	delete this.levelData;
 	delete this.playgroundID;
 	delete this.userCreated;
 	delete this.selectedBody;
 	delete this.nextClickAction;
 	delete this.testing;
-	delete this.bodyPropertiesDialog;
-
-	/* Hide any dialogs that may still be open */
-	this.menu.hideDialog();
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
