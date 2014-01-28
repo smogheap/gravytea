@@ -106,6 +106,8 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 	document.getElementById('menu').style.display = 'block';
 	document.getElementById('game').style.display = 'none';
 
+	this.hideDialog();
+
 	// this.showSection(section);
 
 	/* Update the level list based on the player's progress */
