@@ -116,20 +116,12 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			this.canvas.classList.remove('mouse-crosshair');
 
 			switch (action) {
-				case 'Add Sun':
-					issun = true;
-					/* fallthrough */
-
-				case 'Add Planet':
+				case 'Add Body':
 					var bodies = this.solarsys.getBodies();
 
 					bodies.push({
 						position:	new V(this.ctx.getMouse()),
 						velocity:	new V(0, 0),
-						radius:		issun ? 50 : 15,
-						density:	issun ? 0.09 : 0.01,
-						sun:		issun,
-						goal:		issun ? 0 : 3,
 						color:		Math.pow(this.playgroundID + 2, bodies.length)
 					});
 
@@ -345,12 +337,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		var msg;
 
 		switch (this.nextClickAction) {
-			case 'Add Sun':
-				msg = 'Select a position for new sun';
-				break;
-
-			case 'Add Planet':
-				msg = 'Select a position for new planet';
+			case 'Add Body':
+				msg = 'Select a position for new body';
 				break;
 
 			case 'Remove':
@@ -371,8 +359,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	/* These buttons are only used for the editor */
 	if (this.level < 0 && this.solarsys.options.paused) {
 		var actions = [
-			'Add Sun',
-			'Add Planet',
+			'Add Body',
 			'Remove',
 			'Edit'
 		];

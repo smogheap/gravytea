@@ -6,7 +6,6 @@ function Body(opts)
 	this.position	= new V(opts.position);
 	this.velocity	= new V(opts.velocity);
 
-	this.goal		= opts.goal		|| 0;
 	this.completed	= 0;
 
 	this.renderCB	= opts.renderCB;
@@ -18,6 +17,12 @@ function Body(opts)
 	} else {
 		this.setType(null);
 	}
+
+	/*
+		Calling setType will override the goal. This is good when changing the
+		type but on a newly created body do exactly what was specified.
+	*/
+	this.goal		= opts.goal		|| 0;
 
 	this.setDensity(opts.density);
 	this.setRadius(opts.radius);
@@ -171,16 +176,22 @@ Body.prototype.setType = function setType(value)
 
 	switch (this.type) {
 		case 'sun':
-			this.density = 0.09;
+			this.setRadius(50);
+			this.setDensity(0.09);
+			this.goal = 0;
 			break;
 
 		case 'blackhole':
-			this.density = 1.0;
+			this.setRadius(15);
+			this.setDensity(1.0);
+			this.goal = 0;
 			break;
 
 		default:
 		case 'planet':
-			this.density = 0.01;
+			this.setRadius(15);
+			this.setDensity(0.01);
+			this.goal = 3;
 			break;
 	}
 };
@@ -283,7 +294,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 		switch (this.type) {
 			case 'sun':
-			case 'black hole':
+			case 'blackhole':
 				/* Render a halo/glow effect */
 				ctx.save();
 
@@ -313,7 +324,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.save();
 
 		switch (this.type) {
-			case 'black hole':
+			case 'blackhole':
 				ctx.fillStyle = '#000';
 				break;
 
@@ -780,7 +791,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 	});
 	opt(e, 'sun',			this.type == 'sun');
 	opt(e, 'planet',		this.type == 'planet');
-	opt(e, 'black hole',	this.type == 'black hole');
+	opt(e, 'blackhole',		this.type == 'blackhole');
 	content.appendChild(wrap([ lbl('type:'), e ]));
 
 	this.propertyCBs = [];
