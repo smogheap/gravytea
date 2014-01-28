@@ -126,21 +126,34 @@ SolarSystem.prototype.getCenter = function getCenter()
 	var all		= true;
 
 	for (var i = 0, b; b = this.bodies[i]; i++) {
-		if (b.sun) {
-			all = false;
-			break;
+		switch (b.type) {
+			case 'sun':
+			case 'blackhole':
+				all = false;
+				break;
+
+			default:
+				break;
 		}
 	}
 
 	for (var i = 0, b; b = this.bodies[i]; i++) {
-		if (!all && !b.sun) {
-			continue;
+		switch (b.type) {
+			default:
+				if (all) {
+					/* fallthrough */
+				} else {
+					continue;
+				}
+
+			case 'sun':
+			case 'blackhole':
+				x += b.position.x;
+				y += b.position.y;
+
+				count++;
+				break;
 		}
-
-		x += b.position.x;
-		y += b.position.y;
-
-		count++;
 	}
 
 	if (!count) {
