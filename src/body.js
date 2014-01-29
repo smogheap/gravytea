@@ -284,7 +284,11 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 
 			case 'sun':
-				ctx.fillStyle = '#fff';
+				if (!this.texture) {
+					ctx.fillStyle = '#fff';
+				} else {
+					ctx.fillStyle = this.color || '#fff';
+				}
 				break;
 
 			default:
