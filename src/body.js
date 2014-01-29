@@ -113,6 +113,32 @@ Body.prototype.colors = [
 	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
 	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
 ];
+
+Body.prototype.planetColors = [
+	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
+	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
+	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
+	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
+];
+
+Body.prototype.sunColors = [
+	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
+	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
+	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
+	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
+];
+
+Body.prototype.bhColors = [
+	"-747236", "-4E89D5", "-E04421", "#6CE240", "#66DFCC", "#7CCDD7",
+	"#567C90", "#D28D5E", "#A9DE9C", "-549075", "-4A9F2D", "-E4A337",
+	"#D9E27A", "-6EDD75", "-89B5D9", "#BE5535", "#45843E", "#A1CB47",
+	"#DC7629", "-92A554", "#5BD89E", "-B9A540", "#996828"
+];
+
+
+
+
+
 Body.prototype.nextcolor = 1;
 
 Body.prototype.setColor = function setColor(color)
@@ -300,7 +326,11 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 							this.position.x, this.position.y, this.radius,
 							this.position.x, this.position.y, this.radius * 1.5);
 
-				g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+				if (this.type == 'sun') {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.3)');
+				} else {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+				}
 				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
 
 				ctx.fillStyle = g;
