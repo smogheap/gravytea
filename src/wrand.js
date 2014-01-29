@@ -48,6 +48,14 @@ WRand.setSeed = function(seed)
 
 WRand.getSeed = function(seed)
 {
-	return(seed || WRand.seed || (new Date()).getTime());
+	if (!isNaN(seed)) {
+		return(seed);
+	}
+
+	if (!isNaN(WRand.seed)) {
+		return(WRand.seed);
+	}
+
+	return((new Date()).getTime());
 };
 
