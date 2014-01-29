@@ -145,6 +145,8 @@ Body.prototype.setColor = function setColor(color)
 {
 	this.orgColor = color;
 
+	delete this.sunColor;
+
 	switch (typeof color) {
 		case 'number':
 			color = Math.abs(Math.floor(color));
@@ -239,6 +241,36 @@ Body.prototype.setDensity = function setDensity(density)
 
 	/* Update the volume and the mass */
 	this.setRadius(this.radius);
+};
+
+Body.prototype.colorAverage = function colorAverage(a, b)
+{
+	var reSegment = /[\da-zA-Z]{2}/gi;
+
+	function dec2hex(v) { return v.toString(16);	}
+	function hex2dec(v) { return parseInt(v, 16);	}
+
+	if (a.length == 4) {
+		a = a.replace(/([\da-zA-Z])([\da-zA-Z])([\da-zA-Z])/gi, "$1$1$2$2$3$3");
+	}
+	if (b.length == 4) {
+		b = b.replace(/([\da-zA-Z])([\da-zA-Z])([\da-zA-Z])/gi, "$1$1$2$2$3$3");
+	}
+
+	/* Split into parts */
+    var b1 = a.match(reSegment);
+    var b2 = b.match(reSegment);
+    var t;
+	var c = [];
+
+	for (var i = b1.length - 1; i >= 0; i--) {
+		t = dec2hex((hex2dec(b1[i]) + hex2dec(b2[i])) >> 1);
+
+		/* Padd */
+		c[i] = t.length == 2? '' + t : '0' + t;
+	}
+
+    return(c.join(''));
 };
 
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
@@ -357,7 +389,11 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 
 			case 'sun':
-				ctx.fillStyle = '#fff';
+				if (!this.sunColor) {
+					this.sunColor = this.colorAverage('#fff', this.color);
+					this.sunColor = this.colorAverage('#fff', this.sunColor);
+				}
+				ctx.fillStyle = this.sunColor;
 				break;
 
 			default:
