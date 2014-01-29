@@ -31,7 +31,6 @@
 	</head>
 
 	<body>
-
 		<div id="menu">
 			<div class="title">Unstable</div>
 			<div class="menu" id="mainmenu"></div>
@@ -121,7 +120,7 @@
 			<div id="playground"	class="levellist content"></div>
 		</div>
 
-		<div id="game">
+		<div id="game" style="display: none;">
 			<div class="menu" id="gamemenu"></div>
 			<div class="menu" id="gamebuttons"></div>
 
@@ -129,6 +128,7 @@
 
 			<div id="navigation" class="navigation">
 				<img src="images/navigation.png" usemap="#navigation" />
+
 				<map name="navigation">
 					<area shape="circle"	coords="30,56,8"		alt="center"/>
 
@@ -141,6 +141,11 @@
 					<area shape="rect"		coords="6,135,49,172"	alt="zoomout"/>
 				</map>
 			</div>
+		</div>
+
+		<div id="textures" style="display: none;">
+			<img class="sun"	src="images/sun01.png"		crossorigin="anonymous" />
+			<img class="planet"	src="images/planet01.png"	crossorigin="anonymous" />
 		</div>
 	</body>
 </html>

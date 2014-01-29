@@ -3,6 +3,28 @@ function SolarSystem(opts)
 	this.options	= opts || {};
 
 	this.bodies		= [];
+
+	/*
+		The main index has a list of texture images for bodies. Grab them here
+		so that we can easily apply them to bodies when rendering.
+	*/
+	this.textures = {
+		sun:		[],
+		planet:		[],
+		blackhole:	[]
+	};
+
+	var t;
+
+	if ((t = document.getElementById('textures'))) {
+		var images = t.getElementsByTagName('img');
+
+		for (var i = 0, img; img = images[i]; i++) {
+			if (this.textures[img.className]) {
+				this.textures[img.className].push(img);
+			}
+		}
+	}
 };
 
 SolarSystem.prototype.resetTrajectories = function resetTrajectories()
@@ -34,11 +56,24 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 {
 	this.bodies = [];
 
+	WRand.setSeed(this.id);
+
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!(b instanceof Body)) {
 			this.bodies[i] = new Body(b);
 		} else {
 			this.bodies[i] = b;
+		}
+
+		if (!b.texture) {
+			/* Attempt to assign a texture to each body */
+			var textures;
+
+			if ((textures = this.textures[b.type]) && textures.length > 0) {
+				var x		= Math.abs(WRand()) % textures.length;
+
+				b.texture = textures[x];
+			}
 		}
 	}
 

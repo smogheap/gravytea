@@ -275,7 +275,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 		}
 
-		/* Render as a generic simple planet, nothing fancy */
+		/* Render the base coloured circle for the planet */
 		ctx.save();
 
 		switch (this.type) {
@@ -310,6 +310,11 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			ctx.closePath();
 			ctx.fill();
 			ctx.restore();
+		} else if (this.texture) {
+			/* Render a texture on the body */
+			ctx.drawImage(this.texture,
+				this.position.x - this.radius, this.position.y - this.radius,
+				this.position.x + this.radius, this.position.y + this.radius);
 		}
 
 		if (this.goal) {
