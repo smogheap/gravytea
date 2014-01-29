@@ -63,9 +63,9 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 	if (this.selectedBody) {
 		this.selectedBody.selected = false;
 
-		if (this.bodyPropertiesDialog) {
+		if (this.propertiesDialog) {
 			this.menu.hideDialog();
-			delete this.bodyPropertiesDialog;
+			delete this.propertiesDialog;
 		}
 	}
 
@@ -82,7 +82,7 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 				The first callback is hit when a value is changed by the dialog
 				and the second to close the dialog.
 			*/
-			this.bodyPropertiesDialog = this.selectedBody.getPropertiesDialog(
+			this.propertiesDialog = this.selectedBody.getPropertiesDialog(
 				function() { this.solarsys.resetTrajectories(); }.bind(this),
 				function(deleted) {
 					var was = this.selectedBody;
@@ -109,7 +109,7 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 					}.bind(this));
 				}.bind(this));
 
-			this.menu.showDialog(this.bodyPropertiesDialog, false, 'bodyProperties');
+			this.menu.showDialog(this.propertiesDialog, false, 'bodyProperties');
 		}
 	}
 };
@@ -190,7 +190,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				return(true);
 			}
 
-			if (this.bodyPropertiesDialog) {
+			if (this.propertiesDialog) {
 				return(true);
 			}
 
@@ -319,6 +319,7 @@ UnstableGame.prototype.returnToEditor = function returnToEditor()
 	}
 
 	this.loadLevel(-1, {
+		name:			this.levelData.realname,
 		bodies:			this.levelData.bodies,
 		index:			this.levelData.index,
 		testing:		false,
@@ -384,13 +385,27 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 			div.appendChild(document.createTextNode('  |  '));
 		}
 
-		// TODO	Add an 'Options' button to display properties for the level
+		addbtn('Options', function() {
+			if (this.propertiesDialog) {
+				this.menu.hideDialog();
+				delete this.propertiesDialog;
+			}
+
+			this.propertiesDialog = this.solarsys.getPropertiesDialog(function() {
+				this.menu.hideDialog();
+				delete this.propertiesDialog;
+
+				this.showHint(this.solarsys.name, null);
+			}.bind(this));
+			this.menu.showDialog(this.propertiesDialog, false, 'levelProperties');
+		}.bind(this));
+		div.appendChild(document.createTextNode('  |  '));
 
 		addbtn('Save', function() {
 			this.options.set('nextPlaygroundID', this.playgroundID + 1);
 
 			this.options.set('levelUser-' + this.playgroundID, {
-				name:			(new Date()).toLocaleString(),
+				name:			this.solarsys.name,
 				bodies:			this.solarsys.getBodies(),
 				userCreated:	true
 			});
@@ -401,7 +416,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 		addbtn('Try it', function() {
 			this.loadLevel(this.playgroundID, {
-				name:			'Testing playground level',
+				name:			'Testing: ' + this.solarsys.name,
+				realname:		this.solarsys.name,
 				index:			this.playgroundID,
 				bodies:			this.solarsys.getBodies(),
 				testing:		true,
@@ -432,24 +448,48 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	}
 };
 
+UnstableGame.prototype.showHint = function showHint(title, hint)
+{
+	var hintDiv;
+
+	if ((hintDiv = document.getElementById('hint'))) {
+		hintDiv.innerHTML = '';
+
+		if (title) {
+			var h = document.createElement('h3');
+
+			h.appendChild(document.createTextNode(title));
+			hintDiv.appendChild(h);
+		}
+
+		if (hint) {
+			for (var i = 0, h; h = hint[i]; i++) {
+				hintDiv.appendChild(document.createTextNode(h));
+				hintDiv.appendChild(document.createElement('br'));
+			}
+		}
+	}
+};
+
 /* Return a list of bodies for the specified level */
 UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 {
 	var bodies	= [];
 	var title	= null;
-	var hintDiv;
 
 	/* Hide any dialogs that may still be open */
 	this.menu.hideDialog();
 
 	/* Reset a few things */
-	delete this.bodyPropertiesDialog;
+	delete this.propertiesDialog;
 	delete this.levelData;
 	delete this.playgroundID;
 	delete this.userCreated;
 	delete this.selectedBody;
 	delete this.nextClickAction;
 	delete this.testing;
+
+	delete this.solarsys.name;
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -480,23 +520,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		}
 	}
 
-	if ((hintDiv = document.getElementById('hint'))) {
-		hintDiv.innerHTML = '';
+	this.showHint(title, hint);
 
-		if (title) {
-			var h = document.createElement('h3');
-
-			h.appendChild(document.createTextNode(title));
-			hintDiv.appendChild(h);
-		}
-
-		if (hint) {
-			for (var i = 0, h; h = hint[i]; i++) {
-				hintDiv.appendChild(document.createTextNode(h));
-				hintDiv.appendChild(document.createElement('br'));
-			}
-		}
-	}
 
 	if (this.level < 0) {
 		/* Ensure there is a playground ID for this level */
@@ -514,6 +539,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		newbodies.push(new Body(b));
 	}
 
+	this.solarsys.name = title || (new Date()).toLocaleString();
 	this.solarsys.id = num;
 	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();

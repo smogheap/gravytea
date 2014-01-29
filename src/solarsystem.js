@@ -247,4 +247,81 @@ SolarSystem.prototype.getCenter = function getCenter()
 	return(new V(x, y));
 };
 
+/* Return an Dom element that contains modifyable properties for this body */
+SolarSystem.prototype.getPropertiesDialog = function getPropertiesDialog(closecb)
+{
+	var that		= this;
+	var txt			= function(value) {
+		return(document.createTextNode(value));
+	};
+	var lbl			= function(value, type) {
+		var l = document.createElement(type || 'label');
+
+		l.className = 'label';
+		l.appendChild(document.createTextNode(value));
+		return(l);
+	};
+	var opt			= function(select, label, selected) {
+		var o = document.createElement('option');
+
+		o.selected = selected;
+		o.appendChild(document.createTextNode(label));
+		select.appendChild(o);
+	};
+	var wrap		= function(elements, className) {
+		var p = document.createElement('p');
+
+		if (className) {
+			p.className = className;
+		}
+
+		for (var i = 0, e; e = elements[i]; i++) {
+			p.appendChild(e);
+		}
+		return(p);
+	};
+	var content		= document.createElement('div');
+	var e;
+	var i;
+
+
+	/* Add a close button */
+	e = document.createElement('a');
+
+	e.appendChild(document.createTextNode('x'));
+	e.className = 'value';
+	content.appendChild(wrap([ lbl('Level Properties', 'h3'), e ], 'closebtn'));
+	e.addEventListener('click', function(e) {
+		closecb(false);
+
+		delete that.propertyCBs;
+	});
+
+	// TODO Name
+	var e		= document.createElement('input');
+	e.type		= 'text';
+	e.className	= 'value';
+	e.value		= this.name || '';
+
+	e.addEventListener('change', function() {
+		that.name = e.value;
+	});
+
+	content.appendChild(wrap([ lbl('Name:'), e ]));
+
+	// TODO	Min time to complete
+
+
+	/* Close Button */
+	e			= document.createElement('input');
+	e.type		= 'button';
+	e.value		= 'Close';
+	e.addEventListener('click', function() {
+		closecb(false);
+	});
+	content.appendChild(wrap([ e ]));
+
+	return(content);
+};
+
 

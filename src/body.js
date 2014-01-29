@@ -824,14 +824,22 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 		})(properties[i]);
 	}
 
+	/* Delete Button */
 	e			= document.createElement('input');
 	e.type		= 'button';
 	e.value		= 'Delete';
-
 	e.addEventListener('click', function() {
 		closecb(true);
 	});
+	content.appendChild(wrap([ e ]));
 
+	/* Close Button */
+	e			= document.createElement('input');
+	e.type		= 'button';
+	e.value		= 'Close';
+	e.addEventListener('click', function() {
+		closecb(false);
+	});
 	content.appendChild(wrap([ e ]));
 
 	return(content);
