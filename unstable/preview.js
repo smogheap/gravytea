@@ -141,11 +141,9 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 		if (locked) {
 			/* Dim the preview if this level is locked */
 			b.setColor('#666');
-		} else {
+		} else if (!b.color) {
 			/* Match the colors used in the game */
-			if (!b.color) {
-				b.setColor(num + i);
-			}
+			b.setColor(num + i);
 		}
 	}
 	solarsys.setBodies(bodies);

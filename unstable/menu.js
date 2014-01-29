@@ -144,7 +144,7 @@ UnstableGameMenu.prototype.show = function show()
 			position:	new V(0, 0),
 			radius:		50,
 			density:	0.09,
-			color:		'#666'
+			color:		'#ccc'
 		}),
 
 		new Body({
