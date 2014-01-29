@@ -21,9 +21,6 @@
 
 // TODO	Add support for time based levels (must be stable for at least x sec)
 
-// TODO	Replace the add buttons with a single button and show type as an option
-//		in the planet properties dialog
-
 // TODO	Allow editting properties of the level itself
 
 function UnstableGame(options, menu)
