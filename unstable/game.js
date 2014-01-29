@@ -443,7 +443,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 			this.menu.askUser('Are you sure?', [ 'Yes', 'No' ], function(action) {
 				if (action != 'Yes') return;
 
-				this.reset.bind(this);
+				this.reset();
 			}.bind(this));
 		}.bind(this));
 	}
