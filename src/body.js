@@ -729,7 +729,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 	e.className = 'value';
 	content.appendChild(wrap([ lbl('Body Properties', 'h3'), e ], 'closebtn'));
 	e.addEventListener('click', function(e) {
-		closecb();
+		closecb(false);
 
 		delete that.propertyCBs;
 	});
@@ -823,6 +823,16 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 			});
 		})(properties[i]);
 	}
+
+	e			= document.createElement('input');
+	e.type		= 'button';
+	e.value		= 'Delete';
+
+	e.addEventListener('click', function() {
+		closecb(true);
+	});
+
+	content.appendChild(wrap([ e ]));
 
 	return(content);
 };

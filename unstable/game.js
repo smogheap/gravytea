@@ -84,7 +84,22 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 			*/
 			this.bodyPropertiesDialog = this.selectedBody.getPropertiesDialog(
 				function() { this.solarsys.resetTrajectories(); }.bind(this),
-				function() { this.selectBody(null); }.bind(this));
+				function(deleted) {
+					if (deleted) {
+						var bodies	= this.solarsys.getBodies();
+
+						for (var i = 0, b; b = bodies[i]; i++) {
+							if (b == this.selectedBody) {
+								bodies.splice(i, 1);
+								break;
+							}
+						}
+
+						this.solarsys.setBodies(bodies);
+					}
+
+					this.selectBody(null);
+				}.bind(this));
 
 			this.menu.showDialog(this.bodyPropertiesDialog, false, 'bodyProperties');
 		}
@@ -125,20 +140,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 					this.solarsys.setBodies(bodies);
 					this.selectBody(this.solarsys.bodies[this.solarsys.bodies.length - 1]);
-					break;
-
-				case 'Remove':
-					var bodies	= this.solarsys.getBodies();
-					var mouse	= this.ctx.getMouse();
-
-					for (var i = 0, b; b = bodies[i]; i++) {
-						if (b.inside(this.ctx, mouse)) {
-							bodies.splice(i, 1);
-							break;
-						}
-					}
-
-					this.solarsys.setBodies(bodies);
 					break;
 
 				case 'Edit':
@@ -345,11 +346,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				msg = 'Select a position for new body';
 				break;
 
-			case 'Remove':
-				msg = 'Select a planet or sun to remove';
-				this.solarsys.options.showVelocity = false;
-				break;
-
 			case 'Edit':
 				msg = 'Select a planet or sun to edit';
 				this.solarsys.options.showVelocity = false;
@@ -364,7 +360,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 	if (this.level < 0 && this.solarsys.options.paused) {
 		var actions = [
 			'Add Body',
-			'Remove',
 			'Edit'
 		];
 
@@ -380,6 +375,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 			div.appendChild(document.createTextNode('  |  '));
 		}
+
+		// TODO	Add an 'Options' button to display properties for the level
 
 		addbtn('Save', function() {
 			this.options.set('nextPlaygroundID', this.playgroundID + 1);
@@ -415,10 +412,10 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		} else {
 			addbtn('<< Rewind',	this.go.bind(this));
 		}
-	}
 
-	div.appendChild(document.createTextNode('  |  '));
-	addbtn('Reset', this.reset.bind(this));
+		div.appendChild(document.createTextNode('  |  '));
+		addbtn('Reset', this.reset.bind(this));
+	}
 };
 
 /* Return a list of bodies for the specified level */
@@ -467,13 +464,6 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 				hint = UnstableLevels[num].hint;
 			}
 		}
-	}
-
-	// TODO	Remove this, just needed for testing
-	if (title == 'Color Test') {
-		this.solarsys.options.trajectory = 0;
-	} else {
-		this.solarsys.options.trajectory = 3000;
 	}
 
 	if ((hintDiv = document.getElementById('hint'))) {
