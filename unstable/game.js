@@ -122,7 +122,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					bodies.push({
 						position:	new V(this.ctx.getMouse()),
 						velocity:	new V(0, 0),
-						color:		Math.pow(this.playgroundID + 2, bodies.length),
+						color:		this.playgroundID + bodies.length,
 						goal:		3
 					});
 
@@ -504,7 +504,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!b.color) {
-			b.color = Math.pow(num + 2, i);
+			b.color = num + i;
 		}
 
 		newbodies.push(new Body(b));

@@ -144,7 +144,7 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 		} else {
 			/* Match the colors used in the game */
 			if (!b.color) {
-				b.color = Math.pow(num + 2, i);
+				b.setColor(num + i);
 			}
 		}
 	}

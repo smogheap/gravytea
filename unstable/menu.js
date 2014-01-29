@@ -140,6 +140,7 @@ UnstableGameMenu.prototype.show = function show()
 	solarsys.setBodies([
 		/* A Sun */
 		new Body({
+			type:		'sun',
 			position:	new V(0, 0),
 			radius:		50,
 			density:	0.09,
