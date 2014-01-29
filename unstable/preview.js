@@ -1,5 +1,8 @@
-function LevelPreview(options)
+function LevelPreview(options, menu)
 {
+	/* Use this.menu to interact with the UI */
+	this.menu		= menu;
+
 	/* Use this.options to access saved user data */
 	this.options	= options;
 }
@@ -12,13 +15,15 @@ LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, l
 
 	level.index = num;
 
-	if (!locked) {
-		a.addEventListener('click', function(e)
-		{
+	a.addEventListener('click', function(e)
+	{
+		if (!locked) {
 			cb(num, level);
-			return e.preventDefault() && false;
-		});
-	}
+		} else {
+			this.menu.askUser('Sorry, you haven\'t unlocked this level yet', [ 'Okay' ], function(action) { });
+		}
+		return e.preventDefault() && false;
+	}.bind(this));
 
 	if (level.name) {
 		a.appendChild(document.createTextNode(level.name));
@@ -143,7 +148,7 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 		for (var i = 0, b; b = bodies[i]; i++) {
 			b.setColor('#666');
 		}
-		solarsys.setBodies(bodies);
+		solarsys.setBodies(bodies, true);
 	}
 
 	makeCanvasZoomable(canvas, ctx);

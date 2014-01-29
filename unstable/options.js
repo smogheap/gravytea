@@ -9,6 +9,11 @@ function UnstableGameOptions()
 
 		fullscreen:			false
 	};
+};
+
+UnstableGameOptions.prototype.setup = function setup(menu)
+{
+	this.menu = menu;
 
 	// TODO	Add options for mapping inputs with keyboard and/or gamepads
 	// TODO	Allow reading options from cli args when running in xulrunner
@@ -17,6 +22,25 @@ function UnstableGameOptions()
 	var f = document.getElementById('fullscreen');
 
 	this.addFullscreenOption();
+	document.getElementById('options').appendChild(document.createElement('br'));
+
+	/* Add option to reset progress */
+	var div = document.createElement('div');
+	var a	= document.createElement('a');
+
+	a.addEventListener('click', function() {
+		menu.askUser('Are you sure?', [ 'Yes', 'No' ], function(action) {
+			if (action != 'Yes') return;
+
+			this.set('currentLevel', 0);
+		}.bind(this));
+	}.bind(this));
+
+	a.appendChild(document.createTextNode('Reset Progress'));
+	div.appendChild(a);
+
+	document.getElementById('options').appendChild(div);
+
 };
 
 UnstableGameOptions.prototype.addFullscreenOption = function addFullscreenOption()

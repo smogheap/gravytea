@@ -5,7 +5,7 @@ function UnstableGameMenu(options)
 	this.running		= false;
 
 	/* Initialize the various objects needed to show the game and the menus */
-	this.levelPreview	= new LevelPreview(options);
+	this.levelPreview	= new LevelPreview(options, this);
 	this.game			= new UnstableGame(options, this);
 
 	this.showMenu(window.location.hash.substring(1));
@@ -40,6 +40,9 @@ function UnstableGameMenu(options)
 		this.addMenuItem(menu, 'Menu',
 				function() { that.showMenu();				});
 	}
+
+	/* Let the options class render the options page */
+	this.options.setup(this);
 }
 
 UnstableGameMenu.prototype.addMenuItem = function addMenuItem(menudiv, name, cb)
@@ -369,7 +372,7 @@ UnstableGameMenu.prototype.checkScrim = function checkScrim()
 	so we need to initialize here instead of in the html.
 */
 window.addEventListener('load', function() {
-	var options	= new UnstableGameOptions();
+	var options	= new UnstableGameOptions(this);
 
 	options.ready(function() {
 		(new UnstableGameMenu(options));
