@@ -314,7 +314,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			/* Render a texture on the body */
 			ctx.drawImage(this.texture,
 				this.position.x - this.radius, this.position.y - this.radius,
-				this.position.x + this.radius, this.position.y + this.radius);
+				this.radius * 2, this.radius * 2);
 		}
 
 		if (this.goal) {
