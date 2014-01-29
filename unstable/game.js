@@ -175,6 +175,12 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 		case 'keydown':
 			if (this.menu.checkScrim()) {
+				switch (event.keyCode) {
+					case 32: /* space	*/
+						/* Do the default action for the dialog */
+						this.menu.hideDialog(true);
+						break;
+				}
 				return(true);
 			}
 
@@ -502,13 +508,12 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		this.userCreated = true;
 	}
 
-	this.solarsys.id = num;
-
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
 		newbodies.push(new Body(b));
 	}
 
+	this.solarsys.id = num;
 	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();
 };

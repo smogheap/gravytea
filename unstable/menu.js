@@ -240,6 +240,7 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 	var that	= this;
 	var content	= document.createElement('div');
 	var p		= document.createElement('p');
+	var defcb	= null;
 
 	p.appendChild(document.createTextNode(message));
 	content.appendChild(p);
@@ -259,18 +260,25 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 		}
 
 		(function(action) {
-			a.addEventListener('click', function(e)
+			var f;
+
+			a.addEventListener('click', f = function(e)
 			{
 				that.hideDialog();
 
 				cb(action);
 			});
+
+			defcb = defcb || f;
 		})(actions[i]);
 
 		content.appendChild(a);
 	}
 
 	this.showDialog(content, true, className);
+
+	/* Keep track of the first action, so it can be called in other ways */
+	this.defaultDialogCB = defcb;
 };
 
 UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, className)
@@ -333,11 +341,21 @@ UnstableGameMenu.prototype.showDialog = function showDialog(content, modal, clas
 	document.body.appendChild(popup);
 };
 
-UnstableGameMenu.prototype.hideDialog = function hideDialog()
+UnstableGameMenu.prototype.hideDialog = function hideDialog(doDefaultAction)
 {
+	if (doDefaultAction) {
+		if (!this.defaultDialogCB) {
+			return(false);
+		}
+
+		this.defaultDialogCB();
+	}
+	delete this.defaultDialogCB;
+
 	if (this.closePopup) {
 		this.closePopup();
 	}
+	return(true);
 };
 
 /* Return true if a modal popup is visible */
