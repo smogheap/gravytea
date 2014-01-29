@@ -16,7 +16,7 @@ function SolarSystem(opts)
 
 	var t;
 
-	if ((t = document.getElementById('textures'))) {
+	if (this.options.textures && (t = document.getElementById('textures'))) {
 		var images = t.getElementsByTagName('img');
 
 		for (var i = 0, img; img = images[i]; i++) {

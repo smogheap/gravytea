@@ -36,7 +36,8 @@ function UnstableGame(options, menu)
 	this.solarsys	= new SolarSystem({
 		showVelocity:	true,
 		paused:			true,
-		trajectory:		3000
+		trajectory:		3000,
+		textures:		true
 	});
 
 	this.speed = 1.0;
