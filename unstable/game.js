@@ -466,6 +466,13 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		}
 	}
 
+	// TODO	Remove this, just needed for testing
+	if (title == 'Color Test') {
+		this.solarsys.options.trajectory = 0;
+	} else {
+		this.solarsys.options.trajectory = 3000;
+	}
+
 	if ((hintDiv = document.getElementById('hint'))) {
 		hintDiv.innerHTML = '';
 
