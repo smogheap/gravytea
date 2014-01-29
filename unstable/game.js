@@ -500,15 +500,15 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	if (levelData && levelData.userCreated) {
 		this.levelData	= levelData;
 
-		bodies	= levelData.bodies;
-		title	= levelData.name;
+		bodies			= levelData.bodies;
+		title			= levelData.name;
 
 		if (num < 0) {
 			/* Save it in the same spot */
 			this.playgroundID = levelData.index;
 		}
 
-		this.testing	= levelData.testing;
+		this.testing = levelData.testing;
 	} else {
 		if (UnstableLevels[num]) {
 			bodies	= UnstableLevels[num].bodies;
@@ -520,19 +520,19 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		}
 	}
 
-	this.showHint(title, hint);
-
-
 	if (this.level < 0) {
 		/* Ensure there is a playground ID for this level */
 		if (isNaN(this.playgroundID) || this.playgroundID < 0) {
 			this.playgroundID = this.options.get('nextPlaygroundID');
+			title = null;
 		}
 
 		/* Use the playground ID for generating the colors */
 		num = this.playgroundID;
 		this.userCreated = true;
 	}
+
+	this.showHint(title, hint);
 
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
