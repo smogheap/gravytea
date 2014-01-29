@@ -150,8 +150,14 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 	}
 	solarsys.setBodies(bodies);
 
+	makeCanvasZoomable(canvas, ctx);
+
 	ctx.translate(width / 2, height / 2);
 	ctx.scale(scale, scale);
+
+	/* Advance enough to ensure that we have trajectory path's calculated */
+	solarsys.advance(0);
+	solarsys.advance(16);
 
 	/* Render the bodies */
 	solarsys.render(ctx);

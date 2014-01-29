@@ -484,6 +484,15 @@ UnstableLevels = [
 			{"position":{"x":50,"y":-200},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","color":4,"goal":4},
 			{"position":{"x":-220,"y":-33},"velocity":{"x":-5.25,"y":-7.75,"locked":true},"radius":10,"type":"planet","color":8,"goal":4}
 		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Have a nice day',
+		bodies: [
+			{"position":{"x":-150,"y":-100,"locked":true},"velocity":{"x":-8,"y":-1},"radius":50,"density":0.09,"type":"sun","color":"#4E89D5","goal":0},
+			{"position":{"x":150,"y":-100,"locked":true},"velocity":{"x":8,"y":-1},"radius":50,"density":0.09,"type":"sun","color":"#6CE240","goal":0},
+			{"position":{"x":-210,"y":100},"velocity":{"x":8,"y":15,"locked":true},"radius":15,"type":"planet","color":"#549075","goal":3},
+			{"position":{"x":210,"y":100},"velocity":{"x":-8,"y":15,"locked":true},"radius":15,"type":"planet","color":"#66DFCC","goal":3}
+		]
 	}
 ];
 
