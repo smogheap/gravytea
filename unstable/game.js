@@ -502,18 +502,10 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		this.userCreated = true;
 	}
 
+	this.solarsys.id = num;
 
-	/*
-		Assign a number for the color of any body that doesn't have a color
-		assigned already. The body class will apply a color from it's index
-		based on this number.
-	*/
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
-		if (!b.color) {
-			b.color = num + i;
-		}
-
 		newbodies.push(new Body(b));
 	}
 

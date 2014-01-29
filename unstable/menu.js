@@ -174,7 +174,7 @@ UnstableGameMenu.prototype.show = function show()
 			radius:		2,
 			color:		'#666'
 		})
-	]);
+	], true);
 
 	document.body.appendChild(canvas);
 

@@ -133,20 +133,18 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 	canvas.setAttribute('height', height);
 
 	/* Load a level */
+	solarsys.id = num;
 	solarsys.setBodies(level.bodies);
 
-	var bodies	= solarsys.getBodies();
+	if (locked) {
+		/* Dim the preview if this level is locked */
+		var bodies = solarsys.getBodies();
 
-	for (var i = 0, b; b = bodies[i]; i++) {
-		if (locked) {
-			/* Dim the preview if this level is locked */
+		for (var i = 0, b; b = bodies[i]; i++) {
 			b.setColor('#666');
-		} else if (!b.color) {
-			/* Match the colors used in the game */
-			b.setColor(num + i);
 		}
+		solarsys.setBodies(bodies);
 	}
-	solarsys.setBodies(bodies);
 
 	makeCanvasZoomable(canvas, ctx);
 

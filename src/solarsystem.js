@@ -12,7 +12,25 @@ SolarSystem.prototype.resetTrajectories = function resetTrajectories()
 	}
 };
 
-SolarSystem.prototype.setBodies = function setBodies(bodies)
+/*
+	Color pallete to use for planets
+
+	Generated at http://tools.medialab.sciences-po.fr/iwanthue/index.php
+	with	Hue: 0-250, Chroma: 0.5-3, Lightness: 0.5-1.5
+*/
+SolarSystem.prototype.colors = {
+	list: [
+		"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
+		"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
+		"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
+		"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
+	],
+	planet:		"00011111111111011110101",
+	sun:		"11111001111000101101110",
+	blackhole:	"00011111100010011110001"
+};
+
+SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 {
 	this.bodies = [];
 
@@ -21,6 +39,69 @@ SolarSystem.prototype.setBodies = function setBodies(bodies)
 			this.bodies[i] = new Body(b);
 		} else {
 			this.bodies[i] = b;
+		}
+	}
+
+	var strToBits = function(str) {
+		if (typeof str != 'string') {
+			/* Already done? */
+			return(str);
+		}
+
+		var value = 0;
+
+		for (var i = 0; i < str.length; i++) {
+			if (str.charAt(i) != '0') {
+				value |= 1 << i;
+			}
+		}
+
+		return(value);
+	};
+
+	/*
+		Convert the strings to a bitfield, the string is just for ease of
+		editting and viewing in source.
+	*/
+	this.colors.planet		= strToBits(this.colors.planet);
+	this.colors.sun			= strToBits(this.colors.sun	);
+	this.colors.blackhole	= strToBits(this.colors.blackhole);
+	this.colors.used		= 0;
+
+	if (!preserveColor) {
+		/*
+			Set a color for each body
+
+			There are a few rules to go by here:
+				1) Do not reuse the same color for multiple planets
+				2) Do not apply a color that is blacklisted for that type
+				3) The colors should be consistent if the level is reloaded by
+				basing them on this.id
+		*/
+		WRand.setSeed(this.id);
+
+		for (var i = 0, b; b = this.bodies[i]; i++) {
+			var tries	= 0;
+			var x		= WRand();
+			var bit;
+
+			for (;; x++, tries++) {
+				x	= x % this.colors.list.length;
+				bit	= (1 << x);
+
+				if ( (this.colors[this.type || 'planet'] & bit) &&
+					!(this.colors.used & bit)
+				) {
+					b.setColor(this.colors.list[x]);
+					this.colors.used |= bit;
+					break;
+				}
+
+				if (tries >= this.colors.list.length) {
+					/* We have too many, start over */
+					this.colors.used = 0;
+				}
+			}
 		}
 	}
 

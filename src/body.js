@@ -66,10 +66,6 @@ Body.prototype.toJSON = function toJSON()
 		j.type = this.type;
 	}
 
-	if (this.orgColor) {
-		j.color = this.orgColor;
-	}
-
 	j.goal = this.goal;
 
 	return(j);
@@ -99,78 +95,9 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 	}
 };
 
-/*
-	Color pallete to use for planets
-
-	Generated at http://tools.medialab.sciences-po.fr/iwanthue/index.php
-	with	Hue: 0-250, Chroma: 0.5-3, Lightness: 0.5-1.5
-
-	Yellows where removed (after one was taken to use for the sun)
-*/
-Body.prototype.colors = [
-	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
-	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
-	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
-	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
-];
-
-Body.prototype.planetColors = [
-	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
-	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
-	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
-	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
-];
-
-Body.prototype.sunColors = [
-	"#747236", "#4E89D5", "#E04421", "#6CE240", "#66DFCC", "#7CCDD7",
-	"#567C90", "#D28D5E", "#A9DE9C", "#549075", "#4A9F2D", "#E4A337",
-	"#D9E27A", "#6EDD75", "#89B5D9", "#BE5535", "#45843E", "#A1CB47",
-	"#DC7629", "#92A554", "#5BD89E", "#B9A540", "#996828"
-];
-
-Body.prototype.bhColors = [
-	"-747236", "-4E89D5", "-E04421", "#6CE240", "#66DFCC", "#7CCDD7",
-	"#567C90", "#D28D5E", "#A9DE9C", "-549075", "-4A9F2D", "-E4A337",
-	"#D9E27A", "-6EDD75", "-89B5D9", "#BE5535", "#45843E", "#A1CB47",
-	"#DC7629", "-92A554", "#5BD89E", "-B9A540", "#996828"
-];
-
-
-
-
-
-Body.prototype.nextcolor = 1;
-
 Body.prototype.setColor = function setColor(color)
 {
-	this.orgColor = color;
-
-	switch (typeof color) {
-		case 'number':
-			color = Math.abs(Math.floor(color));
-
-			this.color = this.colors[color % this.colors.length];
-			break;
-
-		case 'string':
-			if (color == 'sun') {
-				// this.color = '#DFCE3B';
-				this.color = '#CAEC33';
-				break;
-			} else if (0 == color.indexOf('#')) {
-				this.color = color;
-				break;
-			} else {
-				/* Fallthrough - This color isn't supported */
-				;
-			}
-
-		default:
-			var c = Body.prototype.nextcolor++;
-
-			this.color = this.colors[c % this.colors.length];
-			break;
-	}
+	this.color = color || '#888';
 
 	/*
 		There are many spots where we need the color of this body, but with the
@@ -361,7 +288,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				break;
 
 			default:
-				ctx.fillStyle = this.color || 'red';
+				ctx.fillStyle = this.color || '#888';
 				break;
 		}
 
