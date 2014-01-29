@@ -85,20 +85,28 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 			this.bodyPropertiesDialog = this.selectedBody.getPropertiesDialog(
 				function() { this.solarsys.resetTrajectories(); }.bind(this),
 				function(deleted) {
-					if (deleted) {
+					var was = this.selectedBody;
+
+					this.selectBody(null);
+
+					if (!deleted) {
+						return;
+					}
+
+					this.menu.askUser('Are you sure?', [ 'Yes', 'No' ], function(action) {
+						if (action != 'Yes') return;
+
 						var bodies	= this.solarsys.getBodies();
 
 						for (var i = 0, b; b = bodies[i]; i++) {
-							if (b == this.selectedBody) {
+							if (b == was) {
 								bodies.splice(i, 1);
 								break;
 							}
 						}
 
 						this.solarsys.setBodies(bodies);
-					}
-
-					this.selectBody(null);
+					}.bind(this));
 				}.bind(this));
 
 			this.menu.showDialog(this.bodyPropertiesDialog, false, 'bodyProperties');
@@ -414,7 +422,13 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		}
 
 		div.appendChild(document.createTextNode('  |  '));
-		addbtn('Reset', this.reset.bind(this));
+		addbtn('Reset', function() {
+			this.menu.askUser('Are you sure?', [ 'Yes', 'No' ], function(action) {
+				if (action != 'Yes') return;
+
+				this.reset.bind(this);
+			}.bind(this));
+		}.bind(this));
 	}
 };
 
