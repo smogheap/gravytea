@@ -493,6 +493,16 @@ UnstableLevels = [
 			{"position":{"x":-210,"y":100},"velocity":{"x":8,"y":15,"locked":true},"radius":15,"type":"planet","color":"#549075","goal":3},
 			{"position":{"x":210,"y":100},"velocity":{"x":-8,"y":15,"locked":true},"radius":15,"type":"planet","color":"#66DFCC","goal":3}
 		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Fangs',
+		bodies: [
+			{"position":{"x":-17,"y":-250},"velocity":{"x":0,"y":0},"radius":25,"density":1.5,"type":"blackhole","color":"#4E89D5","goal":0},
+			{"position":{"x":-155,"y":3.5},"velocity":{"x":0.25,"y":16.375,"locked":true},"radius":15,"type":"planet","color":"#E04421","goal":3},
+			{"position":{"x":-103,"y":1.5},"velocity":{"x":0.75,"y":18.625,"locked":true},"radius":15,"type":"planet","color":"#66DFCC","goal":3},
+			{"position":{"x":63,"y":2.5},"velocity":{"x":0.625,"y":18.5,"locked":true},"radius":15,"type":"planet","color":"#A9DE9C","goal":3},
+			{"position":{"x":117,"y":2.5},"velocity":{"x":0.875,"y":16.25,"locked":true},"radius":15,"type":"planet","color":"#45843E","goal":3}
+		]
 	}
 ];
 
