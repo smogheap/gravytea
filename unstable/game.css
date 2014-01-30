@@ -261,3 +261,7 @@ canvas {
 	cursor:				crosshair;
 }
 
+.hideui #game {
+	display:			none !important;
+}
+

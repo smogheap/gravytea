@@ -168,7 +168,7 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
-Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity)
+Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI)
 {
 	var scale;
 
@@ -310,61 +310,63 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				(this.radius * 2) + 1, (this.radius * 2) + 1);
 		}
 
-		if (this.selected) {
-			/* Highlight the body */
-			ctx.save();
+		if (showUI) {
+			if (this.selected) {
+				/* Highlight the body */
+				ctx.save();
 
-			ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
-			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= 4;
-
-			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, this.radius,
-					0, Math.PI * 2, false);
-			ctx.closePath();
-			ctx.stroke();
-
-			ctx.restore();
-		}
-
-		if (this.goal) {
-			/* Draw the goal on top of the planet */
-			this.completed = this.getOrbitCount();
-
-			ctx.save();
-
-			/*
-				Draw a line around the planet indicating how close to the goal
-				the player is.
-			*/
-			var segmentSize	= (Math.PI * 2) / this.goal;
-
-			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= 4;
-
-			for (var i = 0; i < this.goal; i++) {
-				if (i < this.completed) {
-					ctx.strokeStyle = '#fff';
-				} else {
-					ctx.strokeStyle = '#666';
-				}
+				ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+				ctx.lineCap		= 'butt';
+				ctx.lineWidth	= 4;
 
 				ctx.beginPath();
-
-				if (this.goal > 1) {
-					ctx.arc(this.position.x, this.position.y, this.radius + 5,
-						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
-						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
-				} else {
-					ctx.arc(this.position.x, this.position.y, this.radius + 5,
-						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
-						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
-				}
-
+				ctx.arc(this.position.x, this.position.y, this.radius,
+						0, Math.PI * 2, false);
+				ctx.closePath();
 				ctx.stroke();
+
+				ctx.restore();
 			}
 
-			ctx.restore();
+			if (this.goal) {
+				/* Draw the goal on top of the planet */
+				this.completed = this.getOrbitCount();
+
+				ctx.save();
+
+				/*
+					Draw a line around the planet indicating how close to the goal
+					the player is.
+				*/
+				var segmentSize	= (Math.PI * 2) / this.goal;
+
+				ctx.lineCap		= 'butt';
+				ctx.lineWidth	= 4;
+
+				for (var i = 0; i < this.goal; i++) {
+					if (i < this.completed) {
+						ctx.strokeStyle = '#fff';
+					} else {
+						ctx.strokeStyle = '#666';
+					}
+
+					ctx.beginPath();
+
+					if (this.goal > 1) {
+						ctx.arc(this.position.x, this.position.y, this.radius + 5,
+							(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+							((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+					} else {
+						ctx.arc(this.position.x, this.position.y, this.radius + 5,
+							(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
+							((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
+					}
+
+					ctx.stroke();
+				}
+
+				ctx.restore();
+			}
 		}
 	}
 

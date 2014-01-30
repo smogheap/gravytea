@@ -34,8 +34,8 @@ function UnstableGame(options, menu)
 	this.running	= false;
 
 	this.solarsys	= new SolarSystem({
-		showVelocity:	true,
 		paused:			true,
+		showVelocity:	true,
 		trajectory:		3000,
 		textures:		true
 	});
@@ -196,6 +196,22 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			}
 
 			switch (event.keyCode) {
+				case 113: /* F2 - Toggle UI elements */
+					if (this.solarsys.options.showVelocity) {
+						this.solarsys.options.showVelocity	= false;
+						this.solarsys.options.showUI		= false;
+						this.solarsys.options.trajectory	= 0;
+
+						document.body.classList.add('hideui');
+					} else {
+						this.solarsys.options.showVelocity	= true;
+						this.solarsys.options.showUI		= true;
+						this.solarsys.options.trajectory	= 3000;
+
+						document.body.classList.remove('hideui');
+					}
+					return event.preventDefault() && false;
+
 				case 32: /* space	*/
 					this.go();
 					return event.preventDefault() && false;
@@ -491,6 +507,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.testing;
 
 	delete this.solarsys.name;
+	document.body.classList.remove('hideui');
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
