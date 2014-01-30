@@ -27,6 +27,7 @@ function UnstableGame(options, menu)
 
 	this.solarsys	= new SolarSystem({
 		paused:			true,
+		showUI:			true,
 		showVelocity:	true,
 		trajectory:		3000,
 		textures:		true

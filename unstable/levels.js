@@ -503,6 +503,16 @@ UnstableLevels = [
 			{"position":{"x":63,"y":2.5},"velocity":{"x":0.625,"y":18.5,"locked":true},"radius":15,"type":"planet","color":"#A9DE9C","goal":3},
 			{"position":{"x":117,"y":2.5},"velocity":{"x":0.875,"y":16.25,"locked":true},"radius":15,"type":"planet","color":"#45843E","goal":3}
 		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Endurance',
+		bodies:  [
+			{"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"radius":50,"density":0.09,"type":"sun","goal":0},
+			{"position":{"x":-400,"y":0,"locked":true},"velocity":{"x":0,"y":10,"locked":true},"radius":20,"type":"planet","goal":18},
+			{"position":{"x":400,"y":0,"locked":true},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","goal":18},
+			{"position":{"x":0,"y":-200,"locked":true},"velocity":{"x":-11.25,"y":0},"radius":15,"type":"planet","goal":18},
+			{"position":{"x":0,"y":200,"locked":true},"velocity":{"x":15.625,"y":-8.875},"radius":15,"type":"planet","goal":18}
+		]
 	}
 ];
 
