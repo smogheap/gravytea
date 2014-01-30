@@ -66,6 +66,7 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 		} else {
 			this.bodies[i] = b;
 		}
+		b = this.bodies[i];
 
 		if (!b.texture) {
 			/* Attempt to assign a texture to each body */
