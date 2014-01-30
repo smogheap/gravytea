@@ -91,7 +91,15 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 				and the second to close the dialog.
 			*/
 			this.propertiesDialog = this.selectedBody.getPropertiesDialog(
-				function() { this.solarsys.resetTrajectories(); }.bind(this),
+				function() {
+					/*
+						Reset the bodies to ensure that correct textures are
+						changed for anything that changed it's type.
+
+						This will also call resetTrajectories();
+					*/
+					this.solarsys.setBodies(this.solarsys.getBodies());
+				}.bind(this),
 				function(deleted) {
 					var was = this.selectedBody;
 

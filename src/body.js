@@ -179,6 +179,8 @@ Body.prototype.setType = function setType(value)
 			this.goal = 3;
 			break;
 	}
+
+	delete this.texture;
 };
 
 Body.prototype.setRadius = function setRadius(radius)
