@@ -38,16 +38,40 @@ function UnstableGame(options, menu)
 
 
 	this.failureText = [
-		"You where doing well until everyone died",
+		"You were doing well... until everyone died.",
 		"Think of the pixel children!",
 		"Hey, that planet was where I kept all my stuff!",
 		"Oh no, the planet's kerploding!",
-		"It's as if millions of voices cried out in terror and where suddenly silenced",
-		"I guess they don't need to worry about global warming any more",
-		"No one liked that planet anyway",
-		"Sucks to be you, you left your keys on that planet",
-		"You may want to try that again",
-		"Ouch!"
+		"It's as if millions of voices cried out in terror and were suddenly silenced.",
+		"I guess they don't need to worry about global warming any more.",
+		"No one liked that planet anyway.",
+		"Sucks to be you, you left your keys on that planet.",
+		"You may want to try that again.",
+		"Ouch!",
+		"Perhaps you subconsciously wanted to destroy everything.",
+		"Everybody's dead, Dave.",
+		"Oops.",
+		"I dreamt that you screwed up.  ...Oh, wait.",
+		"Well that's just great.  Those aliens owed me five bucks.",
+		"They deserved it.",
+		"What?  Your planet blew up?  Oh, boo hoo.",
+		"Some men just want to watch the worlds burn.",
+		"They're united!  They're one!  ...With death.",
+		"Fatality!",
+		"You win again, gravity!",
+		"Revenge!",
+		"You are the destroyer of worlds.",
+		"Well this is a fine mess you've gotten us into.",
+		"Good.  That planet was full of teenagers.",
+		"I bet they didn't see that coming!",
+		"Surprise!  Dead.",
+		"Why don't you pick on planets your own size?",
+		"Game Over.",
+		"Behold the power of G's.",
+		"And they were such attractive celestial bodies, too.",
+		"Too bad!",
+		"That planet just cut me off!",
+		"What comes around goes around (and bangs into stuff)."
 	];
 }
 
