@@ -238,7 +238,7 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
-UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className)
+UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className, survey)
 {
 	var that	= this;
 	var content	= document.createElement('div');
@@ -276,6 +276,49 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 		})(actions[i]);
 
 		content.appendChild(a);
+	}
+
+	// TODO	Get rid of this after the beta
+	if (survey && !survey.userCreated) {
+		var div		= document.createElement('div');
+		var html	= [];
+
+		html.push('<hr>');
+		html.push('<form action="survey.html" target="_blank">');
+		html.push('<input type="hidden" name="id" value="' + survey.id + '" />');
+		html.push('<input type="hidden" name="title" value="' + survey.name + '" />');
+
+		html.push('How much did you like this level?');
+		html.push('<br/>');
+		html.push('<select name="rating">');
+		html.push('<option>Loved it</option>');
+		html.push('<option selected>Liked it</option>');
+		html.push('<option>Meh</option>');
+		html.push('<option>It annoyed me</option>');
+		html.push('<option>Hated it</option>');
+		html.push('</select>');
+		html.push('<br/>');
+		html.push('<br/>');
+
+		html.push('How hard was this level?');
+		html.push('<br/>');
+		html.push('<select name="difficulty">');
+		html.push('<option>Too Easy</option>');
+		html.push('<option>Easy</option>');
+		html.push('<option selected>Medium</option>');
+		html.push('<option>Hard</option>');
+		html.push('<option>Is there really a solution?</option>');
+		html.push('<option>Why would you do this to me?</option>');
+		html.push('</select>');
+		html.push('<br/>');
+		html.push('<br/>');
+
+		html.push('<input type="submit" value="Rate Level">');
+
+		html.push('</form>');
+
+		div.innerHTML = html.join('\n');
+		content.appendChild(div);
 	}
 
 	this.showDialog(content, true, className);

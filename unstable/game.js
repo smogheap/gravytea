@@ -564,8 +564,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		newbodies.push(new Body(b));
 	}
 
-	this.solarsys.name = title || (new Date()).toLocaleString();
-	this.solarsys.id = num;
+	this.solarsys.name	= title || (new Date()).toLocaleString();
+	this.solarsys.id	= num;
 	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();
 };
@@ -779,7 +779,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 							this.returnToEditor();
 							return;
 					}
-				}.bind(this), "fail");
+				}.bind(this), "fail", this.solarsys);
 				return;
 			}
 		}
@@ -856,7 +856,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 			this.loadLevel(l, null, hint);
 			this.show();
-		}.bind(this), "success");
+		}.bind(this), "success", this.solarsys);
 	};
 	requestAnimationFrame(render.bind(this));
 };
