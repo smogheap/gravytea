@@ -42,6 +42,26 @@ function Body(opts)
 	this.trajectory	= [];
 
 	this.stats = { };
+
+	/*
+		The main index has a list of images to use for collisions. Grab them
+		here so that we can easily render one when there is a collision.
+	*/
+	this.textures = {
+		crash:		[]
+	};
+
+	var t;
+
+	if ((t = document.getElementById('textures'))) {
+		var images = t.getElementsByTagName('img');
+
+		for (var i = 0, img; img = images[i]; i++) {
+			if (this.textures[img.className]) {
+				this.textures[img.className].push(img);
+			}
+		}
+	}
 };
 
 Body.prototype.period = 16;
@@ -93,6 +113,9 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 		/* Reset calculated stats as well */
 		this.stats = { };
 	}
+
+	/* Try to use a different crash texture each time */
+	delete this.crashtexture;
 };
 
 Body.prototype.setColor = function setColor(color)
@@ -368,6 +391,27 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				ctx.restore();
 			}
 		}
+
+		if (this.textures.crash.length > 0 &&
+			this.collision && this.collision.index < this.index
+		) {
+			/*
+				If 2 bodies have collided we only want to draw the image for it
+				once. Draw it on the one with the higher index.
+			*/
+			if (!this.crashtexture) {
+				var x = Math.floor(Math.random() * this.textures.crash.length);
+
+				this.crashtexture = this.textures.crash[x];
+			}
+
+			var size	= 128;
+
+			ctx.drawImage(this.crashtexture,
+				((this.position.x + this.collision.position.x) / 2) - ((size / 2) * scale),
+				((this.position.y + this.collision.position.y) / 2) - ((size / 2) * scale),
+				size * scale, size * scale);
+		}
 	}
 
 	if (showVelocity && !this.velocity.locked) {
@@ -526,7 +570,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 			/* Get the values prior to the ones we are trying to calculate */
 			var pos		= this.getPosition(bodies, o * this.period);
 			var vel		= this.getVelocity(bodies, o * this.period);
-			var col		= false;
+			var col		= null;
 			var effect	= [];
 
 			for (var i = 0, b; b = bodies[i]; i++) {
@@ -549,7 +593,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 				vel.tx(g.rotate(a));
 
 				if (b.radius + this.radius > d) {
-					col = true;
+					col = b;
 				}
 			}
 
@@ -561,7 +605,7 @@ Body.prototype.predict = function predict(bodies, elapsed)
 			};
 
 			if (col) {
-				this.trajectory[o].collision = true;
+				this.trajectory[o].collision = col;
 			}
 		}
 	}
@@ -586,7 +630,7 @@ Body.prototype.advance = function advance(bodies, elapsed)
 			this.stats.effect	= p.effect;
 
 			if (p.collision) {
-				this.collision = true;
+				this.collision = p.collision;
 			}
 		}
 

@@ -1,15 +1,3 @@
-// TODO	Show a 60's batman style "Kaplow!" image at the location of a collision
-//		and show a dialog with funny text.
-//
-//				You where doing well until everyone died
-//				Think of the pixel children!
-//				Hey, that planet was where I kept all my stuff!
-//				Oh no, the planet's kerploding!
-//				It's as if millions of voices cried out in terror and where suddenly silenced
-//				I guess they don't need to worry about global warming any more
-//				No one liked that planet anyway
-//				Sucks to be you, you left your keys on that planet
-
 // TODO	Implement body grouping?!?
 //
 //		The idea is to somehow allow the user to select a group of planets and
@@ -21,7 +9,11 @@
 
 // TODO	Add support for time based levels (must be stable for at least x sec)
 
-// TODO	Allow editting properties of the level itself
+// TODO	Allow setting a point that the game should move towards, like the center
+//		or a planet, or the collision etc. Move part way there each frame
+//		instead of going right there.
+
+// TODO	Allow tabbing through bodies and controlling them with keyboard input
 
 function UnstableGame(options, menu)
 {
@@ -42,6 +34,20 @@ function UnstableGame(options, menu)
 
 	this.speed = 1.0;
 	// this.speed = 0.2;
+
+
+	this.failureText = [
+		"You where doing well until everyone died",
+		"Think of the pixel children!",
+		"Hey, that planet was where I kept all my stuff!",
+		"Oh no, the planet's kerploding!",
+		"It's as if millions of voices cried out in terror and where suddenly silenced",
+		"I guess they don't need to worry about global warming any more",
+		"No one liked that planet anyway",
+		"Sucks to be you, you left your keys on that planet",
+		"You may want to try that again",
+		"Ouch!"
+	];
 }
 
 UnstableGame.prototype.findBody = function findBody(point)
@@ -756,7 +762,9 @@ UnstableGame.prototype.show = function showUnstableGame()
 					options.push('Back to editor');
 				}
 
-				this.menu.askUser("BOOM! You crashed!", options, function(action) {
+				var x = Math.floor(Math.random() * this.failureText.length);
+
+				this.menu.askUser(this.failureText[x], options, function(action) {
 					switch (action) {
 						case "Reset":
 							this.reset();

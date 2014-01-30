@@ -67,6 +67,10 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 			this.bodies[i] = b;
 		}
 		b = this.bodies[i];
+		b.index = i;
+
+		/* Try to ensure we get a random crash each time */
+		delete b.crashtexture;
 
 		if (!b.texture) {
 			/* Attempt to assign a texture to each body */
