@@ -73,7 +73,7 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 			var tries	= 0;
 			var x		= WRand();
 
-			if (!(textures = this.textures[b.type]) || !textures.length) {
+			if (!(textures = this.textures[b.type || 'planet']) || !textures.length) {
 				continue;
 			}
 
