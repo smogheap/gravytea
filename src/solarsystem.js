@@ -72,7 +72,6 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 			var textures;
 			var tries	= 0;
 			var x		= WRand();
-console.log('x: ', x);
 
 			if (!(textures = this.textures[b.type]) || !textures.length) {
 				continue;
@@ -80,18 +79,15 @@ console.log('x: ', x);
 
 			for (;; x++, tries++) {
 				x	= x % textures.length;
-console.log('x mod: ', x);
 				bit	= (1 << x);
 
 				if (!(this.textures.used & bit)) {
-console.log('used x', x);
 					this.textures.used |= bit;
 					b.texture = textures[x];
 					break;
 				}
 
 				if (tries > textures.length) {
-console.log('reset: ', tries);
 					/* We have too many, start over */
 					tries = 0;
 					this.textures.used = 0;
