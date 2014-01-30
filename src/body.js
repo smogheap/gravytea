@@ -318,7 +318,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			ctx.stroke();
 
 			ctx.restore();
-		} else if (this.texture) {
+		}
+
+		if (this.texture) {
 			/* Render a texture on the body */
 			ctx.drawImage(this.texture,
 				this.position.x - this.radius - 0.5, this.position.y - this.radius - 0.5,
