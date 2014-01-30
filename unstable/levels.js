@@ -510,8 +510,8 @@ UnstableLevels = [
 			{"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"radius":50,"density":0.09,"type":"sun","goal":0},
 			{"position":{"x":-400,"y":0,"locked":true},"velocity":{"x":0,"y":10,"locked":true},"radius":20,"type":"planet","goal":18},
 			{"position":{"x":400,"y":0,"locked":true},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","goal":18},
-			{"position":{"x":0,"y":-200,"locked":true},"velocity":{"x":-11.25,"y":0},"radius":15,"type":"planet","goal":18},
-			{"position":{"x":0,"y":200,"locked":true},"velocity":{"x":15.625,"y":-8.875},"radius":15,"type":"planet","goal":18}
+			{"position":{"x":0,"y":-200,"locked":true},"velocity":{"x":-15,"y":0},"radius":15,"type":"planet","goal":18},
+			{"position":{"x":0,"y":200,"locked":true},"velocity":{"x":15,"y":0},"radius":15,"type":"planet","goal":18}
 		]
 	}
 ];
