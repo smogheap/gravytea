@@ -317,8 +317,8 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		} else if (this.texture) {
 			/* Render a texture on the body */
 			ctx.drawImage(this.texture,
-				this.position.x - this.radius, this.position.y - this.radius,
-				this.radius * 2, this.radius * 2);
+				this.position.x - this.radius - 0.5, this.position.y - this.radius - 0.5,
+				(this.radius * 2) + 1, (this.radius * 2) + 1);
 		}
 
 		if (this.goal) {
