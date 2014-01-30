@@ -2,30 +2,28 @@ function Body(opts)
 {
 	opts = opts || {};
 
-	this.angle		= opts.angle	|| 0;
-	this.position	= new V(opts.position);
-	this.velocity	= new V(opts.velocity);
-
 	this.completed	= 0;
-
 	this.renderCB	= opts.renderCB;
 
-	if (opts.type) {
-		this.setType(opts.type);
-	} else if (opts.color == 'sun' || opts.sun) {
+	this.angle		= opts.a || opts.angle	|| 0;
+	this.position	= new V(opts.p || opts.position);
+	this.velocity	= new V(opts.v || opts.velocity);
+
+	this.setType(opts.t || opts.type || null);
+
+	if (opts.color == 'sun' || opts.sun) {
+		/* Handle older levels */
 		this.setType('sun');
-	} else {
-		this.setType(null);
 	}
 
 	/*
 		Calling setType will override the goal. This is good when changing the
 		type but on a newly created body do exactly what was specified.
 	*/
-	this.goal		= opts.goal		|| 0;
+	this.goal		= opts.g || opts.goal || 0;
 
-	this.setDensity(opts.density);
-	this.setRadius(opts.radius);
+	this.setDensity(opts.d || opts.density);
+	this.setRadius(opts.r || opts.radius);
 
 	this.setColor(opts.color);
 
@@ -37,11 +35,10 @@ function Body(opts)
 
 		This value should match the dragScale value set in drag-bodies.js
 	*/
-	this.indicatorScale = 8.0;
+	this.indicatorScale	= 8.0;
 
-	this.trajectory	= [];
-
-	this.stats = { };
+	this.trajectory		= [];
+	this.stats			= { };
 
 	/*
 		The main index has a list of images to use for collisions. Grab them
@@ -66,27 +63,32 @@ function Body(opts)
 
 Body.prototype.period = 16;
 
+/*
+	Attempt to make the JSON as compact as possible to allow easier sharing of
+	level data.
+*/
 Body.prototype.toJSON = function toJSON()
 {
 	var j = {
-		position:	this.position.toJSON(),
-		velocity:	this.velocity.toJSON()
+		p: this.position.toJSON(),
+		v: this.velocity.toJSON()
 	};
 
 	if (this.angle) {
-		j.angle = this.angle;
+		j.a = this.angle;
 	}
 
-	j.radius = this.radius;
-	if (this.density != 0.01) {
-		j.density = this.density;
+	j.r = this.radius;
+	j.d = this.density;
+
+	switch (this.type) {
+		default:
+		case 'planet':		j.t = 'p'; break;
+		case 'sun':			j.t = 's'; break;
+		case 'blackhole':	j.t = 'b'; break;
 	}
 
-	if (this.type) {
-		j.type = this.type;
-	}
-
-	j.goal = this.goal;
+	j.g = this.goal;
 
 	return(j);
 };
@@ -149,20 +151,29 @@ Body.prototype.setType = function setType(value)
 	this.type = value || this.type || 'planet';
 
 	switch (this.type) {
+		case 's':
 		case 'sun':
+			this.type = 'sun';
+
 			this.setRadius(50);
 			this.setDensity(0.09);
 			this.goal = 0;
 			break;
 
+		case 'b':
 		case 'blackhole':
+			this.type = 'blackhole';
+
 			this.setRadius(25);
 			this.setDensity(1.5);
 			this.goal = 0;
 			break;
 
 		default:
+		case 'p':
 		case 'planet':
+			this.type = 'planet';
+
 			this.setRadius(15);
 			this.setDensity(0.01);
 			this.goal = 3;

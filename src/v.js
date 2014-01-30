@@ -18,11 +18,22 @@ function V(x, y, locked)
 			break;
 
 		case 'object':
-			this.x = x.x;
-			this.y = x.y;
+			if ('number' == typeof(x.length) && x.length >= 2 && x.length <= 3) {
+				/* An array [ x, y, locked ] */
+				this.x = x[0];
+				this.y = x[1];
 
-			if (x.locked) {
-				this.locked = true;
+				if (x[2]) {
+					this.locked = true;
+				}
+			} else {
+				/* An object */
+				this.x = x.x;
+				this.y = x.y;
+
+				if (x.locked) {
+					this.locked = true;
+				}
 			}
 			break;
 	}
@@ -42,13 +53,10 @@ function V(x, y, locked)
 
 V.prototype.toJSON = function()
 {
-	var j = {
-		x: this.x,
-		y: this.y
-	};
+	var j = [ this.x, this.y ];
 
 	if (this.locked) {
-		j.locked = true;
+		j.push(true);
 	}
 
 	return(j);

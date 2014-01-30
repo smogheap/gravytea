@@ -10,17 +10,17 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(0, 0, true),
-				radius:		50,
-				type:		'sun',
-				density:	0.09
+				p: [ 0, 0, true ],
+				v: [ 0, 0, true ],
+				r: 50,
+				t: 's',
+				d: 0.09
 			},
 
 			/* A planet */
 			{
-				position:	new V(140, 0),
-				velocity:	new V(0, 7, true),
+				position:	[ 140, 0 ],
+				velocity:	[ 0, 7, true ],
 				radius:		15,
 
 				goal:		3
@@ -37,8 +37,8 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(0, 0, true),
+				position:	[ 0, 0, true ],
+				velocity:	[ 0, 0, true ],
 				radius:		50,
 				type:		'sun',
 				density:	0.09
@@ -46,8 +46,8 @@ UnstableLevels = [
 
 			/* A planet */
 			{
-				position:	new V(140, 0, true),
-				velocity:	new V(0, 7),
+				position:	[ 140, 0, true ],
+				velocity:	[ 0, 7 ],
 				radius:		15,
 
 				goal:		3
@@ -64,40 +64,40 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(-250, 0, true),
-				velocity:	new V(0, 0, true),
+				position:	[ -250, 0, true ],
+				velocity:	[ 0, 0, true ],
 				radius:		70,
 				type:		'sun',
 				density:	0.09
 			},
 
 			{
-				position:	new V(-50, 0, true),
-				velocity:	new V(0, 7),
+				position:	[ -50, 0, true ],
+				velocity:	[ 0, 7 ],
 				radius:		15,
 
 				goal:		5
 			},
 
 			{
-				position:	new V(50, 0, true),
-				velocity:	new V(0, 7),
+				position:	[ 50, 0, true ],
+				velocity:	[ 0, 7 ],
 				radius:		15,
 
 				goal:		4
 			},
 
 			{
-				position:	new V(150, 0, true),
-				velocity:	new V(0, 7),
+				position:	[ 150, 0, true ],
+				velocity:	[ 0, 7 ],
 				radius:		15,
 
 				goal:		3
 			},
 
 			{
-				position:	new V(250, 0, true),
-				velocity:	new V(0, 7),
+				position:	[ 250, 0, true ],
+				velocity:	[ 0, 7 ],
 				radius:		15,
 
 				goal:		2
@@ -113,8 +113,8 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(0, 0, true),
+				position:	[ 0, 0, true ],
+				velocity:	[ 0, 0, true ],
 				radius:		50,
 				type:		'sun',
 				density:	0.15
@@ -122,8 +122,8 @@ UnstableLevels = [
 
 			/* A bit larger rocky planet */
 			{
-				position:	new V(0, 220),
-				velocity:	new V(-3, 0),
+				position:	[ 0, 220 ],
+				velocity:	[ -3, 0 ],
 				radius:		25,
 
 				goal:		9
@@ -131,8 +131,8 @@ UnstableLevels = [
 
 			/* Another rocky planet */
 			{
-				position:	new V(300, 0),
-				velocity:	new V(5, 5),
+				position:	[ 300, 0 ],
+				velocity:	[ 5, 5 ],
 				radius:		15,
 
 				goal:		7
@@ -143,32 +143,32 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(0, 0, true),
+				position:	[ 0, 0, true ],
+				velocity:	[ 0, 0, true ],
 				radius:		50,
 				type:		'sun',
 				density:	0.15
 			},
 
 			{
-				position:	new V(0, 220),
-				velocity:	new V(-3, 0),
+				position:	[ 0, 220 ],
+				velocity:	[ -3, 0 ],
 				radius:		35,
 
 				goal:		20
 			},
 
 			{
-				position:	new V(300, 0),
-				velocity:	new V(5, 5),
+				position:	[ 300, 0 ],
+				velocity:	[ 5, 5 ],
 				radius:		15,
 
 				goal:		5
 			},
 
 			{
-				position:	new V(-350, -300),
-				velocity:	new V(2, 2),
+				position:	[ -350, -300 ],
+				velocity:	[ 2, 2 ],
 				radius:		20,
 
 				goal:		4
@@ -179,30 +179,30 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(0, 0, true),
+				position:	[ 0, 0, true ],
+				velocity:	[ 0, 0, true ],
 				radius:		70,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(0, 300, true),
-				velocity:	new V(0, 0),
+				position:	[ 0, 300, true ],
+				velocity:	[ 0, 0 ],
 				radius:		20,
 
 				goal:		7
 			},
 			{
-				position:	new V(-260, -150, true),
-				velocity:	new V(0, 0),
+				position:	[ -260, -150, true ],
+				velocity:	[ 0, 0 ],
 				radius:		20,
 
 				goal:		7
 			},
 			{
-				position:	new V(260, -150, true),
-				velocity:	new V(0, 0),
+				position:	[ 260, -150, true ],
+				velocity:	[ 0, 0 ],
 				radius:		20,
 
 				goal:		7
@@ -213,8 +213,8 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(-200, 0, true),
-				velocity:	new V(0, 0),
+				position:	[ -200, 0, true ],
+				velocity:	[ 0, 0 ],
 				radius:		35,
 				sun:		true,
 				density:	0.35,
@@ -222,8 +222,8 @@ UnstableLevels = [
 			},
 
 			{
-				position:	new V(200, 0, true),
-				velocity:	new V(0, 0),
+				position:	[ 200, 0, true ],
+				velocity:	[ 0, 0 ],
 				radius:		35,
 				sun:		true,
 				density:	0.35,
@@ -235,24 +235,24 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(-200, 0, true),
-				velocity:	new V(0, -10, true),
+				position:	[ -200, 0, true ],
+				velocity:	[ 0, -10, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(200, 0, true),
-				velocity:	new V(0, 10, true),
+				position:	[ 200, 0, true ],
+				velocity:	[ 0, 10, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(0, 0),
-				velocity:	new V(0, 0),
+				position:	[ 0, 0 ],
+				velocity:	[ 0, 0 ],
 				radius:		15,
 				goal:		15
 			}
@@ -262,40 +262,40 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(-200, 0, true),
-				velocity:	new V(0, -20, true),
+				position:	[ -200, 0, true ],
+				velocity:	[ 0, -20, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(200, 0, true),
-				velocity:	new V(0, 20, true),
+				position:	[ 200, 0, true ],
+				velocity:	[ 0, 20, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(0, -200, true),
-				velocity:	new V(20, 0, true),
+				position:	[ 0, -200, true ],
+				velocity:	[ 20, 0, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(0, 200, true),
-				velocity:	new V(-20, 0, true),
+				position:	[ 0, 200, true ],
+				velocity:	[ -20, 0, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(0, 0),
-				velocity:	new V(0, 0),
+				position:	[ 0, 0 ],
+				velocity:	[ 0, 0 ],
 				radius:		15,
 				goal:		5
 			}
@@ -305,30 +305,30 @@ UnstableLevels = [
 		bodies: [
 			/* A Sun */
 			{
-				position:	new V(0, 0, true),
-				velocity:	new V(-5, -5, true),
+				position:	[ 0, 0, true ],
+				velocity:	[ -5, -5, true ],
 				radius:		35,
 				sun:		true,
 				density:	0.35
 			},
 
 			{
-				position:	new V(200, 0),
-				velocity:	new V(0, 0),
+				position:	[ 200, 0 ],
+				velocity:	[ 0, 0 ],
 				radius:		10,
 				goal:		8
 			},
 
 			{
-				position:	new V(0, -200),
-				velocity:	new V(0, 0),
+				position:	[ 0, -200 ],
+				velocity:	[ 0, 0 ],
 				radius:		15,
 				goal:		6
 			},
 
 			{
-				position:	new V(0, 200),
-				velocity:	new V(0, 0),
+				position:	[ 0, 200 ],
+				velocity:	[ 0, 0 ],
 				radius:		5,
 				goal:		10
 			}
