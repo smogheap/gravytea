@@ -306,13 +306,17 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		if (this.selected) {
 			/* Highlight the body */
 			ctx.save();
-			ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+
+			ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+			ctx.lineCap		= 'butt';
+			ctx.lineWidth	= 4;
 
 			ctx.beginPath();
 			ctx.arc(this.position.x, this.position.y, this.radius,
 					0, Math.PI * 2, false);
 			ctx.closePath();
-			ctx.fill();
+			ctx.stroke();
+
 			ctx.restore();
 		} else if (this.texture) {
 			/* Render a texture on the body */
@@ -748,7 +752,7 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 	e			= document.createElement('select');
 	e.className	= 'value';
 	e.addEventListener('change', function() {
-		that.setType(e.value);
+		that.setType(this.value);
 		changecb();
 	});
 	opt(e, 'sun',			this.type == 'sun');
@@ -766,21 +770,21 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 			e.className	= 'value';
 
 			e.addEventListener('change', function() {
-				var parts = e.value.split(',');
+				var parts = this.value.split(',');
 
 				if (parts.length == 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
 					that[v] = new V(parseInt(parts[0]), parseInt(parts[1]));
 
 					changecb();
 				}
-				e.value = '' + that[v].x + ',' + that[v].y;
+				this.value = '' + that[v].x + ',' + that[v].y;
 			});
 
 			var l = document.createElement('img');
 			l.style.width = '16px';
 			l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
 
-			l.addEventListener('click', function(e) {
+			l.addEventListener('click', function() {
 				that[v].locked = !that[v].locked;
 
 				l.src = '../images/' + (that[v].locked ? '' : 'un') + 'locked.png';
@@ -805,8 +809,8 @@ Body.prototype.getPropertiesDialog = function getPropertiesDialog(changecb, clos
 			e.className	= 'value';
 
 			e.addEventListener('change', function() {
-				if (!isNaN(e.value)) {
-					var value = e.value * 1;
+				if (!isNaN(this.value)) {
+					var value = this.value * 1;
 
 					if (v == 'density') {
 						value = value / 100;
