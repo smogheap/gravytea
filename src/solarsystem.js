@@ -58,6 +58,8 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 
 	WRand.setSeed(this.id);
 
+	this.textures.used = 0;
+
 	for (var i = 0, b; b = bodies[i]; i++) {
 		if (!(b instanceof Body)) {
 			this.bodies[i] = new Body(b);
@@ -68,11 +70,32 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 		if (!b.texture) {
 			/* Attempt to assign a texture to each body */
 			var textures;
+			var tries	= 0;
+			var x		= WRand();
+console.log('x: ', x);
 
-			if ((textures = this.textures[b.type]) && textures.length > 0) {
-				var x		= Math.abs(WRand()) % textures.length;
+			if (!(textures = this.textures[b.type]) || !textures.length) {
+				continue;
+			}
 
-				b.texture = textures[x];
+			for (;; x++, tries++) {
+				x	= x % textures.length;
+console.log('x mod: ', x);
+				bit	= (1 << x);
+
+				if (!(this.textures.used & bit)) {
+console.log('used x', x);
+					this.textures.used |= bit;
+					b.texture = textures[x];
+					break;
+				}
+
+				if (tries > textures.length) {
+console.log('reset: ', tries);
+					/* We have too many, start over */
+					tries = 0;
+					this.textures.used = 0;
+				}
 			}
 		}
 	}
@@ -132,8 +155,9 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 					break;
 				}
 
-				if (tries >= this.colors.list.length) {
+				if (tries > this.colors.list.length) {
 					/* We have too many, start over */
+					tries = 0;
 					this.colors.used = 0;
 				}
 			}
