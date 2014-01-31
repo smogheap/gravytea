@@ -4,7 +4,10 @@ UnstableLevels = [
 		hint: [
 			'That planet looks like it is going to crash into the sun!',
 			'That could be bad.',
-			'Maybe you should move it a bit further away...'
+			'Maybe you should move it a bit further away...',
+
+			'Try dragging the planet to the right until it\'s path forms a circle.',
+			'When you\'re pretty sure it won\'t crash hit the play button.'
 		],
 
 		bodies: [
@@ -31,7 +34,9 @@ UnstableLevels = [
 		hint: [
 			'Oh look, another planet about to crash into the sun!',
 			'This time try making it go a bit faster.',
-			'Drag the velocity indicator to change the speed of the planet.'
+			'Drag the velocity indicator to change the speed of the planet.',
+			'Just drag the velocity indicator down until the path forms a circle around the sun.',
+			'Each orbit will fill in one of the indicators around the planet. When they are all full you\'ve beaten the level.'
 		],
 
 		bodies: [
@@ -56,9 +61,9 @@ UnstableLevels = [
 	}, {
 		name: 'Let\'s have a race',
 		hint: [
-			'These planets are identical, except for their position. The',
-			'closer a planet is to the sun the faster it needs to go to',
-			'get a stable orbit.'
+			'These planets are identical, except for their position.',
+			'The closer a planet is to the sun the faster it needs to go to maintain a stable orbit.',
+			'Drag down on the velocity indicators until each planet has a circular path, that does\'t hit any others.'
 		],
 
 		bodies: [
@@ -106,7 +111,8 @@ UnstableLevels = [
 	}, {
 		name: 'On your own',
 		hint: [
-			'Now you are on your own.',
+			'In this level you can move the planets, and change their velocity.',
+			'Find a solution that you like.',
 			'Good luck!'
 		],
 

@@ -17,22 +17,15 @@ a, a:visited {
 	font-style:			normal;
 }
 
-.hint {
-	/* font-family:		'vSHandPrinted'; */
-	font-family:		'arial';
-	font-weight:		normal;
-	font-style:			normal;
+#game .title {
+	font-family:		'vSHandPrinted';
 
 	color:				white;
 	position:			absolute;
 
 	left:				10px;
-	top:				10px;
+	top:				0px;
 	font-size:			14px;
-}
-
-.hint h3 {
-	font-family:		'vSHandPrinted';
 }
 
 .navigation {
@@ -41,7 +34,8 @@ a, a:visited {
 	top:				10px;
 }
 
-.title, .menu {
+#menu .title,
+.menu {
 	font-family:		'vSHandPrinted', 'sans-serif';
 	font-weight:		normal;
 	font-style:			normal;
@@ -50,7 +44,7 @@ a, a:visited {
 	position:			absolute;
 }
 
-.title {
+#menu .title {
 	left:				10px;
 	top:				10px;
 	font-size:			50px;
@@ -148,9 +142,24 @@ a, a:visited {
 	-webkit-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
 }
 
+.popup.hint {
+	/* Move to the top left corner */
+	right:				inherit;
+	bottom:				inherit;
+	top:				65px;
+	left:				5px;
+	height:				auto;
+	width:				300px;
+	font-size:			16px;
+}
+
+.popup.hint a {
+	font-weight:		bold;
+}
+
 .popup.levelProperties,
 .popup.bodyProperties {
-	/* Move to the bottom right corner */
+	/* Move to the top right corner */
 	left:				inherit;
 	bottom:				inherit;
 	top:				-5px;;

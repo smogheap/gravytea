@@ -561,6 +561,64 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 UnstableGame.prototype.showHint = function showHint(title, hint)
 {
+	// TODO	Rename hintDiv and the id to title or gametitle, etc
+	var titleDiv;
+
+	if ((titleDiv = document.getElementById('title'))) {
+		titleDiv.innerHTML = '';
+
+		if (title) {
+			var h = document.createElement('h3');
+
+			h.appendChild(document.createTextNode(title));
+			titleDiv.appendChild(h);
+		}
+	}
+
+	if (hint && hint.length > 0) {
+		var hintDiv = document.createElement('div');
+		var h		= document.createElement('div');
+		var i		= 0;
+		var a;
+
+		h.appendChild(document.createTextNode(hint[i]));
+		hintDiv.appendChild(h);
+		hintDiv.appendChild(document.createElement('br'));
+
+		a = document.createElement('a');
+		a.appendChild(document.createTextNode('Close'));
+		a.addEventListener('click', function() {
+			this.menu.hideDialog();
+		}.bind(this));
+		hintDiv.appendChild(a);
+
+		hintDiv.appendChild(document.createTextNode('  |  '));
+
+		a = document.createElement('a');
+		a.appendChild(document.createTextNode('More'));
+		a.addEventListener('click', function() {
+			i++;
+			if (!hint[i]) {
+				i = 0;
+			}
+			h.innerHTML = '';
+			h.appendChild(document.createTextNode(hint[i]));
+
+			a.innerHTML = '';
+			if (!hint[i + 1]) {
+				a.appendChild(document.createTextNode('Repeat hints'));
+			} else {
+				a.appendChild(document.createTextNode('More'));
+			}
+		}.bind(this));
+		hintDiv.appendChild(a);
+
+		this.menu.showDialog(hintDiv, false, 'hint');
+	}
+};
+
+UnstableGame.prototype.OLDshowHint = function OLDshowHint(title, hint)
+{
 	var hintDiv;
 
 	if ((hintDiv = document.getElementById('hint'))) {
