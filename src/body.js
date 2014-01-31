@@ -229,7 +229,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		for (var i = 0; i < this.trajectory.length; i++) {
 			n = this.trajectory[i];
 
-			var alpha = (this.trajectory.length - (i + 1)) * 0.01;
+			var v		= this.trajectory.length - i + 1;
+			var t		= this.trajectory.length;
+			var alpha	= v / t;
 
 			if (showTrajectory) {
 				ctx.strokeStyle = 'rgba(' + this.rgb + ',' + alpha + ')';
@@ -260,14 +262,14 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					}
 
 					if (n.crashSize < 48) {
-						n.crashSize += (48 - n.crashSize) / 2;
+						n.crashSize += (48 - n.crashSize) / 5;
 					}
 
 					ctx.globalAlpha = alpha;
 					ctx.drawImage(n.crashImage,
-						((n.position.x + w.position.x) / 2) - ((n.crashSize / 2) * scale),
-						((n.position.y + w.position.y) / 2) - ((n.crashSize / 2) * scale),
-						n.crashSize * scale, n.crashSize * scale);
+						((n.position.x + w.position.x) / 2) - (n.crashSize / 2),
+						((n.position.y + w.position.y) / 2) - (n.crashSize / 2),
+						n.crashSize, n.crashSize);
 				}
 
 				break;
@@ -456,9 +458,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			}
 
 			ctx.drawImage(this.crashImage,
-				((this.position.x + this.collision.position.x) / 2) - ((this.crashSize / 2) * scale),
-				((this.position.y + this.collision.position.y) / 2) - ((this.crashSize / 2) * scale),
-				this.crashSize * scale, this.crashSize * scale);
+				((this.position.x + this.collision.position.x) / 2) - (this.crashSize / 2),
+				((this.position.y + this.collision.position.y) / 2) - (this.crashSize / 2),
+				this.crashSize, this.crashSize);
 		}
 	}
 
