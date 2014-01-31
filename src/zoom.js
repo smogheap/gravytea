@@ -86,7 +86,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 	canvas.addEventListener('DOMMouseScroll',	handleEvent, false);
 	canvas.addEventListener('mousewheel',		handleEvent, false);
 
-	var zoom = function ctxZoom(clicks)
+	var zoom = function ctxZoom(clicks, center)
 	{
 		switch (typeof zoomEnabled) {
 			case 'number':
@@ -102,13 +102,20 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				break;
 		}
 
-		var point	= ctx.transformedPoint(position.x, position.y);
+		var point;
+
+		if (!center) {
+			point = ctx.transformedPoint(mousePos.x, mousePos.y);
+
+			ctx.translate(point.x, point.y);
+		}
+
 		var factor	= Math.pow(scaleFactor, clicks);
-
-		ctx.translate(point.x, point.y);
-
 		ctx.scale(factor, factor);
-		ctx.translate(-point.x, -point.y);
+
+		if (!center) {
+			ctx.translate(-point.x, -point.y);
+		}
 	};
 
 	/*
@@ -241,24 +248,17 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 
 	ctx.zoom = function(clicks, center)
 	{
-		if (center) {
-			position = {
-				x: canvas.width  / 2,
-				y: canvas.height / 2
-			};
-		}
-
-		zoom(clicks);
+		zoom(clicks, center);
 	};
 
 	ctx.zoomIn = function()
 	{
-		zoom(1);
+		zoom(1, true);
 	};
 
 	ctx.zoomOut = function()
 	{
-		zoom(-1);
+		zoom(-1, true);
 	};
 
 	ctx.center = function()
