@@ -282,7 +282,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						}
 					}
 				} else {
-					this.ctx.translate(x * 10, y * 10);
+					this.ctx.translate(-(x * 10), -(y * 10));
 				}
 			}.bind(this);
 
@@ -689,6 +689,8 @@ UnstableGame.prototype.stop = function stop()
 		b.restore();
 	}
 
+	delete this.panTo;
+
 	/* Reset the canvas */
 	if (this.ctx && this.ctx.center) {
 		this.ctx.center();
@@ -881,6 +883,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 							this.reset();
 							break;
 
+						case "Retry":
 						default:
 							this.stop();
 							break;
