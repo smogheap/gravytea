@@ -227,11 +227,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		var n;
 
 		for (var i = 0; i < this.trajectory.length; i++) {
-			n = this.trajectory[i];
+			var alpha	= 1.0 - ((i + 1) / this.trajectory.length);
 
-			var v		= this.trajectory.length - i + 1;
-			var t		= this.trajectory.length;
-			var alpha	= v / t;
+			n = this.trajectory[i];
 
 			if (showTrajectory) {
 				ctx.strokeStyle = 'rgba(' + this.rgb + ',' + alpha + ')';
@@ -243,6 +241,12 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			}
 
 			if (n.collision) {
+				/*
+					A trajectory collision can be anywhere from 32-64 in size
+					depending on how far out it will occur.
+				*/
+				var size	= 32 + (32 * alpha);
+
 				if (showTrajectoryCollisions && this.index > n.collision.index &&
 					this.images.smallcrash.length > 0
 				) {
@@ -261,8 +265,8 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 						n.crashSize		= 0;
 					}
 
-					if (n.crashSize < 48) {
-						n.crashSize += (48 - n.crashSize) / 5;
+					if (n.crashSize < size) {
+						n.crashSize += (size - n.crashSize) / 5;
 					}
 
 					ctx.globalAlpha = alpha;
