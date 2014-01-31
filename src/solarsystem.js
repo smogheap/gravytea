@@ -229,15 +229,7 @@ SolarSystem.prototype.advance = function advance(time)
 		in the time for the next frame.
 	*/
 	if (!this.options.paused) {
-		// this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
-		this.lasttime = time - this.advanceBodies(
-				Math.min(Body.prototype.period, time - this.lasttime));
-
-		if ((time - this.lasttime) >= Body.prototype.period) {
-			/* Skip a frame until we can catch up */
-			console.log('skipped a frame');
-			return(false);
-		}
+		this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
 	} else {
 		this.lasttime = time;
 	}

@@ -702,7 +702,11 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 /* Let the solarsystem the user has built/fixed run */
 UnstableGame.prototype.go = function go()
 {
-	this.goTime = Date.now();
+	this.goTime			= Date.now();
+	this.frames			= {
+		total:		0,
+		rendered:	0
+	};
 
 	if (!this.solarsys.options.paused) {
 		this.stop();
@@ -777,6 +781,8 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 		console.log('Level runtime was: ',
 			(Date.now() - this.goTime) / 1000);
 	}
+
+	console.log('Rendered ' + this.frames.rendered + ' out of ' + this.frames.total + ' frames');
 
 	if (!success) {
 		var options = [ 'Retry', 'Reset' ];
@@ -1030,21 +1036,30 @@ UnstableGame.prototype.show = function showUnstableGame()
 		requestAnimationFrame(render.bind(this));
 		resizeCanvas();
 
-		do {
+		if (isNaN(this.lasttime)) {
+			this.lasttime = time;
+			return;
+		}
+
+		var period	= Body.prototype.period;
+		var elapsed = time - this.lasttime;
+		var frames	= 0;
+
+		while ((time - this.lasttime) > period) {
+			frames++;
+
 			/* Apply any keyboard input */
 			if (this.keyboard.x || this.keyboard.y) {
 				this.pan(this.keyboard.x, this.keyboard.y, this.keyboard.shift);
 			}
 
 			/*
-				Advance the bodies to the current time
-
-				The call to solarsys.advance() will return true if it has caught
-				up to the current time. Do not render until it has, but do
-				perform all other calculations.
+				Advance the bodies for this period (16ms)
 			*/
-			before	= this.solarsys.getCenter();
-			draw	= this.solarsys.advance(time * this.speed);
+			before = this.solarsys.getCenter();
+
+			this.lasttime += period;
+			this.solarsys.advance(this.lasttime);
 
 			if ((p = this.panTo)) {
 				/* Move towards the selected body */
@@ -1064,20 +1079,25 @@ UnstableGame.prototype.show = function showUnstableGame()
 				ctx.translate(-(after.x - before.x), -(after.y - before.y));
 			}
 
-			if (draw) {
-				/* Clear the canvas */
-				var a = ctx.transformedPoint(0, 0);
-				var b = ctx.transformedPoint(w, h);
-				ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
-
-				/* Render the bodies */
-				ctx.save();
-				this.solarsys.render(ctx);
-				ctx.restore();
+			if (this.checkForEnd()) {
+				break;
 			}
+		}
 
-			this.checkForEnd();
-		} while (!draw);
+		if (frames) {
+			this.frames.total += frames;
+			this.frames.rendered++;
+		}
+
+		/* Clear the canvas */
+		var a = ctx.transformedPoint(0, 0);
+		var b = ctx.transformedPoint(w, h);
+		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
+
+		/* Render the bodies */
+		ctx.save();
+		this.solarsys.render(ctx);
+		ctx.restore();
 	};
 	requestAnimationFrame(render.bind(this));
 };
