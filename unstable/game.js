@@ -19,6 +19,7 @@ function UnstableGame(options, menu)
 
 	this.running	= false;
 	this.panTo		= null;
+	this.keyboard	= { x: 0, y: 0 };
 
 	this.solarsys	= new SolarSystem({
 		paused:						true,
@@ -266,26 +267,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				return(true);
 			}
 
-			var pan = function(x, y) {
-				if (this.selectedBody && this.solarsys.options.paused) {
-					delete this.panTo;
-
-					if (!event.shiftKey) {
-						if (!this.selectedBody.position.locked || this.level < 0) {
-							this.selectedBody.position.tx({ x: x * 2, y: y * 2} );
-							this.solarsys.resetTrajectories();
-						}
-					} else {
-						if (!this.selectedBody.velocity.locked || this.level < 0) {
-							this.selectedBody.velocity.tx({ x: x / 4, y: y / 4} );
-							this.solarsys.resetTrajectories();
-						}
-					}
-				} else {
-					this.ctx.translate(-(x * 10), -(y * 10));
-				}
-			}.bind(this);
-
 			switch (event.keyCode) {
 				case 113: /* F2 - Toggle UI elements */
 					if (this.solarsys.options.showVelocity) {
@@ -354,25 +335,28 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					this.ctx.zoom(-1, true);
 					break;
 
-				case 37: /* left */
-					pan(-1, 0);
-					break;
 
-				case 38: /* up */
-					pan(0, -1);
-					break;
-
-				case 39: /* right */
-					pan(1, 0);
-					break;
-
-				case 40: /* down */
-					pan(0, 1);
-					break;
+				case 37: /* left	*/ this.keyboard.x--; this.keyboard.shift = event.shiftKey; break;
+				case 38: /* up		*/ this.keyboard.y--; this.keyboard.shift = event.shiftKey; break;
+				case 39: /* right	*/ this.keyboard.x++; this.keyboard.shift = event.shiftKey; break;
+				case 40: /* down	*/ this.keyboard.y++; this.keyboard.shift = event.shiftKey; break;
 
 				default:
 					console.log(event.keyCode);
 					break;
+			}
+			break;
+
+		case 'keyup':
+			if (this.menu.checkScrim()) {
+				return(true);
+			}
+
+			switch (event.keyCode) {
+				case 37: /* left	*/ this.keyboard.x = 0; break;
+				case 38: /* up		*/ this.keyboard.y = 0; break;
+				case 39: /* right	*/ this.keyboard.x = 0; break;
+				case 40: /* down	*/ this.keyboard.y = 0; break;
 			}
 			break;
 
@@ -762,6 +746,27 @@ UnstableGame.prototype.stop = function stop()
 	this.loadLevelButtons();
 };
 
+UnstableGame.prototype.pan = function pan(x, y, shift)
+{
+	if (this.selectedBody && this.solarsys.options.paused) {
+		delete this.panTo;
+
+		if (!shift) {
+			if (!this.selectedBody.position.locked || this.level < 0) {
+				this.selectedBody.position.tx({ x: x * 2, y: y * 2} );
+				this.solarsys.resetTrajectories();
+			}
+		} else {
+			if (!this.selectedBody.velocity.locked || this.level < 0) {
+				this.selectedBody.velocity.tx({ x: x / 4, y: y / 4} );
+				this.solarsys.resetTrajectories();
+			}
+		}
+	} else {
+		this.ctx.translate(-(x * 3), -(y * 3));
+	}
+};
+
 UnstableGame.prototype.show = function showUnstableGame()
 {
 	var fresh	= false;
@@ -792,6 +797,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 	canvas.addEventListener('mousedown',		this, false);
 	canvas.addEventListener('mousemove',		this, false);
 	window.addEventListener('keydown',			this, false);
+	window.addEventListener('keyup',			this, false);
 
 	var resizeCanvas = function()
 	{
@@ -884,6 +890,11 @@ UnstableGame.prototype.show = function showUnstableGame()
 		var a = ctx.transformedPoint(0, 0);
 		var b = ctx.transformedPoint(w, h);
 		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
+
+		/* Apply any keyboard input */
+		if (this.keyboard.x || this.keyboard.y) {
+			this.pan(this.keyboard.x, this.keyboard.y, this.keyboard.shift);
+		}
 
 		/* Advance the bodies to the current time */
 		var before = this.solarsys.getCenter();
@@ -1041,6 +1052,7 @@ UnstableGame.prototype.hide = function hideUnstableGame(level)
 		this.canvas.removeEventListener('mousedown',		this, false);
 		this.canvas.removeEventListener('mousemove',		this, false);
 		window.removeEventListener('keydown',				this, false);
+		window.removeEventListener('keyup',					this, false);
 
 		this.running = false;
 	}
