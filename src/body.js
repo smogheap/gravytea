@@ -44,8 +44,9 @@ function Body(opts)
 		The main index has a list of images to use for collisions. Grab them
 		here so that we can easily render one when there is a collision.
 	*/
-	this.textures = {
-		crash:		[]
+	this.images = {
+		crash:		[],
+		smallcrash:	[]
 	};
 
 	var t;
@@ -54,8 +55,8 @@ function Body(opts)
 		var images = t.getElementsByTagName('img');
 
 		for (var i = 0, img; img = images[i]; i++) {
-			if (this.textures[img.className]) {
-				this.textures[img.className].push(img);
+			if (this.images[img.className]) {
+				this.images[img.className].push(img);
 			}
 		}
 	}
@@ -117,7 +118,7 @@ Body.prototype.restore = function save(ctx, body, trajectory)
 	}
 
 	/* Try to use a different crash texture each time */
-	delete this.crashtexture;
+	delete this.crashImage;
 };
 
 Body.prototype.setColor = function setColor(color)
@@ -204,7 +205,7 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
-Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI)
+Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, showTrajectoryCollisions)
 {
 	var scale;
 
@@ -217,9 +218,8 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	/* Update any properties being displayed */
 	this.updateProperties();
 
-	if (showTrajectory) {
+	if (showTrajectory || showTrajectoryCollisions) {
 		ctx.save();
-
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
 
@@ -230,16 +230,33 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			n = this.trajectory[i];
 
 			if (n.collision) {
+				if (showTrajectoryCollisions && this.images.smallcrash.length > 0) {
+					if (!n.crashImage) {
+						var x = Math.floor(Math.random() * this.images.smallcrash.length);
+
+						n.crashImage = this.images.smallcrash[x];
+					}
+
+					var size	= 48;
+
+					ctx.drawImage(n.crashImage,
+						n.position.x - ((size / 2) * scale),
+						n.position.y - ((size / 2) * scale),
+						size * scale, size * scale);
+				}
+
 				break;
 			}
 
-			ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
-								((this.trajectory.length - (i + 1)) * 0.01) + ')';
+			if (showTrajectory) {
+				ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
+									((this.trajectory.length - (i + 1)) * 0.01) + ')';
 
-			ctx.beginPath();
-			ctx.moveTo(p.position.x, p.position.y);
-			ctx.lineTo(n.position.x, n.position.y);
-			ctx.stroke();
+				ctx.beginPath();
+				ctx.moveTo(p.position.x, p.position.y);
+				ctx.lineTo(n.position.x, n.position.y);
+				ctx.stroke();
+			}
 
 			/* Keep track of the previous position */
 			p = n;
@@ -405,22 +422,22 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			}
 		}
 
-		if (this.textures.crash.length > 0 &&
+		if (this.images.crash.length > 0 &&
 			this.collision && this.collision.index < this.index
 		) {
 			/*
 				If 2 bodies have collided we only want to draw the image for it
 				once. Draw it on the one with the higher index.
 			*/
-			if (!this.crashtexture) {
-				var x = Math.floor(Math.random() * this.textures.crash.length);
+			if (!this.crashImage) {
+				var x = Math.floor(Math.random() * this.images.crash.length);
 
-				this.crashtexture = this.textures.crash[x];
+				this.crashImage = this.images.crash[x];
 			}
 
 			var size	= 128;
 
-			ctx.drawImage(this.crashtexture,
+			ctx.drawImage(this.crashImage,
 				((this.position.x + this.collision.position.x) / 2) - ((size / 2) * scale),
 				((this.position.y + this.collision.position.y) / 2) - ((size / 2) * scale),
 				size * scale, size * scale);

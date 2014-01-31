@@ -26,11 +26,12 @@ function UnstableGame(options, menu)
 	this.running	= false;
 
 	this.solarsys	= new SolarSystem({
-		paused:			true,
-		showUI:			true,
-		showVelocity:	true,
-		trajectory:		3000,
-		textures:		true
+		paused:						true,
+		showUI:						true,
+		showVelocity:				true,
+		showTrajectoryCollisions:	true,
+		trajectory:					3000,
+		textures:					true
 	});
 
 	this.speed = 1.0;
@@ -237,15 +238,17 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			switch (event.keyCode) {
 				case 113: /* F2 - Toggle UI elements */
 					if (this.solarsys.options.showVelocity) {
-						this.solarsys.options.showVelocity	= false;
-						this.solarsys.options.showUI		= false;
-						this.solarsys.options.trajectory	= 0;
+						this.solarsys.options.showVelocity				= false;
+						this.solarsys.options.showUI					= false;
+						this.solarsys.options.showTrajectoryCollisions	= false;
+						this.solarsys.options.trajectory				= 0;
 
 						document.body.classList.add('hideui');
 					} else {
-						this.solarsys.options.showVelocity	= true;
-						this.solarsys.options.showUI		= true;
-						this.solarsys.options.trajectory	= 3000;
+						this.solarsys.options.showVelocity				= true;
+						this.solarsys.options.showUI					= true;
+						this.solarsys.options.showTrajectoryCollisions	= true;
+						this.solarsys.options.trajectory				= 3000;
 
 						document.body.classList.remove('hideui');
 					}

@@ -70,7 +70,7 @@ SolarSystem.prototype.setBodies = function setBodies(bodies, preserveColor)
 		b.index = i;
 
 		/* Try to ensure we get a random crash each time */
-		delete b.crashtexture;
+		delete b.crashImage;
 
 		if (!b.texture) {
 			/* Attempt to assign a texture to each body */
@@ -249,6 +249,13 @@ SolarSystem.prototype.render = function render(ctx)
 	/* Render the bodies */
 	for (var i = 0, body; body = this.bodies[i]; i++) {
 		body.render(ctx, true, false, this.options.showVelocity, this.options.showUI);
+	}
+
+	/* Render the collisions at the end of a trajectory */
+	if (this.options.trajectory && this.options.showTrajectoryCollisions) {
+		for (var i = 0, body; body = this.bodies[i]; i++) {
+			body.render(ctx, false, false, this.options.showVelocity, this.options.showUI, true);
+		}
 	}
 };
 
