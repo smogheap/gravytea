@@ -9,12 +9,6 @@
 
 // TODO	Add support for time based levels (must be stable for at least x sec)
 
-// TODO	Allow setting a point that the game should move towards, like the center
-//		or a planet, or the collision etc. Move part way there each frame
-//		instead of going right there.
-
-// TODO	Allow tabbing through bodies and controlling them with keyboard input
-
 function UnstableGame(options, menu)
 {
 	/* Use this.menu to interact with the UI */
@@ -233,9 +227,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			}
 
 			switch (event.keyCode) {
-				// TODO	Should this select bodies that aren't actionable?
-				// TODO	Should this select velocity indicators?
-
 				case 9:  /* tab - Select the next body */
 					var bodies = this.solarsys.getBodies();
 					var i, b, x;
@@ -274,6 +265,26 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			if (this.propertiesDialog) {
 				return(true);
 			}
+
+			var pan = function(x, y) {
+				if (this.selectedBody && this.solarsys.options.paused) {
+					delete this.panTo;
+
+					if (!event.shiftKey) {
+						if (!this.selectedBody.position.locked || this.level < 0) {
+							this.selectedBody.position.tx({ x: x * 2, y: y * 2} );
+							this.solarsys.resetTrajectories();
+						}
+					} else {
+						if (!this.selectedBody.velocity.locked || this.level < 0) {
+							this.selectedBody.velocity.tx({ x: x / 4, y: y / 4} );
+							this.solarsys.resetTrajectories();
+						}
+					}
+				} else {
+					this.ctx.translate(x * 10, y * 10);
+				}
+			}.bind(this);
 
 			switch (event.keyCode) {
 				case 113: /* F2 - Toggle UI elements */
@@ -343,19 +354,19 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					break;
 
 				case 37: /* left */
-					this.ctx.translate(-10, 0);
+					pan(-1, 0);
 					break;
 
 				case 38: /* up */
-					this.ctx.translate(0, -10);
+					pan(0, -1);
 					break;
 
 				case 39: /* right */
-					this.ctx.translate(10, 0);
+					pan(1, 0);
 					break;
 
 				case 40: /* down */
-					this.ctx.translate(0, 10);
+					pan(0, 1);
 					break;
 
 				default:
@@ -741,6 +752,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		ctx.save();
 		makeBodiesDraggable(canvas, ctx, this.solarsys);
 		makeCanvasZoomable(canvas, ctx, function() {
+			this.selectBody(null);
 			delete this.panTo;
 		}.bind(this));
 		resizeCanvas();
