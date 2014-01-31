@@ -202,9 +202,12 @@ SolarSystem.prototype.advanceBodies = function advanceBodies(elapsed)
 SolarSystem.prototype.advance = function advance(time)
 {
 	if (isNaN(this.lasttime)) {
-		this.lasttime	= time;
+		this.lasttime = time;
 		return(false);
 	}
+
+	var elapsed	= time - this.lasttime;
+	var offset	= Math.floor(elapsed / Body.prototype.period);
 
 	/*
 		Calculate the trajectory for this body (using any valid pre-calculated
@@ -229,12 +232,24 @@ SolarSystem.prototype.advance = function advance(time)
 		in the time for the next frame.
 	*/
 	if (!this.options.paused) {
-		this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
+		// this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
+		this.lasttime = time - this.advanceBodies(Body.prototype.period);
+
+		/*
+			Do not render a frame if we have more than Body.prototype.period
+			left over.
+		*/
+		if ((time - this.lasttime) >= Body.prototype.period) {
+			return(false);
+		} else {
+			return(true);
+		}
 	} else {
 		this.lasttime = time;
-	}
 
-	return(true);
+		/* Let the consumer know that they should render a frame */
+		return(true);
+	}
 };
 
 SolarSystem.prototype.render = function render(ctx)

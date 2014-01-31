@@ -766,6 +766,140 @@ UnstableGame.prototype.pan = function pan(x, y, shift)
 	}
 };
 
+/* Pause the game and display either a success or failure dialog */
+UnstableGame.prototype.endLevel = function endLevel(success)
+{
+	this.solarsys.options.paused = true;
+
+	if (!success) {
+		var options = [ 'Retry', 'Reset' ];
+
+		if (this.testing) {
+			options.push('Back to editor');
+		}
+
+		var x = Math.floor(Math.random() * this.failureText.length);
+
+		this.menu.askUser(this.failureText[x], options, function(action) {
+			switch (action) {
+				case "Reset":
+					this.reset();
+					break;
+
+				case "Retry":
+				default:
+					this.stop();
+					break;
+
+				case "Back to editor":
+					this.returnToEditor();
+					return;
+			}
+		}.bind(this), "fail", this.solarsys);
+	} else {
+		var options = [ 'Replay' ];
+
+		if (!this.userCreated && !this.testing) {
+			options.unshift('Next Level');
+		}
+
+		if (this.testing) {
+			options.push('Back to editor');
+		}
+
+		this.menu.askUser("Success!", options, function(action) {
+			var hint			= null;
+			var currentLevel	= this.options.get('currentLevel');
+
+			if (!this.userCreated && (this.level + 1 > currentLevel)) {
+				/* Remember that the user is allowed to play the next level */
+				this.options.set('currentLevel', this.level + 1);
+			}
+
+			switch (action) {
+				default:
+				case "Next Level":
+					l = this.level + 1;
+					break;
+
+				case "Replay":
+					this.reset();
+					return;
+
+				case "Back to editor":
+					this.returnToEditor();
+					return;
+			}
+
+			this.hide();
+
+			if (!UnstableLevels[l]) {
+				l = -1;
+				hint = [
+					'You finished all the levels!',
+					'Why don\'t you try to make your own now?'
+				];
+			}
+
+			this.loadLevel(l, null, hint);
+			this.show();
+		}.bind(this), "success", this.solarsys);
+	}
+};
+
+/*
+	Attempt to determine if the level has ended or not.
+
+	This checks the current state to see if the goal has been completed, and to
+	see if there have been any collisions or other failures.
+
+	If the level has ended then this will display the appropriate dialog.
+*/
+UnstableGame.prototype.checkForEnd = function checkForEnd()
+{
+	if (this.solarsys.options.paused) {
+		/* The game is paused */
+		return(false);
+	}
+
+	/* Did anything crash? */
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		if (b.collision) {
+			this.panTo = new V(b.collision.position);
+			this.panTo.y -= 100;
+
+			this.endLevel(false);
+			return(true);
+		}
+	}
+
+	if (this.level < 0) {
+		/* We are in the editor, which means a level can not be completed */
+		return(false);
+	}
+
+	/* Has the user completed the level? */
+	var havegoal = false;
+	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		if (b.completed < b.goal) {
+			/* The user has not completed the level */
+			return(false);
+		}
+
+		if (b.goal) {
+			havegoal = true;
+		}
+	}
+
+	/* This level does not appear to have a goal; oh well */
+	if (!havegoal) {
+		return(false);
+	}
+
+	this.endLevel(true);
+	return(true);
+};
+
 UnstableGame.prototype.show = function showUnstableGame()
 {
 	var fresh	= false;
@@ -872,6 +1006,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 	var render = function render(time)
 	{
+		var before;
+		var draw;
+		var p;
+
 		if (!this.running) {
 			if (this.canvas) {
 				document.body.removeChild(this.canvas);
@@ -885,20 +1023,21 @@ UnstableGame.prototype.show = function showUnstableGame()
 		requestAnimationFrame(render.bind(this));
 		resizeCanvas();
 
-		/* Clear the canvas */
-		var a = ctx.transformedPoint(0, 0);
-		var b = ctx.transformedPoint(w, h);
-		ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
+		do {
+			/* Apply any keyboard input */
+			if (this.keyboard.x || this.keyboard.y) {
+				this.pan(this.keyboard.x, this.keyboard.y, this.keyboard.shift);
+			}
 
-		/* Apply any keyboard input */
-		if (this.keyboard.x || this.keyboard.y) {
-			this.pan(this.keyboard.x, this.keyboard.y, this.keyboard.shift);
-		}
+			/*
+				Advance the bodies to the current time
 
-		/* Advance the bodies to the current time */
-		var before = this.solarsys.getCenter();
-		if (this.solarsys.advance(time * this.speed)) {
-			var p;
+				The call to solarsys.advance() will return true if it has caught
+				up to the current time. Do not render until it has, but do
+				perform all other calculations.
+			*/
+			before	= this.solarsys.getCenter();
+			draw	= this.solarsys.advance(time * this.speed);
 
 			if ((p = this.panTo)) {
 				/* Move towards the selected body */
@@ -918,126 +1057,20 @@ UnstableGame.prototype.show = function showUnstableGame()
 				ctx.translate(-(after.x - before.x), -(after.y - before.y));
 			}
 
-			/* Render the bodies */
-			ctx.save();
-			this.solarsys.render(ctx);
-			ctx.restore();
-		}
+			if (draw) {
+				/* Clear the canvas */
+				var a = ctx.transformedPoint(0, 0);
+				var b = ctx.transformedPoint(w, h);
+				ctx.clearRect(a.x, a.y, b.x - a.x, b.y - a.y);
 
-		/* Check for end of level events... */
-		if (this.solarsys.options.paused) {
-			return;
-		}
-
-		/* Did anything crash? */
-		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
-			if (b.collision) {
-				this.solarsys.options.paused = true;
-
-				this.panTo = new V(b.collision.position);
-				this.panTo.y -= 100;
-
-				var options = [ 'Retry', 'Reset' ];
-
-				if (this.testing) {
-					options.push('Back to editor');
-				}
-
-				var x = Math.floor(Math.random() * this.failureText.length);
-
-				this.menu.askUser(this.failureText[x], options, function(action) {
-					switch (action) {
-						case "Reset":
-							this.reset();
-							break;
-
-						case "Retry":
-						default:
-							this.stop();
-							break;
-
-						case "Back to editor":
-							this.returnToEditor();
-							return;
-					}
-				}.bind(this), "fail", this.solarsys);
-				return;
-			}
-		}
-
-		if (this.level < 0) {
-			return;
-		}
-
-		/* Has the user completed the level? */
-		var havegoal = false;
-		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
-			if (b.completed < b.goal) {
-				/* The user has not completed the level */
-				return;
+				/* Render the bodies */
+				ctx.save();
+				this.solarsys.render(ctx);
+				ctx.restore();
 			}
 
-			if (b.goal) {
-				havegoal = true;
-			}
-		}
-
-		/*
-			If there are no goals, then the level never ends (useful for the
-			editor and possibly other stuff in the future).
-		*/
-		if (!havegoal) {
-			return;
-		}
-
-		this.solarsys.options.paused = true;
-		var options = [ 'Replay' ];
-
-		if (!this.userCreated && !this.testing) {
-			options.unshift('Next Level');
-		}
-
-		if (this.testing) {
-			options.push('Back to editor');
-		}
-
-		this.menu.askUser("Success!", options, function(action) {
-			var hint			= null;
-			var currentLevel	= this.options.get('currentLevel');
-
-			if (!this.userCreated && (this.level + 1 > currentLevel)) {
-				/* Remember that the user is allowed to play the next level */
-				this.options.set('currentLevel', this.level + 1);
-			}
-
-			switch (action) {
-				default:
-				case "Next Level":
-					l = this.level + 1;
-					break;
-
-				case "Replay":
-					this.reset();
-					return;
-
-				case "Back to editor":
-					this.returnToEditor();
-					return;
-			}
-
-			this.hide();
-
-			if (!UnstableLevels[l]) {
-				l = -1;
-				hint = [
-					'You finished all the levels!',
-					'Why don\'t you try to make your own now?'
-				];
-			}
-
-			this.loadLevel(l, null, hint);
-			this.show();
-		}.bind(this), "success", this.solarsys);
+			this.checkForEnd();
+		} while (!draw);
 	};
 	requestAnimationFrame(render.bind(this));
 };
