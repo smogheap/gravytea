@@ -785,10 +785,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 								}
 								break;
 
-							case 'left':	ctx.translate(-10,   0);	break;
-							case 'right':	ctx.translate( 10,   0);	break;
-							case 'up':		ctx.translate(  0, -10);	break;
-							case 'down':	ctx.translate(  0,  10);	break;
+							case 'left':	ctx.translate( 10,   0);	break;
+							case 'right':	ctx.translate(-10,   0);	break;
+							case 'up':		ctx.translate(  0,  10);	break;
+							case 'down':	ctx.translate(  0, -10);	break;
 
 							case 'zoomin':	ctx.zoomIn();				break;
 							case 'zoomout': ctx.zoomOut();				break;
