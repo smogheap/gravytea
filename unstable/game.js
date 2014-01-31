@@ -233,6 +233,9 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			}
 
 			switch (event.keyCode) {
+				// TODO	Should this select bodies that aren't actionable?
+				// TODO	Should this select velocity indicators?
+
 				case 9:  /* tab - Select the next body */
 					var bodies = this.solarsys.getBodies();
 					var i, b, x;
@@ -577,6 +580,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	this.menu.hideDialog();
 
 	/* Reset a few things */
+	delete this.panTo;
 	delete this.propertiesDialog;
 	delete this.levelData;
 	delete this.playgroundID;
@@ -846,6 +850,9 @@ UnstableGame.prototype.show = function showUnstableGame()
 		for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 			if (b.collision) {
 				this.solarsys.options.paused = true;
+
+				this.panTo = new V(b.collision.position);
+				this.panTo.y -= 100;
 
 				var options = [ 'Retry', 'Reset' ];
 
