@@ -229,8 +229,28 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		for (var i = 0; i < this.trajectory.length; i++) {
 			n = this.trajectory[i];
 
+			if (showTrajectory) {
+				ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
+									((this.trajectory.length - (i + 1)) * 0.01) + ')';
+
+				ctx.beginPath();
+				ctx.moveTo(p.position.x, p.position.y);
+				ctx.lineTo(n.position.x, n.position.y);
+				ctx.stroke();
+			}
+
 			if (n.collision) {
-				if (showTrajectoryCollisions && this.images.smallcrash.length > 0) {
+				if (showTrajectoryCollisions && this.index > n.collision.index &&
+					this.images.smallcrash.length > 0
+				) {
+					var w = null;
+					for (var c = 0; c < n.collision.trajectory.length; c++) {
+						if (n.collision.trajectory[c].collision) {
+							w = n.collision.trajectory[c];
+							break;
+						}
+					}
+
 					if (!n.crashImage) {
 						var x = Math.floor(Math.random() * this.images.smallcrash.length);
 
@@ -240,22 +260,12 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					var size	= 48;
 
 					ctx.drawImage(n.crashImage,
-						n.position.x - ((size / 2) * scale),
-						n.position.y - ((size / 2) * scale),
+						((n.position.x + w.position.x) / 2) - ((size / 2) * scale),
+						((n.position.y + w.position.y) / 2) - ((size / 2) * scale),
 						size * scale, size * scale);
 				}
 
 				break;
-			}
-
-			if (showTrajectory) {
-				ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
-									((this.trajectory.length - (i + 1)) * 0.01) + ')';
-
-				ctx.beginPath();
-				ctx.moveTo(p.position.x, p.position.y);
-				ctx.lineTo(n.position.x, n.position.y);
-				ctx.stroke();
 			}
 
 			/* Keep track of the previous position */
