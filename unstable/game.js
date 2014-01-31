@@ -312,6 +312,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				case 13: /* Enter */
 					var bodies = this.solarsys.getBodies();
 
+					console.log(JSON.stringify(bodies));
 					alert(JSON.stringify(bodies));
 					return event.preventDefault() && false;
 
