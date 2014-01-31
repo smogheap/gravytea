@@ -255,16 +255,19 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					if (!n.crashImage) {
 						var x = Math.floor(Math.random() * this.images.smallcrash.length);
 
-						n.crashImage = this.images.smallcrash[x];
+						n.crashImage	= this.images.smallcrash[x];
+						n.crashSize		= 0;
 					}
 
-					var size	= 48;
+					if (n.crashSize < 48) {
+						n.crashSize += 2;
+					}
 
 					ctx.globalAlpha = alpha;
 					ctx.drawImage(n.crashImage,
-						((n.position.x + w.position.x) / 2) - ((size / 2) * scale),
-						((n.position.y + w.position.y) / 2) - ((size / 2) * scale),
-						size * scale, size * scale);
+						((n.position.x + w.position.x) / 2) - ((n.crashSize / 2) * scale),
+						((n.position.y + w.position.y) / 2) - ((n.crashSize / 2) * scale),
+						n.crashSize * scale, n.crashSize * scale);
 				}
 
 				break;
@@ -445,14 +448,17 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				var x = Math.floor(Math.random() * this.images.crash.length);
 
 				this.crashImage = this.images.crash[x];
+				this.crashSize	= 0;
 			}
 
-			var size	= 128;
+			if (this.crashSize < 128) {
+				this.crashSize += 8;
+			}
 
 			ctx.drawImage(this.crashImage,
-				((this.position.x + this.collision.position.x) / 2) - ((size / 2) * scale),
-				((this.position.y + this.collision.position.y) / 2) - ((size / 2) * scale),
-				size * scale, size * scale);
+				((this.position.x + this.collision.position.x) / 2) - ((this.crashSize / 2) * scale),
+				((this.position.y + this.collision.position.y) / 2) - ((this.crashSize / 2) * scale),
+				this.crashSize * scale, this.crashSize * scale);
 		}
 	}
 
