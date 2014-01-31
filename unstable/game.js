@@ -545,7 +545,6 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 UnstableGame.prototype.showHint = function showHint(title, hint)
 {
-	// TODO	Rename hintDiv and the id to title or gametitle, etc
 	var titleDiv;
 
 	if ((titleDiv = document.getElementById('title'))) {
@@ -897,7 +896,6 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Advance the bodies to the current time */
-		// TODO	advance needs to stop if there has been a collision
 		var before = this.solarsys.getCenter();
 		if (this.solarsys.advance(time * this.speed)) {
 			var p;
