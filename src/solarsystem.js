@@ -207,7 +207,6 @@ SolarSystem.prototype.advance = function advance(time)
 	}
 
 	var elapsed	= time - this.lasttime;
-	var offset	= Math.floor(elapsed / Body.prototype.period);
 
 	/*
 		Calculate the trajectory for this body (using any valid pre-calculated
@@ -232,14 +231,14 @@ SolarSystem.prototype.advance = function advance(time)
 		in the time for the next frame.
 	*/
 	if (!this.options.paused) {
-		// this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
-		this.lasttime = time - this.advanceBodies(Body.prototype.period);
+		this.advanceBodies(Body.prototype.period);
+		this.lastime += Body.prototype.period;
 
 		/*
 			Do not render a frame if we have more than Body.prototype.period
 			left over.
 		*/
-		if ((time - this.lasttime) >= Body.prototype.period) {
+		if ((time - this.lasttime) > 0) {
 			return(false);
 		} else {
 			return(true);
