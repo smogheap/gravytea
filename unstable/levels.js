@@ -514,6 +514,12 @@ UnstableLevels = [
 			{"p":[283.55572509765625,333.594970703125],"v":[0,0],"r":10,"d":0.01,"t":"p","g":10}
 		]
 	}, {
+		name: 'Out of Nowhere',
+		bodies: [
+			{"p":[0, 0], "v": [0,0,true], "r":65, "t": "s"},
+			{"p":[-5000,-5000, true], "v":[20,20, true], "r":5, "g": 10}
+		]
+	}, {
 		author: 'Owen Swerkstrom',
 		name: 'Endurance',
 		bodies:  [
