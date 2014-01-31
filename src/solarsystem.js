@@ -230,11 +230,12 @@ SolarSystem.prototype.advance = function advance(time)
 	*/
 	if (!this.options.paused) {
 		// this.lasttime = time - this.advanceBodies(time - this.lasttime, false);
-		this.lasttime = time - this.advanceBodies(Body.prototype.period);
+		this.lasttime = time - this.advanceBodies(
+				Math.min(Body.prototype.period, time - this.lasttime));
 
 		if ((time - this.lasttime) >= Body.prototype.period) {
 			/* Skip a frame until we can catch up */
-console.log('skipped a frame');
+			console.log('skipped a frame');
 			return(false);
 		}
 	} else {

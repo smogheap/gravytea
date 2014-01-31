@@ -702,6 +702,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 /* Let the solarsystem the user has built/fixed run */
 UnstableGame.prototype.go = function go()
 {
+	this.goTime = Date.now();
+
 	if (!this.solarsys.options.paused) {
 		this.stop();
 		return;
@@ -770,6 +772,11 @@ UnstableGame.prototype.pan = function pan(x, y, shift)
 UnstableGame.prototype.endLevel = function endLevel(success)
 {
 	this.solarsys.options.paused = true;
+
+	if (this.goTime) {
+		console.log('Level runtime was: ',
+			(Date.now() - this.goTime) / 1000);
+	}
 
 	if (!success) {
 		var options = [ 'Retry', 'Reset' ];
