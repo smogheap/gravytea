@@ -232,29 +232,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				return(true);
 			}
 
-			if (this.propertiesDialog) {
-				return(true);
-			}
-
 			switch (event.keyCode) {
-				case 113: /* F2 - Toggle UI elements */
-					if (this.solarsys.options.showVelocity) {
-						this.solarsys.options.showVelocity				= false;
-						this.solarsys.options.showUI					= false;
-						this.solarsys.options.showTrajectoryCollisions	= false;
-						this.solarsys.options.trajectory				= 0;
-
-						document.body.classList.add('hideui');
-					} else {
-						this.solarsys.options.showVelocity				= true;
-						this.solarsys.options.showUI					= true;
-						this.solarsys.options.showTrajectoryCollisions	= true;
-						this.solarsys.options.trajectory				= 3000;
-
-						document.body.classList.remove('hideui');
-					}
-					return event.preventDefault() && false;
-
 				case 9:  /* tab - Select the next body */
 					var bodies = this.solarsys.getBodies();
 					var i, b, x;
@@ -285,7 +263,31 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					this.selectBody(this.panTo);
 
 					if (!this.panTo) {
-						this.panTo = this.solarsys.getCenter();
+						this.panTo = { x: 0, y: 0 };
+					}
+					return event.preventDefault() && false;
+			}
+
+			if (this.propertiesDialog) {
+				return(true);
+			}
+
+			switch (event.keyCode) {
+				case 113: /* F2 - Toggle UI elements */
+					if (this.solarsys.options.showVelocity) {
+						this.solarsys.options.showVelocity				= false;
+						this.solarsys.options.showUI					= false;
+						this.solarsys.options.showTrajectoryCollisions	= false;
+						this.solarsys.options.trajectory				= 0;
+
+						document.body.classList.add('hideui');
+					} else {
+						this.solarsys.options.showVelocity				= true;
+						this.solarsys.options.showUI					= true;
+						this.solarsys.options.showTrajectoryCollisions	= true;
+						this.solarsys.options.trajectory				= 3000;
+
+						document.body.classList.remove('hideui');
 					}
 					return event.preventDefault() && false;
 
