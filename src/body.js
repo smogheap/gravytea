@@ -688,7 +688,20 @@ Body.prototype.advance = function advance(bodies, elapsed)
 			}
 		}
 
-		/* All values prior to this one are no longer need */
+		/*
+			All values prior to this one are no longer need
+
+			If any of those where a collision then consider this a collision as
+			well.
+		*/
+		if (!this.collision) {
+			for (var i = 0; i < offset; i++) {
+				if (this.trajectory[i] && this.trajectory[i].collision) {
+					this.collision = this.trajectory[i].collision;
+					break;
+				}
+			}
+		}
 		this.trajectory.splice(0, offset);
 	}
 };

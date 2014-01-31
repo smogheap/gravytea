@@ -897,6 +897,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		}
 
 		/* Advance the bodies to the current time */
+		// TODO	advance needs to stop if there has been a collision
 		var before = this.solarsys.getCenter();
 		if (this.solarsys.advance(time * this.speed)) {
 			var p;

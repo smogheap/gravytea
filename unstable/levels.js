@@ -526,6 +526,16 @@ UnstableLevels = [
 			{"p":[-5000,-5000, true], "v":[20,20, true], "r":5, "g": 10}
 		]
 	}, {
+/*
+		author: 'Owen Swerkstrom',
+		name: 'fubar',
+		bodies:[
+			{"p":[-200,0],"v":[0,0],"r":100,"d":0.09,"t":"s","g":0},
+			{"p":[450,0],"v":[0,18],"r":5,"d":0.01,"t":"p","g":8},
+			{"p":[0,0],"v":[0,-45],"r":30,"d":0.01,"t":"p","g":8}
+		]
+	}, {
+*/
 		author: 'Owen Swerkstrom',
 		name: 'Endurance',
 		bodies:  [
