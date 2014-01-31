@@ -1084,7 +1084,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 			}
 		}
 
-		if (frames) {
+		if (frames && this.frames) {
 			this.frames.total += frames;
 			this.frames.rendered++;
 		}
