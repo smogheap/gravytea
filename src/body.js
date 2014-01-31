@@ -260,7 +260,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					}
 
 					if (n.crashSize < 48) {
-						n.crashSize += 2;
+						n.crashSize += (48 - n.crashSize) / 2;
 					}
 
 					ctx.globalAlpha = alpha;
@@ -452,7 +452,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			}
 
 			if (this.crashSize < 128) {
-				this.crashSize += 8;
+				this.crashSize += (128 - this.crashSize) / 5;
 			}
 
 			ctx.drawImage(this.crashImage,
