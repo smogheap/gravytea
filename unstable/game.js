@@ -24,6 +24,7 @@ function UnstableGame(options, menu)
 	this.options	= options;
 
 	this.running	= false;
+	this.panTo		= null;
 
 	this.solarsys	= new SolarSystem({
 		paused:						true,
@@ -251,6 +252,40 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 						this.solarsys.options.trajectory				= 3000;
 
 						document.body.classList.remove('hideui');
+					}
+					return event.preventDefault() && false;
+
+				case 9:  /* tab - Select the next body */
+					var bodies = this.solarsys.getBodies();
+					var i, b, x;
+
+					if (!event.shiftKey) {
+						i = 0;
+						x = 1;
+					} else {
+						i = bodies.length - 1;
+						x = -1;
+					}
+
+					if (!this.selectedBody) {
+						delete this.panTo;
+					}
+
+					for (; b = bodies[i]; i += x) {
+						if (!this.panTo) {
+							this.panTo = b;
+							break;
+						}
+
+						if (b == this.selectedBody) {
+							delete this.panTo;
+						}
+					}
+
+					this.selectBody(this.panTo);
+
+					if (!this.panTo) {
+						this.panTo = this.solarsys.getCenter();
 					}
 					return event.preventDefault() && false;
 
@@ -699,7 +734,9 @@ UnstableGame.prototype.show = function showUnstableGame()
 	if (fresh) {
 		ctx.save();
 		makeBodiesDraggable(canvas, ctx, this.solarsys);
-		makeCanvasZoomable(canvas, ctx);
+		makeCanvasZoomable(canvas, ctx, function() {
+			delete this.panTo;
+		}.bind(this));
 		resizeCanvas();
 
 		/*
@@ -772,9 +809,25 @@ UnstableGame.prototype.show = function showUnstableGame()
 		/* Advance the bodies to the current time */
 		var before = this.solarsys.getCenter();
 		if (this.solarsys.advance(time * this.speed)) {
-			/* Adjust the position of the canvas to keep the suns fixed */
-			var after = this.solarsys.getCenter();
-			ctx.translate(-(after.x - before.x), -(after.y - before.y));
+			var p;
+
+			if ((p = this.panTo)) {
+				/* Move towards the selected body */
+				var center = ctx.transformedPoint(w / 2, h / 2);
+
+				/* this.panTo can be either a body or a position */
+				if (p.position) {
+					p = p.position;
+				}
+
+				ctx.translate(
+					-((p.x - center.x) / 2),
+					-((p.y - center.y) / 2));
+			} else {
+				/* Adjust the position of the canvas to keep the suns fixed */
+				var after = this.solarsys.getCenter();
+				ctx.translate(-(after.x - before.x), -(after.y - before.y));
+			}
 
 			/* Render the bodies */
 			ctx.save();

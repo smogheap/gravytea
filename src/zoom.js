@@ -1,4 +1,4 @@
-function makeCanvasZoomable(canvas, ctx)
+function makeCanvasZoomable(canvas, ctx, dragcb)
 {
 	var scaleFactor	= 1.1;
 	var position = {
@@ -51,6 +51,7 @@ function makeCanvasZoomable(canvas, ctx)
 
 				var point = ctx.transformedPoint(position.x, position.y);
 
+				if (dragcb) dragcb();
 				ctx.translate(point.x - dragStart.x, point.y - dragStart.y);
 				break;
 
