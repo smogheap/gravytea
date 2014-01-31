@@ -229,9 +229,10 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		for (var i = 0; i < this.trajectory.length; i++) {
 			n = this.trajectory[i];
 
+			var alpha = (this.trajectory.length - (i + 1)) * 0.01;
+
 			if (showTrajectory) {
-				ctx.strokeStyle = 'rgba(' + this.rgb + ',' +
-									((this.trajectory.length - (i + 1)) * 0.01) + ')';
+				ctx.strokeStyle = 'rgba(' + this.rgb + ',' + alpha + ')';
 
 				ctx.beginPath();
 				ctx.moveTo(p.position.x, p.position.y);
@@ -259,6 +260,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 					var size	= 48;
 
+					ctx.globalAlpha = alpha;
 					ctx.drawImage(n.crashImage,
 						((n.position.x + w.position.x) / 2) - ((size / 2) * scale),
 						((n.position.y + w.position.y) / 2) - ((size / 2) * scale),
