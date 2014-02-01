@@ -153,6 +153,8 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 
 	makeCanvasZoomable(canvas, ctx);
 
+	ctx.cleanupZoomEvents();
+
 	ctx.translate(width / 2, height / 2);
 	ctx.scale(scale, scale);
 
