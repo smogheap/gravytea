@@ -239,27 +239,25 @@ SolarSystem.prototype.advance = function advance(time)
 
 SolarSystem.prototype.render = function render(ctx)
 {
-	var trajectoryCollisions	= true;
+	var predictCollisions	= this.options.predictCollisions;
 
 	/* Render the trajectories below the bodies */
 	if (this.options.trajectory) {
 		for (var i = 0, body; body = this.bodies[i]; i++) {
-			body.render(ctx, false, true);
+			body.render(ctx, false, true, false, false, true);
 		}
 	}
 
 	/* Render the bodies */
 	for (var i = 0, body; body = this.bodies[i]; i++) {
 		if (body.collision) {
-			trajectoryCollisions = false;
+			predictCollisions = false;
 		}
 		body.render(ctx, true, false, this.options.showVelocity, this.options.showUI);
 	}
 
 	/* Render the collisions at the end of a trajectory */
-	if (trajectoryCollisions && this.options.trajectory &&
-		this.options.showTrajectoryCollisions
-	) {
+	if (predictCollisions && this.options.trajectory) {
 		for (var i = 0, body; body = this.bodies[i]; i++) {
 			body.render(ctx, false, false, this.options.showVelocity, this.options.showUI, true);
 		}

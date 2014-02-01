@@ -7,12 +7,16 @@ function UnstableGameOptions()
 		/* The next ID to use when saving playground levels */
 		nextPlaygroundID:	0,
 
-		fullscreen:			false
+		fullscreen:			false,
+		predictCollisions:	true
 	};
 };
 
 UnstableGameOptions.prototype.setup = function setup(menu)
 {
+	var that	= this;
+	var opts	= document.getElementById('options');
+
 	this.menu = menu;
 
 	// TODO	Add options for mapping inputs with keyboard and/or gamepads
@@ -22,7 +26,7 @@ UnstableGameOptions.prototype.setup = function setup(menu)
 	var f = document.getElementById('fullscreen');
 
 	this.addFullscreenOption();
-	document.getElementById('options').appendChild(document.createElement('br'));
+	opts.appendChild(document.createElement('br'));
 
 	/* Add option to reset progress */
 	var div = document.createElement('div');
@@ -39,8 +43,24 @@ UnstableGameOptions.prototype.setup = function setup(menu)
 	a.appendChild(document.createTextNode('Reset Progress'));
 	div.appendChild(a);
 
-	document.getElementById('options').appendChild(div);
+	opts.appendChild(div);
+	opts.appendChild(document.createElement('br'));
 
+	/*
+		Allow enabling or disabling of displaying predicting collisions.
+
+		The code will still predict collisions internally, but will not display
+		the predicted collisions.
+	*/
+	var i		= document.createElement('input');
+	i.type		= 'checkbox';
+	i.checked	= this.get('predictCollisions');
+	opts.appendChild(i);
+	i.addEventListener('change', function() {
+		that.set('predictCollisions', this.checked);
+	});
+
+	opts.appendChild(document.createTextNode('Predict Collisions'));
 };
 
 UnstableGameOptions.prototype.addFullscreenOption = function addFullscreenOption()

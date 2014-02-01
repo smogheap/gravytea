@@ -23,12 +23,10 @@ function UnstableGame(options, menu)
 
 	this.solarsys	= new SolarSystem({
 		paused:						true,
-		showUI:						true,
-		showVelocity:				true,
-		showTrajectoryCollisions:	true,
-		trajectory:					3000,
 		textures:					true
 	});
+
+	this.enableUI(true);
 
 	this.speed = 1.0;
 	// this.speed = 0.2;
@@ -151,6 +149,25 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 	}
 };
 
+UnstableGame.prototype.enableUI = function enableUI(enabled)
+{
+	if (!enabled) {
+		this.solarsys.options.showVelocity		= false;
+		this.solarsys.options.showUI			= false;
+		this.solarsys.options.predictCollisions	= false;
+		this.solarsys.options.trajectory		= 0;
+
+		document.body.classList.add('hideui');
+	} else {
+		this.solarsys.options.showVelocity		= true;
+		this.solarsys.options.showUI			= true;
+		this.solarsys.options.predictCollisions	= this.options.get('predictCollisions');
+		this.solarsys.options.trajectory		= 3000;
+
+		document.body.classList.remove('hideui');
+	}
+};
+
 UnstableGame.prototype.handleEvent = function handleEvent(event)
 {
 	switch (event.type) {
@@ -269,21 +286,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 			switch (event.keyCode) {
 				case 113: /* F2 - Toggle UI elements */
-					if (this.solarsys.options.showVelocity) {
-						this.solarsys.options.showVelocity				= false;
-						this.solarsys.options.showUI					= false;
-						this.solarsys.options.showTrajectoryCollisions	= false;
-						this.solarsys.options.trajectory				= 0;
-
-						document.body.classList.add('hideui');
-					} else {
-						this.solarsys.options.showVelocity				= true;
-						this.solarsys.options.showUI					= true;
-						this.solarsys.options.showTrajectoryCollisions	= true;
-						this.solarsys.options.trajectory				= 3000;
-
-						document.body.classList.remove('hideui');
-					}
+					this.enableUI(!this.solarsys.options.showUI);
 					break;
 
 				case 32: /* space	*/
@@ -645,7 +648,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.testing;
 
 	delete this.solarsys.name;
-	document.body.classList.remove('hideui');
+	this.enableUI(true);
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();

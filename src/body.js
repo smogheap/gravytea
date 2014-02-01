@@ -205,7 +205,7 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
-Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, showTrajectoryCollisions)
+Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, predictCollisions)
 {
 	var scale;
 
@@ -218,7 +218,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	/* Update any properties being displayed */
 	this.updateProperties();
 
-	if (showTrajectory || showTrajectoryCollisions) {
+	if (showTrajectory || predictCollisions) {
 		ctx.save();
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
@@ -240,14 +240,14 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 				ctx.stroke();
 			}
 
-			if (n.collision) {
+			if (n.collision && predictCollisions && !showTrajectory) {
 				/*
 					A trajectory collision can be anywhere from 32-64 in size
 					depending on how far out it will occur.
 				*/
 				var size	= 32 + (32 * alpha);
 
-				if (showTrajectoryCollisions && this.index > n.collision.index &&
+				if (this.index > n.collision.index &&
 					this.images.smallcrash.length > 0
 				) {
 					var w = null;
@@ -275,7 +275,10 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 						((n.position.y + w.position.y) / 2) - (n.crashSize / 2),
 						n.crashSize, n.crashSize);
 				}
+			}
 
+			if (n.collision && predictCollisions) {
+				/* Stop rendering the trajectory */
 				break;
 			}
 
