@@ -8,7 +8,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 	var handleEvent = function handleEvent(event)
 	{
-		var toches;
+		var touches;
 
 		if ((touches = event.changedTouches)) {
 			// console.log(touches);
@@ -112,12 +112,12 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 		return(true);
 	};
 
-	canvas.addEventListener('mousedown',		handleEvent, false);
-	canvas.addEventListener('mouseup',			handleEvent, false);
-	canvas.addEventListener('mousemove',		handleEvent, false);
-
 	canvas.addEventListener('touchstart',		handleEvent, false);
 	canvas.addEventListener('touchend',			handleEvent, false);
 	canvas.addEventListener('touchmove',		handleEvent, false);
+
+	canvas.addEventListener('mousedown',		handleEvent, false);
+	canvas.addEventListener('mouseup',			handleEvent, false);
+	canvas.addEventListener('mousemove',		handleEvent, false);
 }
 

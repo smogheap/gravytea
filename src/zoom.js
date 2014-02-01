@@ -112,17 +112,16 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 		return event.preventDefault() && false;
 	};
 
+	canvas.addEventListener('touchstart',		handleEvent, false);
+	canvas.addEventListener('touchend',			handleEvent, false);
+	canvas.addEventListener('touchmove',		handleEvent, false);
+
 	canvas.addEventListener('mousedown',		handleEvent, false);
 	canvas.addEventListener('mouseup',			handleEvent, false);
 	canvas.addEventListener('mousemove',		handleEvent, false);
 
 	canvas.addEventListener('DOMMouseScroll',	handleEvent, false);
 	canvas.addEventListener('mousewheel',		handleEvent, false);
-
-
-	canvas.addEventListener('touchstart',		handleEvent, false);
-	canvas.addEventListener('touchend',			handleEvent, false);
-	canvas.addEventListener('touchmove',		handleEvent, false);
 
 	var zoom = function ctxZoom(clicks, center)
 	{
@@ -319,6 +318,10 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 		canvas.removeEventListener('mousedown',			handleEvent, false);
 		canvas.removeEventListener('mouseup',			handleEvent, false);
 		canvas.removeEventListener('mousemove',			handleEvent, false);
+
+		canvas.removeEventListener('touchstart',		handleEvent, false);
+		canvas.removeEventListener('touchend',			handleEvent, false);
+		canvas.removeEventListener('touchmove',			handleEvent, false);
 
 		canvas.removeEventListener('DOMMouseScroll',	handleEvent, false);
 		canvas.removeEventListener('mousewheel',		handleEvent, false);
