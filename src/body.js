@@ -222,25 +222,29 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.save();
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
-		ctx.strokeStyle = 'rgba(' + this.rgb + ', 0.5)';
 
-		var p = this;
-		var n = null;;
+		var n = this;
 
 		if (showTrajectory) {
-			ctx.beginPath();
+			var i = 0;
+			var s = Math.ceil(this.trajectory.length / 10);
 
-			ctx.moveTo(p.position.x, p.position.y);
-			for (var i = 0; n = this.trajectory[i]; i++) {
-				ctx.lineTo(n.position.x, n.position.y);
+			for (var x = 0; n && x < 10; x++) {
+				ctx.beginPath();
 
-				if (n.collision) {
-					break;
+				ctx.moveTo(n.position.x, n.position.y);
+				for (var c = 0; c < s && (n = this.trajectory[i++]); c++) {
+					ctx.lineTo(n.position.x, n.position.y);
+
+					if (n.collision) {
+						n = null;
+						break;
+					}
 				}
-			}
-			ctx.stroke();
 
-			// TODO	Fade the end?
+				ctx.strokeStyle = 'rgba(' + this.rgb + ', ' + (1 - (x / 10)) + ')';
+				ctx.stroke();
+			}
 		}
 
 		if (predictCollisions && !showTrajectory) {
