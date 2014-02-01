@@ -1014,7 +1014,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 			for (var i = 0, b; b = btns[i]; i++) {
 				(function(action) {
-					b.addEventListener('click', function() {
+					b.addEventListener('click', function(event) {
 						switch(action) {
 							case 'center':
 								ctx.center();
@@ -1033,6 +1033,8 @@ UnstableGame.prototype.show = function showUnstableGame()
 							case 'zoomin':	ctx.zoomIn();				break;
 							case 'zoomout': ctx.zoomOut();				break;
 						}
+
+						return event.preventDefault() && false;
 					});
 				})(b.alt);
 
