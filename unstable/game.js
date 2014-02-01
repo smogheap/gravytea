@@ -959,6 +959,10 @@ UnstableGame.prototype.show = function showUnstableGame()
 	//		smoothing enabled.
 	setCanvasSmoothing(ctx, true);
 
+	ctx.imageSmoothingEnabled				= false;
+	ctx.mozImageSmoothingEnabled			= false;
+	ctx.webkitImageSmoothingEnabled			= false;
+
 	if (isNaN(this.level)) {
 		this.loadLevel(this.options.get('currentLevel'));
 	}

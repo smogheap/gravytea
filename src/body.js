@@ -222,70 +222,70 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.save();
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
+		ctx.strokeStyle = 'rgba(' + this.rgb + ', 0.5)';
 
 		var p = this;
-		var n;
+		var n = null;;
 
-		for (var i = 0; i < this.trajectory.length; i++) {
-			var alpha	= 1.0 - ((i + 1) / this.trajectory.length);
+		if (showTrajectory) {
+			ctx.beginPath();
 
-			n = this.trajectory[i];
-
-			if (showTrajectory) {
-				ctx.strokeStyle = 'rgba(' + this.rgb + ',' + alpha + ')';
-
-				ctx.beginPath();
-				ctx.moveTo(p.position.x, p.position.y);
+			ctx.moveTo(p.position.x, p.position.y);
+			for (var i = 0; n = this.trajectory[i]; i++) {
 				ctx.lineTo(n.position.x, n.position.y);
-				ctx.stroke();
-			}
 
-			if (n.collision && predictCollisions && !showTrajectory) {
-				/*
-					A trajectory collision can be anywhere from 32-64 in size
-					depending on how far out it will occur.
-				*/
-				var size	= 32 + (32 * alpha);
-
-				if (this.index > n.collision.index &&
-					this.images.smallcrash.length > 0
-				) {
-					var w = null;
-					for (var c = 0; c < n.collision.trajectory.length; c++) {
-						if (n.collision.trajectory[c].collision) {
-							w = n.collision.trajectory[c];
-							break;
-						}
-					}
-
-					if (!n.crashImage) {
-						var x = Math.floor(Math.random() * this.images.smallcrash.length);
-
-						n.crashImage	= this.images.smallcrash[x];
-						n.crashSize		= 0;
-					}
-
-					if (n.crashSize < size) {
-						n.crashSize += (size - n.crashSize) / 5;
-					}
-
-					ctx.globalAlpha = alpha;
-					ctx.drawImage(n.crashImage,
-						((n.position.x + w.position.x) / 2) - (n.crashSize / 2),
-						((n.position.y + w.position.y) / 2) - (n.crashSize / 2),
-						n.crashSize, n.crashSize);
+				if (n.collision) {
+					break;
 				}
 			}
+			ctx.stroke();
 
-			if (n.collision && predictCollisions) {
-				/* Stop rendering the trajectory */
-				break;
-			}
-
-			/* Keep track of the previous position */
-			p = n;
+			// TODO	Fade the end?
 		}
 
+		if (predictCollisions && !showTrajectory) {
+			for (var i = 0; n = this.trajectory[i]; i++) {
+				if (n.collision) {
+					/*
+						A trajectory collision can be anywhere from 32-64 in
+						size depending on how far out it will occur.
+					*/
+					if (this.index > n.collision.index &&
+						this.images.smallcrash.length > 0
+					) {
+						var alpha	= 1.0 - ((i + 1) / this.trajectory.length);
+						var size	= 32 + (32 * alpha);
+						var w		= null;
+
+						for (var c = 0; c < n.collision.trajectory.length; c++) {
+							if (n.collision.trajectory[c].collision) {
+								w = n.collision.trajectory[c];
+								break;
+							}
+						}
+
+						if (!n.crashImage) {
+							var x = Math.floor(Math.random() * this.images.smallcrash.length);
+
+							n.crashImage	= this.images.smallcrash[x];
+							n.crashSize		= 0;
+						}
+
+						if (n.crashSize < size) {
+							n.crashSize += (size - n.crashSize) / 5;
+						}
+
+						ctx.globalAlpha = alpha;
+						ctx.drawImage(n.crashImage,
+							((n.position.x + w.position.x) / 2) - (n.crashSize / 2),
+							((n.position.y + w.position.y) / 2) - (n.crashSize / 2),
+							n.crashSize, n.crashSize);
+					}
+
+					break;
+				}
+			}
+		}
 		ctx.restore();
 	}
 
@@ -312,7 +312,13 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-
+	// TODO	Render the circle of color, the texture and the pizza crust (goal)
+	//		all to a seperate canvas that is cached.
+	//
+	//		If the goal changes then re-render the goal on top of this cached
+	//		image.
+	//
+	//		Render just this one image each frame.
 	if (showBody) {
 		if (this.renderCB) {
 			/* There is an overridden render function for this body */
