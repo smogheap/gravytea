@@ -10,6 +10,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 	var dragEnabled	= true;
 	var zoomEnabled	= true;
 	var mousePos	= { x: 0, y: 0 };
+	var distance	= NaN;
 
 	document.body.style.mozUserSelect		= 'none';
 	document.body.style.webkitUserSelect	= 'none';
@@ -22,16 +23,25 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 		if ((touches = event.changedTouches)) {
 			// console.log(touches);
 
-			if (touches.length >= 1) {
+			if (touches.length > 0) {
 				event.mouse = {
 					x: touches[0].pageX - canvas.offsetLeft,
 					y: touches[0].pageY - canvas.offsetTop
 				};
 			}
 
-			// TODO	Handle multiple touches for scrolling
+			/* Use the average position */
+			var center = { x: 0, y: 0 };
+			for (var i = 0; i < touches.length; i++) {
+				center.x += touches[0].pageX - canvas.offsetLeft;
+				center.y += touches[0].pageY - canvas.offsetTop;
+			}
+			center.x = center.x / touches.length;
+			center.y = center.y / touches.length;
+
+			event.center = center;
 		} else {
-			event.mouse ={
+			event.mouse = {
 				x: event.offsetX || (event.pageX - canvas.offsetLeft),
 				y: event.offsetY || (event.pageY - canvas.offsetTop)
 			};
@@ -62,6 +72,20 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					dragged		= false;
 
 					return(true);
+				}
+
+				if (touches && touches.length == 2) {
+					var a = new V(touches[0].pageX, touches[0].pageY);
+					var b = new V(touches[1].pageX, touches[1].pageY);
+					var d = a.distance(b);
+
+					if (!isNaN(distance)) {
+						zoom(d - distance, event.center);
+					}
+
+					distance = d;
+				} else {
+					distance = NaN;
 				}
 
 				if (Math.abs(position.x - mousePos.x) <= 5 &&
