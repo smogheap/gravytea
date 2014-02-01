@@ -60,6 +60,8 @@ function disableCanvasSmoothing(ctx)
 
 	wrap('clearRect');
 	wrap('drawImage');
+/*
+	// These ones appear to hurt the frame rate...
 	wrap('lineTo');
 	wrap('moveTo');
 	wrap('rect');
@@ -67,6 +69,7 @@ function disableCanvasSmoothing(ctx)
 	wrap('strokeRect');
 	wrap('fillText');
 	wrap('strokeText');
+*/
 
 	return(ctx);
 }
