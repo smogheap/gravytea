@@ -415,6 +415,17 @@ UnstableGameMenu.prototype.checkScrim = function checkScrim()
 	so we need to initialize here instead of in the html.
 */
 window.addEventListener('load', function() {
+	document.addEventListener('touchmove', function(event) {
+		/*
+			Needed for android
+
+			Chrome for android will not fire the touch events on our canvas
+			unless we preventDefault on this.
+		*/
+		event.preventDefault();
+	});
+
+
 	var options	= new UnstableGameOptions(this);
 
 	options.ready(function() {
