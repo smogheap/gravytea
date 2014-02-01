@@ -10,7 +10,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 	var dragEnabled	= true;
 	var zoomEnabled	= true;
 	var mousePos	= { x: 0, y: 0 };
-	var distance	= NaN;
+	var oldDistance	= NaN;
 
 	document.body.style.mozUserSelect		= 'none';
 	document.body.style.webkitUserSelect	= 'none';
@@ -77,15 +77,18 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				if (touches && touches.length == 2) {
 					var a = new V(touches[0].pageX, touches[0].pageY);
 					var b = new V(touches[1].pageX, touches[1].pageY);
-					var d = a.distance(b);
+					var newDistance = a.distance(b);
 
-					if (!isNaN(distance)) {
-						zoom(d - distance, true);
+					if (!isNaN(oldDistance)) {
+						/* Scale to x where newDistance * x == oldDistance */
+						var x = oldDistance / newDistance;
+
+						ctx.scale(x, x);
 					}
-
-					distance = d;
+					oldDistance = newDistance;
+					break;
 				} else {
-					distance = NaN;
+					oldDistance = NaN;
 				}
 
 				if (Math.abs(position.x - mousePos.x) <= 5 &&
