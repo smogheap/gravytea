@@ -80,8 +80,8 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					var newDistance = a.distance(b);
 
 					if (!isNaN(oldDistance)) {
-						/* Scale to x where newDistance * x == oldDistance */
-						var x = oldDistance / newDistance;
+						/* Scale to x where oldDistance * x == newDistance */
+						var x = newDistance / oldDistance;
 
 						ctx.scale(x, x);
 					}
