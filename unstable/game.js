@@ -783,11 +783,13 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 	this.solarsys.options.paused = true;
 
 	if (this.goTime) {
-		console.log('Level runtime was: ',
-			(Date.now() - this.goTime) / 1000);
-	}
+		var elapsed	= (Date.now() - this.goTime) / 1000;
 
-	console.log('Rendered ' + this.frames.rendered + ' out of ' + this.frames.total + ' frames');
+		console.log('Level runtime was: ', elapsed);
+
+		console.log('Rendered ' + this.frames.rendered + ' out of ' + this.frames.total + ' frames');
+		console.log('Average FPS: ' + (this.frames.rendered / elapsed));
+	}
 
 	if (!success) {
 		var options = [ 'Retry', 'Reset' ];
@@ -924,6 +926,18 @@ UnstableGame.prototype.show = function showUnstableGame()
 
 	this.running = true;
 
+	/*
+		Needed for android
+
+		Chrome for android will not fire the touch events on our canvas unless
+		we preventDefault on this.
+	*/
+	document.addEventListener('touchmove', function(event) {
+		if (this.running) {
+			event.preventDefault();
+		}
+	}.bind(this));
+
 	if (!(this.canvas)) {
 		fresh = true;
 
@@ -937,6 +951,13 @@ UnstableGame.prototype.show = function showUnstableGame()
 	var ctx		= this.ctx;
 	var w		= -1;
 	var h		= -1;
+
+	// TODO	Make this optional, and determine if it even makes sense to use it
+	//
+	//		The expectation is that this will be signifcantly faster on mobile
+	//		but so far frame rates seem to be hurt by this code. For now leave
+	//		smoothing enabled.
+	setCanvasSmoothing(ctx, true);
 
 	if (isNaN(this.level)) {
 		this.loadLevel(this.options.get('currentLevel'));
