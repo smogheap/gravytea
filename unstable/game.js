@@ -284,18 +284,18 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 						document.body.classList.remove('hideui');
 					}
-					return event.preventDefault() && false;
+					break;
 
 				case 32: /* space	*/
 					this.go();
-					return event.preventDefault() && false;
+					break;
 
 				case 13: /* Enter */
 					var bodies = this.solarsys.getBodies();
 
 					console.log(JSON.stringify(bodies));
 					alert(JSON.stringify(bodies));
-					return event.preventDefault() && false;
+					break;
 
 				case 187: /* plus sign */
 					if (this.level < 0) {
@@ -309,7 +309,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 						this.solarsys.setBodies(bodies);
 					}
-					return event.preventDefault() && false;
+					break;
 
 				case 189: /* minus sign */
 					if (this.level < 0) {
@@ -325,7 +325,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 						this.solarsys.setBodies(bodies);
 					}
-					return event.preventDefault() && false;
+					break;
 
 				case 33: /* Page Up */
 					this.ctx.zoom(1, true);
@@ -335,17 +335,16 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					this.ctx.zoom(-1, true);
 					break;
 
-
 				case 37: /* left	*/ this.keyboard.x--; this.keyboard.shift = event.shiftKey; break;
 				case 38: /* up		*/ this.keyboard.y--; this.keyboard.shift = event.shiftKey; break;
 				case 39: /* right	*/ this.keyboard.x++; this.keyboard.shift = event.shiftKey; break;
 				case 40: /* down	*/ this.keyboard.y++; this.keyboard.shift = event.shiftKey; break;
 
 				default:
-					console.log(event.keyCode);
-					break;
+					console.log('Unhandled keystroke: ' + event.keyCode);
+					return(true);
 			}
-			break;
+			return event.preventDefault() && false;
 
 		case 'keyup':
 			if (this.menu.checkScrim()) {
@@ -357,8 +356,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				case 38: /* up		*/ this.keyboard.y = 0; break;
 				case 39: /* right	*/ this.keyboard.x = 0; break;
 				case 40: /* down	*/ this.keyboard.y = 0; break;
+
+				default:
+					return(true);
 			}
-			break;
+			return event.preventDefault() && false;
 
 		case 'mousemove':
 			if (!this.solarsys.options.paused) {

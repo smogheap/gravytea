@@ -17,8 +17,29 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 
 	var handleEvent = function handleEvent(event)
 	{
+		var toches;
+
+		if ((touches = event.changedTouches)) {
+			// console.log(touches);
+
+			if (touches.length >= 1) {
+				event.mouse = {
+					x: touches[0].pageX - canvas.offsetLeft,
+					y: touches[0].pageY - canvas.offsetTop
+				};
+			}
+
+			// TODO	Handle multiple touches for scrolling
+		} else {
+			event.mouse ={
+				x: event.offsetX || (event.pageX - canvas.offsetLeft),
+				y: event.offsetY || (event.pageY - canvas.offsetTop)
+			};
+		}
+
 		switch (event.type) {
 			case 'mousedown':
+			case 'touchstart':
 				if (!dragEnabled) {
 					dragStart	= null;
 					dragged		= false;
@@ -26,21 +47,27 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					return(true);
 				}
 
-				position.x = event.offsetX || (event.pageX - canvas.offsetLeft);
-				position.y = event.offsetY || (event.pageY - canvas.offsetTop);
+				position = event.mouse;
 
 				dragStart = ctx.transformedPoint(position.x, position.y);
 				dragged = false;
-				break;
+				return(true);
 
 			case 'mousemove':
-				mousePos.x = event.offsetX || (event.pageX - canvas.offsetLeft);
-				mousePos.y = event.offsetY || (event.pageY - canvas.offsetTop);
+			case 'touchmove':
+				mousePos = event.mouse;
 
 				if (!dragStart || !dragEnabled) {
 					dragStart	= null;
 					dragged		= false;
 
+					return(true);
+				}
+
+				if (Math.abs(position.x - mousePos.x) <= 5 &&
+					Math.abs(position.y - mousePos.y) <= 5
+				) {
+					/* Ya gotta drag like ya mean it */
 					return(true);
 				}
 
@@ -56,6 +83,8 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				break;
 
 			case 'mouseup':
+			case 'touchend':
+				mousePos = event.mouse;
 				dragStart = null;
 
 				// Turn back on to allow click and shift click to zoom in and out...
@@ -63,6 +92,10 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					if (!dragged) {
 						zoom(event.shiftKey ? -1 : 1 );
 					}
+				}
+
+				if (!dragged) {
+					return(true);
 				}
 				break;
 
@@ -85,6 +118,11 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 
 	canvas.addEventListener('DOMMouseScroll',	handleEvent, false);
 	canvas.addEventListener('mousewheel',		handleEvent, false);
+
+
+	canvas.addEventListener('touchstart',		handleEvent, false);
+	canvas.addEventListener('touchend',			handleEvent, false);
+	canvas.addEventListener('touchmove',		handleEvent, false);
 
 	var zoom = function ctxZoom(clicks, center)
 	{
