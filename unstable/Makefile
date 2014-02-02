@@ -1,4 +1,5 @@
 APP				:= unstable
+CHROME_DIR		:= chrome
 XR_DIR			:= xulrunner-wrapper
 APP_DIR			:= ${XR_DIR}/${APP}
 CONTENT			:= ${APP_DIR}/content/app/
@@ -7,12 +8,19 @@ XR_VERSION		:= 26.0
 ${APP_DIR}/xulrunner:
 	@echo ""
 	@echo "Select a platform by running one of the following before building:"
+	@echo "   make chrome"
 	@echo "   make linux"
 	@echo "   make linux64"
 	@echo "   make mac"
 	@echo "   make win"
 	@echo ""
 	@false
+
+chrome:
+	mkdir -p ${CHROME_DIR}/${APP}
+	cp -r manifest.json icon*.png ../fonts ../src ${CHROME_DIR}/
+	cp -r *.html *.css *.js images ${CHROME_DIR}/${APP}
+	(cd ${CHROME_DIR} && zip -r ../unstable-chrome.zip *)
 
 linux: ${XR_DIR}/xulrunner-${XR_VERSION}.en-US.linux-i686.tar.bz2
 	rm -rf ${APP_DIR}/xulrunner || true
@@ -47,6 +55,7 @@ ${XR_DIR}/xulrunner-${XR_VERSION}.en-US.win32.zip:
 	@(cd ${XR_DIR} && curl -O http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/${XR_VERSION}/runtimes/xulrunner-${XR_VERSION}.en-US.win32.zip)
 
 clean:
+	rm -rf ${CHROME_DIR}		|| true
 	rm -rf ${CONTENT}			|| true
 	rm ${APP_DIR}/${APP}		|| true
 	rm ${APP_DIR}/${APP}.exe	|| true
