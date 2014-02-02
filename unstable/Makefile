@@ -17,11 +17,12 @@ ${APP_DIR}/xulrunner:
 	@false
 
 unstable.appcache:
-	@echo "CACHE MANIFEST\n# Version 1\n\nCACHE:\n"	>  unstable.appcache
-	@ls index.html *.js *.css *.png						>> unstable.appcache
+	@echo "CACHE MANIFEST"								>  unstable.appcache
+	@echo "# `date`"									>> unstable.appcache
+	@ls *.js *.css *.png						>> unstable.appcache
 	@find ../src ../fonts ../images images	-type f		>> unstable.appcache
 
-web: unstable.appcache
+appcache: unstable.appcache
 
 chrome:
 	mkdir -p ${CHROME_DIR}/${APP}
@@ -88,5 +89,5 @@ all: ${APP_DIR}/xulrunner
 test: all
 	${APP_DIR}/${APP}
 
-.PHONY: clean test unstable.appcache
+.PHONY: clean test appcache unstable.appcache
 

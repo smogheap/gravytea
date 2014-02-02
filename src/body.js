@@ -528,7 +528,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			s = scale * 7;
 			w = 1;
 		} else {
-			s = scale * 30;
+			s = scale * 20;
 			w = 3;
 		}
 
@@ -630,7 +630,7 @@ Body.prototype.inside = function inside(ctx, point, type, padding)
 					*/
 					return(false);
 				}
-				radius = scale * 30;
+				radius = scale * 25;
 			} else {
 				radius = scale * 7;
 			}
