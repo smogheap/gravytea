@@ -113,6 +113,10 @@ UnstableGameOptions.prototype.setFullscreen = function setFullscreen(enabled, de
 {
 	if (enabled) {
 		setTimeout(function() {
+			if (chrome && chrome.app && chrome.app.window) {
+				chrome.app.window.current().fullscreen();
+			}
+
 			if (document.body.requestFullscreen) {
 				document.body.requestFullscreen();
 			} else if (document.body.msRequestFullscreen) {
