@@ -115,9 +115,7 @@ UnstableGameOptions.prototype.setFullscreen = function setFullscreen(enabled, de
 		setTimeout(function() {
 			if (chrome && chrome.app && chrome.app.window) {
 				chrome.app.window.current().fullscreen();
-			}
-
-			if (document.body.requestFullscreen) {
+			} else if (document.body.requestFullscreen) {
 				document.body.requestFullscreen();
 			} else if (document.body.msRequestFullscreen) {
 				document.body.msRequestFullscreen();
@@ -134,7 +132,9 @@ UnstableGameOptions.prototype.setFullscreen = function setFullscreen(enabled, de
 		}, delay || 1);
 	} else {
 		setTimeout(function() {
-			if (document.exitFullscreen) {
+			if (chrome && chrome.app && chrome.app.window) {
+				chrome.app.window.current().restore();
+			} else if (document.exitFullscreen) {
 				document.exitFullscreen();
 			} else if (document.msExitFullscreen) {
 				document.msExitFullscreen();
