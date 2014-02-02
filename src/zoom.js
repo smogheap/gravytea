@@ -47,6 +47,11 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 			};
 		}
 
+		if (!touches || 2 != touches.length) {
+			/* Reset the distance for dragging */
+			oldDistance = NaN;
+		}
+
 		switch (event.type) {
 			case 'mousedown':
 			case 'touchstart':
