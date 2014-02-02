@@ -1,5 +1,5 @@
 APP				:= unstable
-CHROME_DIR		:= chrome
+CHROME_DIR		:= deploy-chrome
 XR_DIR			:= xulrunner-wrapper
 APP_DIR			:= ${XR_DIR}/${APP}
 CONTENT			:= ${APP_DIR}/content/app/
@@ -55,10 +55,11 @@ ${XR_DIR}/xulrunner-${XR_VERSION}.en-US.win32.zip:
 	@(cd ${XR_DIR} && curl -O http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/${XR_VERSION}/runtimes/xulrunner-${XR_VERSION}.en-US.win32.zip)
 
 clean:
-	rm -rf ${CHROME_DIR}		|| true
-	rm -rf ${CONTENT}			|| true
-	rm ${APP_DIR}/${APP}		|| true
-	rm ${APP_DIR}/${APP}.exe	|| true
+	@rm -rf ${CHROME_DIR}		|| true
+	@rm -rf ${CONTENT}			|| true
+	@rm ${APP_DIR}/${APP}		|| true
+	@rm ${APP_DIR}/${APP}.exe	|| true
+	@rm *.zip					|| true
 
 distclean: clean
 	rm -rf ${APP_DIR}/xulrunner	|| true

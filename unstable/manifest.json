@@ -19,8 +19,8 @@
 	},
 
 	"app": {
-		"launch": {
-			"local_path": "unstable/index.html"
+		"background": {
+			"scripts": [ "unstable/chrome.js" ]
 		}
 	},
 
