@@ -19,6 +19,7 @@ ${APP_DIR}/xulrunner:
 chrome:
 	mkdir -p ${CHROME_DIR}/${APP}
 	cp -r manifest.json icon*.png ../fonts ../src ${CHROME_DIR}/
+	cp ../index.html ${CHROME_DIR}/
 	cp -r *.html *.css *.js images ${CHROME_DIR}/${APP}
 	(cd ${CHROME_DIR} && zip -r ../unstable-chrome.zip *)
 
