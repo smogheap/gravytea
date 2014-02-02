@@ -214,12 +214,34 @@ Body.prototype.getImage = function getImage(showUI)
 		this.cachedImage.completed	!= this.completed	||
 		this.cachedImage.showUI		!= showUI
 	) {
-		delete this.cachedImage;
+		/*
+			The base images are of a planet with a radius of 256, so that is the
+			highest possible quality.
 
-		var canvas			= document.createElement('canvas');
-		var ctx				= canvas.getContext('2d');
+			Try scaling down for mobile devices though.
+		*/
 		var radius			= 256;
 		var size			= (radius * 2) * 1.5;
+		var canvas;
+		var ctx;
+
+		/* Either clear the canvas, or create a new one */
+		if (this.cachedImage) {
+			canvas			= this.cachedImage;
+			ctx				= canvas.cachedctx;
+
+			ctx.clearRect(-radius, -radius, radius, radius);
+		} else {
+			canvas			= document.createElement('canvas');
+			ctx				= canvas.getContext('2d');
+
+			this.cachedImage= canvas;
+			canvas.cachedctx= ctx;
+
+			canvas.setAttribute('width',  size);
+			canvas.setAttribute('height', size);
+			ctx.translate(size / 2, size / 2);
+		}
 
 		/*
 			Keep details needed to determine when this cached image is no longer
@@ -230,11 +252,6 @@ Body.prototype.getImage = function getImage(showUI)
 		canvas.goal			= this.goal;
 		canvas.completed	= this.completed;
 		canvas.showUI		= showUI;
-		this.cachedImage	= canvas;
-
-		canvas.setAttribute('width',  size);
-		canvas.setAttribute('height', size);
-		ctx.translate(size / 2, size / 2);
 
 		/* Render the area around the body */
 		switch (this.type) {
@@ -309,7 +326,7 @@ Body.prototype.getImage = function getImage(showUI)
 			var segmentSize	= (Math.PI * 2) / this.goal;
 
 			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= 60;
+			ctx.lineWidth	= radius / 4;
 
 			for (var i = 0; i < this.goal; i++) {
 				if (i < this.completed) {
@@ -321,11 +338,11 @@ Body.prototype.getImage = function getImage(showUI)
 				ctx.beginPath();
 
 				if (this.goal > 1) {
-					ctx.arc(0, 0, radius + 80,
+					ctx.arc(0, 0, radius * 1.3,
 						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
 						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
 				} else {
-					ctx.arc(0, 0, radius + 80,
+					ctx.arc(0, 0, radius * 1.3,
 						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
 						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
 				}
