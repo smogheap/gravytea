@@ -37,7 +37,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 				/* Did the user click on a velocity vector node? */
 				for (var i = 0, b; b = solarsys.bodies[i]; i++) {
-					if (!b.velocity.locked && b.inside(ctx, point, true, 3)) {
+					if (!b.velocity.locked && b.inside(ctx, point, 'velocity', 3)) {
 						activeVector = b.velocity;
 
 						/*
@@ -54,7 +54,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 				if (!activeVector) {
 					/* Did the user click on a body? */
 					for (var i = 0, b; b = solarsys.bodies[i]; i++) {
-						if (!b.position.locked && b.inside(ctx, point, false, 7)) {
+						if (!b.position.locked && b.inside(ctx, point, 'drag', 7)) {
 							activeVector = b.position;
 							dragScale = 1.0;
 							break;
@@ -95,7 +95,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 					lastPoint = point;
 					solarsys.resetTrajectories();
 				}
-				break;
+				return event.preventDefault() && false;
 
 			case 'mouseup':
 			case 'touchend':
@@ -107,7 +107,7 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 				ctx.setZoomable(true);
 
 				activeVector = null;
-				return(true);
+				return event.preventDefault() && false;
 		}
 		return(true);
 	};

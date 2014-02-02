@@ -207,6 +207,7 @@ Body.prototype.setDensity = function setDensity(density)
 
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, predictCollisions)
 {
+	var touch = ('ontouchstart' in window);
 	var scale;
 
 	try {
@@ -293,7 +294,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-	if (showVelocity && !this.velocity.locked) {
+	if (showVelocity && !this.velocity.locked && (!touch || this.selected)) {
 		/*
 			Show the line to the velocity indicator node. This line needs to be
 			under the body itself.
@@ -399,20 +400,45 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 		if (showUI) {
 			if (this.selected) {
-				/* Highlight the body */
-				ctx.save();
+				if (!touch || this.position.locked) {
+					/* Highlight the body with a simple ring */
+					ctx.save();
 
-				ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
-				ctx.lineCap		= 'butt';
-				ctx.lineWidth	= 4;
+					ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+					ctx.lineCap		= 'butt';
+					ctx.lineWidth	= 4;
 
-				ctx.beginPath();
-				ctx.arc(this.position.x, this.position.y, this.radius,
-						0, Math.PI * 2, false);
-				ctx.closePath();
-				ctx.stroke();
+					ctx.beginPath();
+					ctx.arc(this.position.x, this.position.y, this.radius,
+							0, Math.PI * 2, false);
+					ctx.closePath();
+					ctx.stroke();
 
-				ctx.restore();
+					ctx.restore();
+				} else {
+					/* Highlight the body with a large draggable area */
+					var r = Math.max(this.radius + 5, scale * 50);
+
+					ctx.save();
+
+					var g = ctx.createRadialGradient(
+								this.position.x, this.position.y, r,
+								this.position.x, this.position.y, this.radius);
+
+					g.addColorStop(0.0, 'rgba(255, 255, 255, 0.7)');
+					g.addColorStop(0.1, 'rgba(255, 255, 255, 0.3)');
+					g.addColorStop(1.0, 'rgba(255, 255, 255, 0.1)');
+
+					ctx.fillStyle = g;
+
+					ctx.beginPath();
+					ctx.arc(this.position.x, this.position.y, r,
+							0, Math.PI * 2, false);
+					ctx.closePath();
+					ctx.fill();
+
+					ctx.restore();
+				}
 			}
 
 			if (this.goal) {
@@ -481,7 +507,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		}
 	}
 
-	if (showVelocity && !this.velocity.locked) {
+	if (showVelocity && !this.velocity.locked && (!touch || this.selected)) {
 		/*
 			Show a velocity indicator node
 
@@ -492,14 +518,23 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			known distance and use the resulting distance to determine the
 			current scale level.
 		*/
-		var s		= 7 * scale;
-		var v		= new V(this.position);
-
-		v.tx(this.velocity.multiply(this.indicatorScale));
+		var s;
+		var w;
+		var v = new V(this.position);
 
 		ctx.save();
 
-		ctx.lineWidth	= 1 * scale;
+		if (!touch) {
+			s = scale * 7;
+			w = 1;
+		} else {
+			s = scale * 30;
+			w = 3;
+		}
+
+		v.tx(this.velocity.multiply(this.indicatorScale));
+
+		ctx.lineWidth	= w * scale;
 		ctx.lineCap		= 'round';
 		ctx.strokeStyle	= 'rgba(255, 255, 255, 1.0)';
 
@@ -507,12 +542,12 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		for (var i = 0; i < 2; i++) {
 			switch (i) {
 				case 0:
-					ctx.lineWidth	= 3 * scale;
+					ctx.lineWidth	= w * scale * 3;
 					ctx.strokeStyle = 'rgba(0, 0, 0, 1.0)';
 					break;
 
 				case 1:
-					ctx.lineWidth	= 1 * scale;
+					ctx.lineWidth	= w * scale;
 					ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
 					break;
 			}
@@ -549,17 +584,59 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	If vectorIndicator is true then the check will be performed for the position
 	the velocity vector indicator is displayed instead of the position of the
 	body itself.
+
+	Type can be:
+		'default'		Is the point inside the area of this body
+
+		'drag'			Is the point within a UI control to be used for dragging
+						this body?
+
+		'velocity'		Is the point within a UI control to be used for changing
+						the body's velocity?
 */
-Body.prototype.inside = function inside(ctx, point, vectorIndicator, padding)
+Body.prototype.inside = function inside(ctx, point, type, padding)
 {
 	var center	= new V(this.position);
 	var radius	= this.radius;
 	var scale	= ctx.getScale();
+	var touch = ('ontouchstart' in window);
 
-	if (vectorIndicator) {
+	switch (type) {
+		default:
+		case 'default':
+			break;
 
-		radius = 7 * scale;
-		center.tx(this.velocity.multiply(this.indicatorScale));
+		case 'drag':
+			if (touch) {
+				if (!this.selected) {
+					/*
+						On a touch screen the body must be selected before it
+						can be moved on screen.
+					*/
+					return(false);
+				}
+
+				radius = Math.max(scale * 50, radius);
+			}
+
+			break;
+
+		case 'velocity':
+			if (touch) {
+				if (!this.selected) {
+					/*
+						On a touch screen the body must be selected before the
+						velocity vector can be moved.
+					*/
+					return(false);
+				}
+				radius = scale * 30;
+			} else {
+				radius = scale * 7;
+			}
+
+			center.tx(this.velocity.multiply(this.indicatorScale));
+			break;
 	}
 
 	if (!isNaN(padding)) {
