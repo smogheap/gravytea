@@ -205,6 +205,141 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
+Body.prototype.getImage = function getImage(showUI)
+{
+	if (!this.cachedImage								||
+		this.cachedImage.type		!= this.type		||
+		this.cachedImage.radius		!= this.radius		||
+		this.cachedImage.goal		!= this.goal		||
+		this.cachedImage.completed	!= this.completed	||
+		this.cachedImage.showUI		!= showUI
+	) {
+		delete this.cachedImage;
+
+		var canvas			= document.createElement('canvas');
+		var ctx				= canvas.getContext('2d');
+		var radius			= 256;
+		var size			= (radius * 2) * 1.5;
+
+		/*
+			Keep details needed to determine when this cached image is no longer
+			valid and must be recreated.
+		*/
+		canvas.type			= this.type;
+		canvas.radius		= this.radius;
+		canvas.goal			= this.goal;
+		canvas.completed	= this.completed;
+		canvas.showUI		= showUI;
+		this.cachedImage	= canvas;
+
+		canvas.setAttribute('width',  size);
+		canvas.setAttribute('height', size);
+		ctx.translate(size / 2, size / 2);
+
+		/* Render the area around the body */
+		switch (this.type) {
+			case 'sun':
+			case 'blackhole':
+				/* Render a halo/glow effect */
+				ctx.save();
+
+				var g = ctx.createRadialGradient(
+								0, 0, radius,
+								0, 0, radius * 1.5);
+
+				if (this.type == 'sun') {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.3)');
+				} else {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+				}
+				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+
+				ctx.fillStyle = g;
+
+				ctx.beginPath();
+				ctx.arc(0, 0, radius * 1.5, 0, Math.PI * 2, false);
+				ctx.closePath();
+				ctx.fill();
+
+				ctx.restore();
+				break;
+
+			default:
+				break;
+		}
+
+		/* Render the base coloured circle for the planet */
+		ctx.save();
+		switch (this.type) {
+			case 'blackhole':
+				ctx.fillStyle = '#000';
+				break;
+
+			case 'sun':
+				if (!this.texture) {
+					ctx.fillStyle = '#fff';
+				} else {
+					ctx.fillStyle = this.color || '#fff';
+				}
+				break;
+
+			default:
+				ctx.fillStyle = this.color || '#888';
+				break;
+		}
+		ctx.beginPath();
+		ctx.arc(0, 0, radius, 0, Math.PI * 2, false);
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
+
+		if (this.texture) {
+			/* Render a texture on the body */
+			ctx.drawImage(this.texture, -radius, -radius, radius * 2, radius * 2);
+		}
+
+		if (showUI && this.goal) {
+			/* Draw the goal on top of the planet */
+			ctx.save();
+
+			/*
+				Draw a line around the planet indicating how close to the goal
+				the player is.
+			*/
+			var segmentSize	= (Math.PI * 2) / this.goal;
+
+			ctx.lineCap		= 'butt';
+			ctx.lineWidth	= 60;
+
+			for (var i = 0; i < this.goal; i++) {
+				if (i < this.completed) {
+					ctx.strokeStyle = '#fff';
+				} else {
+					ctx.strokeStyle = '#666';
+				}
+
+				ctx.beginPath();
+
+				if (this.goal > 1) {
+					ctx.arc(0, 0, radius + 80,
+						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+				} else {
+					ctx.arc(0, 0, radius + 80,
+						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
+				}
+
+				ctx.stroke();
+			}
+
+			ctx.restore();
+		}
+	}
+
+	return(this.cachedImage);
+};
+
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, predictCollisions)
 {
 	var touch = ('ontouchstart' in window);
@@ -219,7 +354,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	/* Update any properties being displayed */
 	this.updateProperties();
 
-	if (showTrajectory || predictCollisions) {
+	if ((showTrajectory || predictCollisions) && !this.collision) {
 		ctx.save();
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
@@ -317,13 +452,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-	// TODO	Render the circle of color, the texture and the pizza crust (goal)
-	//		all to a seperate canvas that is cached.
-	//
-	//		If the goal changes then re-render the goal on top of this cached
-	//		image.
-	//
-	//		Render just this one image each frame.
 	if (showBody) {
 		if (this.renderCB) {
 			/* There is an overridden render function for this body */
@@ -331,74 +459,19 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			return;
 		}
 
-		switch (this.type) {
-			case 'sun':
-			case 'blackhole':
-				/* Render a halo/glow effect */
-				ctx.save();
+		this.completed = this.getOrbitCount();
 
-				var g = ctx.createRadialGradient(
-							this.position.x, this.position.y, this.radius,
-							this.position.x, this.position.y, this.radius * 1.5);
+		/*
+			Draw the body itself
 
-				if (this.type == 'sun') {
-					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.3)');
-				} else {
-					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
-				}
-				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+			The cached image is 1.5 * the size needed for the body.
+		*/
+		var r = this.radius * 1.5;
+		ctx.drawImage(this.getImage(showUI),
+			this.position.x - r, this.position.y - r,
+			r * 2, r * 2);
 
-				ctx.fillStyle = g;
-
-				ctx.beginPath();
-				ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
-						0, Math.PI * 2, false);
-				ctx.closePath();
-				ctx.fill();
-
-				ctx.restore();
-				break;
-
-			default:
-				break;
-		}
-
-		/* Render the base coloured circle for the planet */
-		ctx.save();
-
-		switch (this.type) {
-			case 'blackhole':
-				ctx.fillStyle = '#000';
-				break;
-
-			case 'sun':
-				if (!this.texture) {
-					ctx.fillStyle = '#fff';
-				} else {
-					ctx.fillStyle = this.color || '#fff';
-				}
-				break;
-
-			default:
-				ctx.fillStyle = this.color || '#888';
-				break;
-		}
-
-		ctx.beginPath();
-		ctx.arc(this.position.x, this.position.y, this.radius,
-				0, Math.PI * 2, false);
-		ctx.closePath();
-		ctx.fill();
-		ctx.restore();
-
-		if (this.texture) {
-			/* Render a texture on the body */
-			ctx.drawImage(this.texture,
-				this.position.x - this.radius - 0.5, this.position.y - this.radius - 0.5,
-				(this.radius * 2) + 1, (this.radius * 2) + 1);
-		}
-
-		if (showUI) {
+		if (this.selected && showUI) {
 			if (this.selected) {
 				if (!touch || this.position.locked) {
 					/* Highlight the body with a simple ring */
@@ -409,8 +482,8 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 					ctx.lineWidth	= 4;
 
 					ctx.beginPath();
-					ctx.arc(this.position.x, this.position.y, this.radius,
-							0, Math.PI * 2, false);
+					ctx.arc(this.position.x, this.position.y,
+						this.radius, 0, Math.PI * 2, false);
 					ctx.closePath();
 					ctx.stroke();
 
@@ -439,46 +512,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 					ctx.restore();
 				}
-			}
-
-			if (this.goal) {
-				/* Draw the goal on top of the planet */
-				this.completed = this.getOrbitCount();
-
-				ctx.save();
-
-				/*
-					Draw a line around the planet indicating how close to the goal
-					the player is.
-				*/
-				var segmentSize	= (Math.PI * 2) / this.goal;
-
-				ctx.lineCap		= 'butt';
-				ctx.lineWidth	= 4;
-
-				for (var i = 0; i < this.goal; i++) {
-					if (i < this.completed) {
-						ctx.strokeStyle = '#fff';
-					} else {
-						ctx.strokeStyle = '#666';
-					}
-
-					ctx.beginPath();
-
-					if (this.goal > 1) {
-						ctx.arc(this.position.x, this.position.y, this.radius + 5,
-							(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
-							((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
-					} else {
-						ctx.arc(this.position.x, this.position.y, this.radius + 5,
-							(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
-							((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
-					}
-
-					ctx.stroke();
-				}
-
-				ctx.restore();
 			}
 		}
 

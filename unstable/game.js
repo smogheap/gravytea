@@ -96,7 +96,7 @@ UnstableGame.prototype.setUIOptions = function setUIOptions(showUI, showControls
 			this.solarsys.options.showVelocity	= true;
 		} else {
 			/* Hide controls */
-			this.solarsys.options.showVelocity	= true;
+			this.solarsys.options.showVelocity	= false;
 		}
 	}
 };
