@@ -205,8 +205,161 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
+Body.prototype.getImage = function getImage(showUI)
+{
+	if (!this.cachedImage								||
+		this.cachedImage.type		!= this.type		||
+		this.cachedImage.radius		!= this.radius		||
+		this.cachedImage.goal		!= this.goal		||
+		this.cachedImage.completed	!= this.completed	||
+		this.cachedImage.showUI		!= showUI
+	) {
+		/*
+			The base images are of a planet with a radius of 256, so that is the
+			highest possible quality.
+
+			Try scaling down for mobile devices though.
+		*/
+		var radius			= 256;
+		var size			= (radius * 2) * 1.5;
+		var canvas;
+		var ctx;
+
+		/* Either clear the canvas, or create a new one */
+		if (this.cachedImage) {
+			canvas			= this.cachedImage;
+			ctx				= canvas.cachedctx;
+
+			ctx.clearRect(-radius, -radius, radius, radius);
+		} else {
+			canvas			= document.createElement('canvas');
+			ctx				= canvas.getContext('2d');
+
+			this.cachedImage= canvas;
+			canvas.cachedctx= ctx;
+
+			canvas.setAttribute('width',  size);
+			canvas.setAttribute('height', size);
+			ctx.translate(size / 2, size / 2);
+		}
+
+		/*
+			Keep details needed to determine when this cached image is no longer
+			valid and must be recreated.
+		*/
+		canvas.type			= this.type;
+		canvas.radius		= this.radius;
+		canvas.goal			= this.goal;
+		canvas.completed	= this.completed;
+		canvas.showUI		= showUI;
+
+		/* Render the area around the body */
+		switch (this.type) {
+			case 'sun':
+			case 'blackhole':
+				/* Render a halo/glow effect */
+				ctx.save();
+
+				var g = ctx.createRadialGradient(
+								0, 0, radius,
+								0, 0, radius * 1.5);
+
+				if (this.type == 'sun') {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.3)');
+				} else {
+					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
+				}
+				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+
+				ctx.fillStyle = g;
+
+				ctx.beginPath();
+				ctx.arc(0, 0, radius * 1.5, 0, Math.PI * 2, false);
+				ctx.closePath();
+				ctx.fill();
+
+				ctx.restore();
+				break;
+
+			default:
+				break;
+		}
+
+		/* Render the base coloured circle for the planet */
+		ctx.save();
+		switch (this.type) {
+			case 'blackhole':
+				ctx.fillStyle = '#000';
+				break;
+
+			case 'sun':
+				if (!this.texture) {
+					ctx.fillStyle = '#fff';
+				} else {
+					ctx.fillStyle = this.color || '#fff';
+				}
+				break;
+
+			default:
+				ctx.fillStyle = this.color || '#888';
+				break;
+		}
+		ctx.beginPath();
+		ctx.arc(0, 0, radius, 0, Math.PI * 2, false);
+		ctx.closePath();
+		ctx.fill();
+		ctx.restore();
+
+		if (this.texture) {
+			/* Render a texture on the body */
+			ctx.drawImage(this.texture, -radius, -radius, radius * 2, radius * 2);
+		}
+
+		if (showUI && this.goal) {
+			/* Draw the goal on top of the planet */
+			ctx.save();
+
+			/*
+				Draw a line around the planet indicating how close to the goal
+				the player is.
+			*/
+			var segmentSize	= (Math.PI * 2) / this.goal;
+
+			ctx.lineCap		= 'butt';
+			ctx.lineWidth	= radius / 4;
+
+			for (var i = 0; i < this.goal; i++) {
+				if (i < this.completed) {
+					ctx.strokeStyle = '#fff';
+				} else {
+					ctx.strokeStyle = '#666';
+				}
+
+				ctx.beginPath();
+
+				if (this.goal > 1) {
+					ctx.arc(0, 0, radius * 1.3,
+						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+				} else {
+					ctx.arc(0, 0, radius * 1.3,
+						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
+						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
+				}
+
+				ctx.stroke();
+			}
+
+			ctx.restore();
+		}
+	}
+
+	return(this.cachedImage);
+};
+
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, predictCollisions)
 {
+	var touch = ('ontouchstart' in window);
 	var scale;
 
 	try {
@@ -218,7 +371,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	/* Update any properties being displayed */
 	this.updateProperties();
 
-	if (showTrajectory || predictCollisions) {
+	if ((showTrajectory || predictCollisions) && !this.collision) {
 		ctx.save();
 		ctx.lineCap		= 'round';
 		ctx.lineWidth	= 1 * scale;
@@ -293,7 +446,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-	if (showVelocity && !this.velocity.locked) {
+	if (showVelocity && !this.velocity.locked && (!touch || this.selected)) {
 		/*
 			Show the line to the velocity indicator node. This line needs to be
 			under the body itself.
@@ -316,13 +469,6 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		ctx.restore();
 	}
 
-	// TODO	Render the circle of color, the texture and the pizza crust (goal)
-	//		all to a seperate canvas that is cached.
-	//
-	//		If the goal changes then re-render the goal on top of this cached
-	//		image.
-	//
-	//		Render just this one image each frame.
 	if (showBody) {
 		if (this.renderCB) {
 			/* There is an overridden render function for this body */
@@ -330,129 +476,59 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			return;
 		}
 
-		switch (this.type) {
-			case 'sun':
-			case 'blackhole':
-				/* Render a halo/glow effect */
-				ctx.save();
+		this.completed = this.getOrbitCount();
 
-				var g = ctx.createRadialGradient(
-							this.position.x, this.position.y, this.radius,
-							this.position.x, this.position.y, this.radius * 1.5);
+		/*
+			Draw the body itself
 
-				if (this.type == 'sun') {
-					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.3)');
-				} else {
-					g.addColorStop(0, 'rgba(' + this.rgb + ', 0.2)');
-				}
-				g.addColorStop(1, 'rgba(' + this.rgb + ', 0.0)');
+			The cached image is 1.5 * the size needed for the body.
+		*/
+		var r = this.radius * 1.5;
+		ctx.drawImage(this.getImage(showUI),
+			this.position.x - r, this.position.y - r,
+			r * 2, r * 2);
 
-				ctx.fillStyle = g;
-
-				ctx.beginPath();
-				ctx.arc(this.position.x, this.position.y, this.radius * 1.6,
-						0, Math.PI * 2, false);
-				ctx.closePath();
-				ctx.fill();
-
-				ctx.restore();
-				break;
-
-			default:
-				break;
-		}
-
-		/* Render the base coloured circle for the planet */
-		ctx.save();
-
-		switch (this.type) {
-			case 'blackhole':
-				ctx.fillStyle = '#000';
-				break;
-
-			case 'sun':
-				if (!this.texture) {
-					ctx.fillStyle = '#fff';
-				} else {
-					ctx.fillStyle = this.color || '#fff';
-				}
-				break;
-
-			default:
-				ctx.fillStyle = this.color || '#888';
-				break;
-		}
-
-		ctx.beginPath();
-		ctx.arc(this.position.x, this.position.y, this.radius,
-				0, Math.PI * 2, false);
-		ctx.closePath();
-		ctx.fill();
-		ctx.restore();
-
-		if (this.texture) {
-			/* Render a texture on the body */
-			ctx.drawImage(this.texture,
-				this.position.x - this.radius - 0.5, this.position.y - this.radius - 0.5,
-				(this.radius * 2) + 1, (this.radius * 2) + 1);
-		}
-
-		if (showUI) {
+		if (this.selected && showUI) {
 			if (this.selected) {
-				/* Highlight the body */
-				ctx.save();
+				if (!touch || this.position.locked) {
+					/* Highlight the body with a simple ring */
+					ctx.save();
 
-				ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
-				ctx.lineCap		= 'butt';
-				ctx.lineWidth	= 4;
-
-				ctx.beginPath();
-				ctx.arc(this.position.x, this.position.y, this.radius,
-						0, Math.PI * 2, false);
-				ctx.closePath();
-				ctx.stroke();
-
-				ctx.restore();
-			}
-
-			if (this.goal) {
-				/* Draw the goal on top of the planet */
-				this.completed = this.getOrbitCount();
-
-				ctx.save();
-
-				/*
-					Draw a line around the planet indicating how close to the goal
-					the player is.
-				*/
-				var segmentSize	= (Math.PI * 2) / this.goal;
-
-				ctx.lineCap		= 'butt';
-				ctx.lineWidth	= 4;
-
-				for (var i = 0; i < this.goal; i++) {
-					if (i < this.completed) {
-						ctx.strokeStyle = '#fff';
-					} else {
-						ctx.strokeStyle = '#666';
-					}
+					ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
+					ctx.lineCap		= 'butt';
+					ctx.lineWidth	= 4;
 
 					ctx.beginPath();
-
-					if (this.goal > 1) {
-						ctx.arc(this.position.x, this.position.y, this.radius + 5,
-							(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
-							((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
-					} else {
-						ctx.arc(this.position.x, this.position.y, this.radius + 5,
-							(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
-							((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
-					}
-
+					ctx.arc(this.position.x, this.position.y,
+						this.radius, 0, Math.PI * 2, false);
+					ctx.closePath();
 					ctx.stroke();
-				}
 
-				ctx.restore();
+					ctx.restore();
+				} else {
+					/* Highlight the body with a large draggable area */
+					var r = Math.max(this.radius + 5, scale * 50);
+
+					ctx.save();
+
+					var g = ctx.createRadialGradient(
+								this.position.x, this.position.y, r,
+								this.position.x, this.position.y, this.radius);
+
+					g.addColorStop(0.0, 'rgba(255, 255, 255, 0.7)');
+					g.addColorStop(0.1, 'rgba(255, 255, 255, 0.3)');
+					g.addColorStop(1.0, 'rgba(255, 255, 255, 0.1)');
+
+					ctx.fillStyle = g;
+
+					ctx.beginPath();
+					ctx.arc(this.position.x, this.position.y, r,
+							0, Math.PI * 2, false);
+					ctx.closePath();
+					ctx.fill();
+
+					ctx.restore();
+				}
 			}
 		}
 
@@ -481,7 +557,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		}
 	}
 
-	if (showVelocity && !this.velocity.locked) {
+	if (showVelocity && !this.velocity.locked && (!touch || this.selected)) {
 		/*
 			Show a velocity indicator node
 
@@ -492,14 +568,23 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			known distance and use the resulting distance to determine the
 			current scale level.
 		*/
-		var s		= 7 * scale;
-		var v		= new V(this.position);
-
-		v.tx(this.velocity.multiply(this.indicatorScale));
+		var s;
+		var w;
+		var v = new V(this.position);
 
 		ctx.save();
 
-		ctx.lineWidth	= 1 * scale;
+		if (!touch) {
+			s = scale * 7;
+			w = 1;
+		} else {
+			s = scale * 20;
+			w = 3;
+		}
+
+		v.tx(this.velocity.multiply(this.indicatorScale));
+
+		ctx.lineWidth	= w * scale;
 		ctx.lineCap		= 'round';
 		ctx.strokeStyle	= 'rgba(255, 255, 255, 1.0)';
 
@@ -507,12 +592,12 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 		for (var i = 0; i < 2; i++) {
 			switch (i) {
 				case 0:
-					ctx.lineWidth	= 3 * scale;
+					ctx.lineWidth	= w * scale * 3;
 					ctx.strokeStyle = 'rgba(0, 0, 0, 1.0)';
 					break;
 
 				case 1:
-					ctx.lineWidth	= 1 * scale;
+					ctx.lineWidth	= w * scale;
 					ctx.strokeStyle = 'rgba(255, 255, 255, 1.0)';
 					break;
 			}
@@ -549,17 +634,59 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	If vectorIndicator is true then the check will be performed for the position
 	the velocity vector indicator is displayed instead of the position of the
 	body itself.
+
+	Type can be:
+		'default'		Is the point inside the area of this body
+
+		'drag'			Is the point within a UI control to be used for dragging
+						this body?
+
+		'velocity'		Is the point within a UI control to be used for changing
+						the body's velocity?
 */
-Body.prototype.inside = function inside(ctx, point, vectorIndicator, padding)
+Body.prototype.inside = function inside(ctx, point, type, padding)
 {
 	var center	= new V(this.position);
 	var radius	= this.radius;
 	var scale	= ctx.getScale();
+	var touch = ('ontouchstart' in window);
 
-	if (vectorIndicator) {
+	switch (type) {
+		default:
+		case 'default':
+			break;
 
-		radius = 7 * scale;
-		center.tx(this.velocity.multiply(this.indicatorScale));
+		case 'drag':
+			if (touch) {
+				if (!this.selected) {
+					/*
+						On a touch screen the body must be selected before it
+						can be moved on screen.
+					*/
+					return(false);
+				}
+
+				radius = Math.max(scale * 50, radius);
+			}
+
+			break;
+
+		case 'velocity':
+			if (touch) {
+				if (!this.selected) {
+					/*
+						On a touch screen the body must be selected before the
+						velocity vector can be moved.
+					*/
+					return(false);
+				}
+				radius = scale * 25;
+			} else {
+				radius = scale * 7;
+			}
+
+			center.tx(this.velocity.multiply(this.indicatorScale));
+			break;
 	}
 
 	if (!isNaN(padding)) {

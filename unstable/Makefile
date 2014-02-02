@@ -16,6 +16,14 @@ ${APP_DIR}/xulrunner:
 	@echo ""
 	@false
 
+unstable.appcache:
+	@echo "CACHE MANIFEST"								>  unstable.appcache
+	@echo "# `date`"									>> unstable.appcache
+	@ls *.js *.css *.png						>> unstable.appcache
+	@find ../src ../fonts ../images images	-type f		>> unstable.appcache
+
+appcache: unstable.appcache
+
 chrome:
 	mkdir -p ${CHROME_DIR}/${APP}
 	cp -r manifest.json icon*.png ../fonts ../src ${CHROME_DIR}/
@@ -60,7 +68,7 @@ clean:
 	@rm -rf ${CONTENT}			|| true
 	@rm ${APP_DIR}/${APP}		|| true
 	@rm ${APP_DIR}/${APP}.exe	|| true
-	@rm *.zip					|| true
+	@rm *.zip *.appcache		|| true
 
 distclean: clean
 	rm -rf ${APP_DIR}/xulrunner	|| true
@@ -82,5 +90,5 @@ all: ${APP_DIR}/xulrunner
 test: all
 	${APP_DIR}/${APP}
 
-.PHONY: clean test
+.PHONY: clean test appcache unstable.appcache
 

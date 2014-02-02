@@ -257,7 +257,7 @@ SolarSystem.prototype.render = function render(ctx)
 	}
 
 	/* Render the collisions at the end of a trajectory */
-	if (predictCollisions && this.options.trajectory) {
+	if (predictCollisions && this.options.trajectory && this.options.textures) {
 		for (var i = 0, body; body = this.bodies[i]; i++) {
 			body.render(ctx, false, false, this.options.showVelocity, this.options.showUI, true);
 		}

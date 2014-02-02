@@ -33,3 +33,10 @@
 	}
 }());
 
+window.addEventListener('load', function() {
+	/* Add a class to body if we are on a device that has a touchscreen */
+	if ('ontouchstart' in window) {
+		document.body.classList.add('touchscreen');
+	}
+});
+

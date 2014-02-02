@@ -34,6 +34,10 @@ a, a:visited {
 	top:				10px;
 }
 
+.touchscreen .navigation {
+	display:			none;
+}
+
 #menu .title,
 .menu {
 	font-family:		'vSHandPrinted', 'sans-serif';
@@ -86,7 +90,7 @@ a, a:visited {
 
 	left:				0px;
 	right:				0px;
-	top:				110px;
+	top:				120px;
 	bottom:				0px;
 
 	padding-left:		30px;

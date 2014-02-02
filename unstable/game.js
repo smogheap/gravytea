@@ -26,7 +26,7 @@ function UnstableGame(options, menu)
 		textures:					true
 	});
 
-	this.enableUI(true);
+	this.setUIOptions(true, true);
 
 	this.speed = 1.0;
 	// this.speed = 0.2;
@@ -69,6 +69,37 @@ function UnstableGame(options, menu)
 		"What comes around goes around (and bangs into stuff)."
 	];
 }
+
+UnstableGame.prototype.setUIOptions = function setUIOptions(showUI, showControls)
+{
+	if (showUI || arguments.length < 1) {
+		/* Show UI elements */
+		this.solarsys.options.showUI			= true;
+		this.solarsys.options.predictCollisions	= this.options.get('predictCollisions');
+		this.solarsys.options.trajectory		= 3000;
+
+		document.body.classList.remove('hideui');
+		this.showUI = true;
+	} else {
+		/* Hide UI elements */
+		this.solarsys.options.showUI			= false;
+		this.solarsys.options.predictCollisions	= false;
+		this.solarsys.options.trajectory		= 0;
+
+		document.body.classList.add('hideui');
+		this.showUI = false;
+	}
+
+	if (arguments.length >= 2) {
+		if (showControls) {
+			/* Show controls */
+			this.solarsys.options.showVelocity	= true;
+		} else {
+			/* Hide controls */
+			this.solarsys.options.showVelocity	= false;
+		}
+	}
+};
 
 UnstableGame.prototype.findBody = function findBody(point)
 {
@@ -149,43 +180,21 @@ UnstableGame.prototype.selectBody = function selectBody(body)
 	}
 };
 
-UnstableGame.prototype.enableUI = function enableUI(enabled)
-{
-	if (!enabled) {
-		this.solarsys.options.showVelocity		= false;
-		this.solarsys.options.showUI			= false;
-		this.solarsys.options.predictCollisions	= false;
-		this.solarsys.options.trajectory		= 0;
-
-		document.body.classList.add('hideui');
-	} else {
-		this.solarsys.options.showVelocity		= true;
-		this.solarsys.options.showUI			= true;
-		this.solarsys.options.predictCollisions	= this.options.get('predictCollisions');
-		this.solarsys.options.trajectory		= 3000;
-
-		document.body.classList.remove('hideui');
-	}
-};
-
 UnstableGame.prototype.handleEvent = function handleEvent(event)
 {
 	switch (event.type) {
 		case 'click':
 			if (!this.nextClickAction) {
-				if (this.level < 0) {
-					var b = this.findBody();
-
-					if (b) this.selectBody(b);
-				}
-
+				// this.selectBody(this.panTo = this.findBody());
+				this.selectBody(this.findBody());
 				return(true);
 			}
 
 			var issun	= false;
 			var action	= this.nextClickAction;
 
-			this.solarsys.options.showVelocity = true;
+			/* Re-enable normal controls once the action is done */
+			this.setUIOptions(this.showUI, true);
 			delete this.nextClickAction;
 			this.canvas.classList.remove('mouse-crosshair');
 
@@ -286,7 +295,7 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 			switch (event.keyCode) {
 				case 113: /* F2 - Toggle UI elements */
-					this.enableUI(!this.solarsys.options.showUI);
+					this.setUIOptions(!this.solarsys.options.showUI);
 					break;
 
 				case 32: /* space	*/
@@ -366,11 +375,6 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 			return event.preventDefault() && false;
 
 		case 'mousemove':
-			if (!this.solarsys.options.paused) {
-				/* Only allow selecting an object when the game isn't going */
-				return(true);
-			}
-
 			var mouse	= this.ctx.getMouse();
 
 			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
@@ -381,9 +385,19 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				}
 			}
 
+			if (!this.solarsys.options.paused) {
+				/* Only allow selecting an object when the game isn't going */
+				this.canvas.classList.remove('mouse-grab');
+				return(true);
+			}
+
+			/*
+				Change the mouse cursor if we are hovering over something that
+				can be moved. Either a body or a velocity node.
+			*/
 			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 				if (!b.velocity.locked &&
-					b.inside(this.ctx, mouse, true, 3)
+					b.inside(this.ctx, mouse, 'velocity', 3)
 				) {
 					b.velocity.selected = true;
 					this.canvas.classList.add('mouse-grab');
@@ -393,19 +407,19 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 
 			for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
 				if (!b.position.locked &&
-					b.inside(this.ctx, mouse, false, 7)
+					b.inside(this.ctx, mouse, 'drag', 7)
 				) {
 					b.selected = true;
 					this.canvas.classList.add('mouse-grab');
 					return(true);
 				}
 			}
-			this.canvas.classList.remove('mouse-grab');
 
+			this.canvas.classList.remove('mouse-grab');
 			break;
 	}
 
-	return true;
+	return(true);
 };
 
 /*
@@ -457,7 +471,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 
 			case 'Edit':
 				msg = 'Select a planet or sun to edit';
-				this.solarsys.options.showVelocity = false;
+				/* Hide controls */
+				this.setUIOptions(this.showUI, false);
 				break;
 		}
 
@@ -648,7 +663,7 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	delete this.testing;
 
 	delete this.solarsys.name;
-	this.enableUI(true);
+	this.setUIOptions(true);
 
 	/* Make sure the planets aren't moving when the new level is loaded */
 	this.stop();
@@ -728,8 +743,9 @@ UnstableGame.prototype.go = function go()
 		b.save();
 	}
 
-	this.solarsys.options.paused		= false;
-	this.solarsys.options.showVelocity	= false;
+	/* Turn controls off */
+	this.setUIOptions(true, false);
+	this.solarsys.options.paused = false;
 
 	this.loadLevelButtons();
 };
@@ -748,8 +764,9 @@ UnstableGame.prototype.stop = function stop()
 		this.ctx.center();
 	}
 
-	this.solarsys.options.paused		= true;
-	this.solarsys.options.showVelocity	= true;
+	/* Turn controls back on */
+	this.setUIOptions(true, true);
+	this.solarsys.options.paused = true;
 
 	/* Renable displaying the selected body */
 	this.selectBody(this.selectedBody);
@@ -995,7 +1012,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 		ctx.save();
 		makeBodiesDraggable(canvas, ctx, this.solarsys);
 		makeCanvasZoomable(canvas, ctx, function() {
-			this.selectBody(null);
+			// this.selectBody(null);
 			delete this.panTo;
 		}.bind(this));
 		resizeCanvas();
@@ -1130,6 +1147,14 @@ UnstableGame.prototype.show = function showUnstableGame()
 		ctx.save();
 		this.solarsys.render(ctx);
 		ctx.restore();
+
+		/* De-select the current body if it can't be modified */
+		if (this.level > 0 && this.selectedBody &&
+			this.selectedBody.position.locked &&
+			this.selectedBody.velocity.locked
+		) {
+			this.selectBody(null);
+		}
 	};
 	requestAnimationFrame(render.bind(this));
 };
