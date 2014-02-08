@@ -415,6 +415,9 @@ UnstableGameMenu.prototype.checkScrim = function checkScrim()
 	so we need to initialize here instead of in the html.
 */
 window.addEventListener('load', function() {
+	/* Prevent 300ms delay on click events on mobile devices */
+	FastClick.attach(document.body);
+
 	var options	= new UnstableGameOptions(this);
 
 	options.ready(function() {
