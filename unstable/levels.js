@@ -181,38 +181,20 @@ UnstableLevels = [
 			}
 		]
 	}, {
-		name: 'A Trio',
+		author: 'Owen Swerkstrom',
+		name: 'Jerk',
 		bodies: [
-			/* A Sun */
-			{
-				position:	[ 0, 0, true ],
-				velocity:	[ 0, 0, true ],
-				radius:		70,
-				sun:		true,
-				density:	0.35
-			},
-
-			{
-				position:	[ 0, 300, true ],
-				velocity:	[ 0, 0 ],
-				radius:		20,
-
-				goal:		7
-			},
-			{
-				position:	[ -260, -150, true ],
-				velocity:	[ 0, 0 ],
-				radius:		20,
-
-				goal:		7
-			},
-			{
-				position:	[ 260, -150, true ],
-				velocity:	[ 0, 0 ],
-				radius:		20,
-
-				goal:		7
-			}
+			{"p":[0,0],"v":[0,0,true],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[-334,-4,true],"v":[0.125,-11.75,true],"r":15,"d":0.01,"t":"p","g":4},
+			{"p":[0,1900,true],"v":[-3,0,true],"r":40,"d":0.01,"t":"p","g":0}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Thief',
+		bodies: [
+			{"p":[0,0],"v":[0,0,true],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[-334,-4,true],"v":[0.125,-11.75,true],"r":15,"d":0.01,"t":"p","g":4},
+			{"p":[0,1880],"v":[-3,0,true],"r":40,"d":0.01,"t":"p","g":0}
 		]
 	}, {
 		name: 'Binary',
@@ -252,6 +234,40 @@ UnstableLevels = [
 			{"p":[-49,6],"v":[0,0,true],"r":100,"d":0.09,"t":"s","g":0},
 			{"p":[215,-134],"v":[17.5,19.25,true],"r":15,"d":0.01,"t":"p","g":5},
 			{"p":[311,-130],"v":[5,20.125,true],"r":15,"d":0.01,"t":"p","g":5}
+		]
+	}, {
+		name: 'A Trio',
+		bodies: [
+			/* A Sun */
+			{
+				position:	[ 0, 0, true ],
+				velocity:	[ 0, 0, true ],
+				radius:		70,
+				sun:		true,
+				density:	0.35
+			},
+
+			{
+				position:	[ 0, 300, true ],
+				velocity:	[ 0, 0 ],
+				radius:		20,
+
+				goal:		7
+			},
+			{
+				position:	[ -260, -150, true ],
+				velocity:	[ 0, 0 ],
+				radius:		20,
+
+				goal:		7
+			},
+			{
+				position:	[ 260, -150, true ],
+				velocity:	[ 0, 0 ],
+				radius:		20,
+
+				goal:		7
+			}
 		]
 	}, {
 		name: 'Three is a crowd',
