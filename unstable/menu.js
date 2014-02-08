@@ -8,8 +8,7 @@ function UnstableGameMenu(options)
 	this.levelPreview	= new LevelPreview(options, this);
 	this.game			= new UnstableGame(options, this);
 
-	this.showMenu(window.location.hash.substring(1));
-	this.showSection('beta');
+	this.showMenu('beta');
 
 	var menu;
 	var that = this;
@@ -75,6 +74,9 @@ UnstableGameMenu.prototype.showSection = function showSection(name)
 
 	if (section) {
 		section.style.display = 'block';
+		this.currentSection = name;
+	} else {
+		this.currentSection = null;
 	}
 };
 
@@ -106,22 +108,40 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(num, level, playground
 /* Hide the game and show the menu again */
 UnstableGameMenu.prototype.showMenu = function showMenu(section)
 {
+	var was = section || this.currentSection;
+
 	document.getElementById('menu').style.display = 'block';
 	document.getElementById('game').style.display = 'none';
 
 	this.hideDialog();
 
-	// this.showSection(section);
+	this.game.hide();
+	this.showSection('loading');
+
+	var sections = 2;
+
+	var readyfunc = function() {
+		if (--sections == 0) {
+			if (was != 'loading') {
+				this.showSection(was);
+			} else {
+				this.showSection(null);
+			}
+			this.show();
+
+		}
+	};
 
 	/* Update the level list based on the player's progress */
-	this.levelPreview.getMenu(document.getElementById('level'), false,
-			this.loadLevel.bind(this));
+	if (!this.loadedLevels) {
+		this.levelPreview.getMenu(document.getElementById('level'), false,
+				this.loadLevel.bind(this), readyfunc.bind(this));
+
+		this.loadedLevels = true;
+	}
 
 	this.levelPreview.getMenu(document.getElementById('playground'), true,
-			this.loadLevel.bind(this));
-
-	this.game.hide();
-	this.show();
+			this.loadLevel.bind(this), readyfunc.bind(this));
 };
 
 UnstableGameMenu.prototype.show = function show()

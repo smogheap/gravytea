@@ -5,8 +5,6 @@ function LevelPreview(options, menu)
 
 	/* Use this.options to access saved user data */
 	this.options	= options;
-
-	this.loading	= [];
 }
 
 LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, locked, playground)
@@ -34,10 +32,6 @@ LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, l
 	}
 
 	var img = document.createElement('img');
-
-	this.loading.push(function() {
-		img.src = this.getImage(level, num, 250, 250, 0.3, locked).toDataURL();
-	}.bind(this));
 
 	a.appendChild(document.createElement('br'));
 	a.appendChild(img);
@@ -77,26 +71,32 @@ LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, l
 		a.appendChild(b);
 	}
 
-	return(a);
+	div.appendChild(a);
+
+	return({
+		img:	img,
+		level:	level,
+		num:	num,
+		locked:	locked
+	});
 };
 
-LevelPreview.prototype.getMenu = function getMenu(div, playground, cb)
+LevelPreview.prototype.getMenu = function getMenu(div, playground, selectCB, doneCB)
 {
 	var currentLevel	= this.options.get('currentLevel');
-	var a;
+	var levels			= [];
+	var l;
 
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
 
 	if (!playground) {
 		for (var i = 0, level; level = UnstableLevels[i]; i++) {
-			if ((a = this.getMenuItem(div, cb, level, i, i > currentLevel ? true : false))) {
-				div.appendChild(a);
-			}
+			levels.push(this.getMenuItem(div, selectCB, level, i, i > currentLevel ? true : false));
 		}
 	} else {
 		/* Insert a fake item to create a new level */
-		if ((a = this.getMenuItem(div, cb, {
+		levels.push(this.getMenuItem(div, selectCB, {
 			name:			'New level',
 			userCreated:	true,
 			bodies: [
@@ -108,9 +108,7 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, cb)
 					sun:		true
 				}
 			]
-		}, -1, false, true))) {
-			div.appendChild(a);
-		}
+		}, -1, false, true));
 
 		var nextID = this.options.get('nextPlaygroundID');
 		for (var i = 0; i < nextID;i ++) {
@@ -121,20 +119,22 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, cb)
 				continue;
 			}
 
-			if ((a = this.getMenuItem(div, cb, data, i, false, playground))) {
-				div.appendChild(a);
-			}
+			levels.push(this.getMenuItem(div, selectCB, data, i, false, playground));
 		}
 	}
 
 	var loadfunc = function() {
-		var cb = this.loading.shift();
+		var l;
 
-		if (cb) {
-			cb();
+		if ((l = levels.shift())) {
+			l.img.src = this.getImage(l.level, l.num, 250, 250, 0.3, l.locked).toDataURL();
+
 			setTimeout(loadfunc, 10);
+		} else {
+			if (doneCB) doneCB();
 		}
 	}.bind(this);
+
 	loadfunc();
 };
 

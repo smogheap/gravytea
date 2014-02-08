@@ -205,7 +205,7 @@ Body.prototype.setDensity = function setDensity(density)
 	this.setRadius(this.radius);
 };
 
-Body.prototype.getImage = function getImage(showUI)
+Body.prototype.getImage = function getImage(showUI, radius)
 {
 	var state	= this.drawState;
 	var canvas;
@@ -217,7 +217,15 @@ Body.prototype.getImage = function getImage(showUI)
 
 		Try scaling down for mobile devices though.
 	*/
-	var radius			= 256;
+	// TODO	Attempt to figure determine the best value to use here. It seems
+	//		that devices with accelerated canvas are not effected much by the
+	//		different sizes, but when running with software canvas having a
+	//		size as close to the real size as possible makes a huge difference.
+	//
+	//		For example, ff on android runs well at 32, but that slows down ff
+	//		on the desktop.
+	// radius			= 256;
+	// radius			= 32;
 	var size			= (radius * 2) * 1.5;
 
 	if (state) {
@@ -232,15 +240,21 @@ Body.prototype.getImage = function getImage(showUI)
 	if (!canvas ||
 		state.type		!= this.type	||
 		state.radius	!= this.radius	||
-		state.showUI	!= showUI
+		state.goal		!= this.goal	||
+		state.showUI	!= showUI		||
+		state.size		!= size
 	) {
+		var resize = (state.size != size);
+
+		// console.log('Rendering body', this.index);
 		/*
 			Keep details needed to determine when this cached image is no longer
 			valid and must be recreated.
 		*/
-		state.type			= this.type;
-		state.radius		= this.radius;
-		state.showUI		= showUI;
+		state.type		= this.type;
+		state.radius	= this.radius;
+		state.showUI	= showUI;
+		state.size		= size;
 
 		/* Ensure that the goal will be rendered fresh */
 		delete state.goal;
@@ -248,11 +262,21 @@ Body.prototype.getImage = function getImage(showUI)
 
 		/* Either clear the canvas, or create a new one */
 		if (canvas) {
-			ctx.clearRect(-(size / 2), -(size / 2), size, size);
+			if (!resize) {
+				ctx.clearRect(-(size / 2), -(size / 2), size, size);
+			} else {
+				ctx = canvas.getContext('2d');
+
+				// console.log('Resized:', this.index, size);
+				canvas.setAttribute('width',  size);
+				canvas.setAttribute('height', size);
+				ctx.translate(size / 2, size / 2);
+			}
 		} else {
 			canvas			= document.createElement('canvas');
 			ctx				= canvas.getContext('2d');
 
+			// console.log('Resized:', this.index, size);
 			canvas.setAttribute('width',  size);
 			canvas.setAttribute('height', size);
 			ctx.translate(size / 2, size / 2);
@@ -334,6 +358,8 @@ Body.prototype.getImage = function getImage(showUI)
 		var i;
 		var e;
 
+		// console.log('Rendering pizza crust', this.index);
+
 		/* Draw the goal on top of the planet */
 		ctx.save();
 
@@ -376,11 +402,11 @@ Body.prototype.getImage = function getImage(showUI)
 			ctx.stroke();
 		}
 		ctx.restore();
-
-		/* Save the values so we can detect when we need to re-render */
-		state.completed	= this.completed;
-		state.goal		= this.goal;
 	}
+
+	/* Save the values so we can detect when we need to re-render */
+	state.completed	= this.completed;
+	state.goal		= this.goal;
 
 	return(canvas);
 };
@@ -512,7 +538,7 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			The cached image is 1.5 * the size needed for the body.
 		*/
 		var r = this.radius * 1.5;
-		ctx.drawImage(this.getImage(showUI),
+		ctx.drawImage(this.getImage(showUI, this.radius / scale),
 			this.position.x - r, this.position.y - r,
 			r * 2, r * 2);
 
