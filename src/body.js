@@ -242,6 +242,10 @@ Body.prototype.getImage = function getImage(showUI)
 		state.radius		= this.radius;
 		state.showUI		= showUI;
 
+		/* Ensure that the goal will be rendered fresh */
+		delete state.goal;
+		delete state.completed;
+
 		/* Either clear the canvas, or create a new one */
 		if (canvas) {
 			ctx.clearRect(-(size / 2), -(size / 2), size, size);
