@@ -296,7 +296,11 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 					break;
 
 				case 32: /* space	*/
-					this.go();
+					if (this.level >= 0) {
+						this.go();
+					} else {
+						this.tryLevel();
+					}
 					break;
 
 				case 13: /* Enter */
@@ -527,14 +531,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		div.appendChild(document.createTextNode('  |  '));
 
 		addbtn('Try it', function() {
-			this.loadLevel(this.playgroundID, {
-				name:			'Testing: ' + this.solarsys.name,
-				realname:		this.solarsys.name,
-				index:			this.playgroundID,
-				bodies:			this.solarsys.getBodies(),
-				testing:		true,
-				userCreated:	true
-			});
+			this.tryLevel();
 		}.bind(this));
 	} else {
 		if (this.testing) {
@@ -689,6 +686,20 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	this.solarsys.id	= num;
 	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();
+};
+
+UnstableGame.prototype.tryLevel = function tryLevel()
+{
+	if (this.level < 0) {
+		this.loadLevel(this.playgroundID, {
+			name:			'Testing: ' + this.solarsys.name,
+			realname:		this.solarsys.name,
+			index:			this.playgroundID,
+			bodies:			this.solarsys.getBodies(),
+			testing:		true,
+			userCreated:	true
+		});
+	}
 };
 
 /* Let the solarsystem the user has built/fixed run */

@@ -553,6 +553,58 @@ UnstableLevels = [
 		]
 	}, {
 		author: 'Owen Swerkstrom',
+		name: 'apple',
+		bodies: [
+			{"p":[0,0,true],"v":[0,3],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[20,-140],"v":[15,-10,true],"r":15,"d":0.01,"t":"p","g":8},
+			{"p":[-20,-140],"v":[-15,-10,true],"r":15,"d":0.01,"t":"p","g":8},
+			{"p":[35,-275],"v":[-1,0],"r":10,"d":0.01,"t":"p","g":8}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'treble trouble',
+		bodies: [
+			{"p":[0,111,true],"v":[0,2],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[0,-87,true],"v":[0,-14],"r":25,"d":0.09,"t":"s","g":0},
+			{"p":[0,-256,true],"v":[5,0],"r":15,"d":0.01,"t":"p","g":6}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'ring around the rosy',
+		bodies: [
+			{"p":[0,0,true],"v":[0,0,true],"r":25,"d":1.5,"t":"b","g":0},
+			{"p":[-253,-91],"v":[5.5,-8.625,true],"r":15,"d":0.01,"t":"p","g":12},
+			{"p":[435,119],"v":[-2.125,6.5,true],"r":20,"d":0.01,"t":"p","g":12}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'scrambled egg',
+		bodies: [
+			{"p":[-100,0,true],"v":[0,20,true],"r":51,"d":0.09,"t":"s","g":0},
+			{"p":[100,0,true],"v":[0,-10,true],"r":25,"d":1.53,"t":"b","g":0},
+			{"p":[-520,1],"v":[0,0],"r":15,"d":0.01,"t":"p","g":8}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'peace',
+		bodies: [
+			{"p":[0,0,true],"v":[0,0,true],"r":25,"d":1.5,"t":"b","g":0},
+			{"p":[260,170,true],"v":[0,0],"r":50,"d":0.09,"t":"s","g":3},
+			{"p":[0,-300,true],"v":[0,0],"r":50,"d":0.09,"t":"s","g":3},
+			{"p":[-260,170,true],"v":[0,0],"r":50,"d":0.09,"t":"s","g":3}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
+		name: 'smogheap',
+		bodies: [
+			{"p":[-50,180,true],"v":[0,-14],"r":15,"d":0.01,"t":"p","g":3},
+			{"p":[50,180,true],"v":[0,-14],"r":15,"d":0.01,"t":"p","g":3},
+			{"p":[0,180],"v":[0,-24,true],"r":15,"d":0.01,"t":"p","g":3},
+			{"p":[175,-150,true],"v":[0,0],"r":25,"d":1.5,"t":"b","g":0},
+			{"p":[-175,-150,true],"v":[0,0],"r":25,"d":1.5,"t":"b","g":0}
+		]
+	}, {
+		author: 'Owen Swerkstrom',
 		name: 'Endurance',
 		bodies: [
 			{"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"radius":50,"density":0.09,"type":"sun","goal":0},
