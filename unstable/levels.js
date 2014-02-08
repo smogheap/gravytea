@@ -526,19 +526,18 @@ UnstableLevels = [
 			{"p":[-5000,-5000, true], "v":[20,20, true], "r":5, "g": 10}
 		]
 	}, {
-/*
-		author: 'Owen Swerkstrom',
-		name: 'fubar',
-		bodies:[
-			{"p":[-200,0],"v":[0,0],"r":100,"d":0.09,"t":"s","g":0},
-			{"p":[450,0],"v":[0,18],"r":5,"d":0.01,"t":"p","g":8},
-			{"p":[0,0],"v":[0,-45],"r":30,"d":0.01,"t":"p","g":8}
+		author: 'Garret Downs',
+		name: 'Flower',
+		bodies: [
+			{"p":[-267,-6],"v":[0,5.5],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[382,-9.5],"v":[0.125,-5.25],"r":50,"d":0.09,"t":"s","g":0},
+			{"p":[53.54320299625397,-120.51522064208984],"v":[4.935789585113525,-14.69332218170166],"r":15,"d":0.01,"t":"p","g":10},
+			{"p":[37.20277786254883,4.4289021492004395],"v":[-0.6643352508544922,18.822834849357605],"r":15,"d":0.01,"t":"p","g":3}
 		]
 	}, {
-*/
 		author: 'Owen Swerkstrom',
 		name: 'Endurance',
-		bodies:  [
+		bodies: [
 			{"position":{"x":0,"y":0},"velocity":{"x":0,"y":0},"radius":50,"density":0.09,"type":"sun","goal":0},
 			{"position":{"x":-400,"y":0,"locked":true},"velocity":{"x":0,"y":10,"locked":true},"radius":20,"type":"planet","goal":18},
 			{"position":{"x":400,"y":0,"locked":true},"velocity":{"x":0,"y":-10,"locked":true},"radius":20,"type":"planet","goal":18},
