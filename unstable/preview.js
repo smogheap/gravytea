@@ -86,6 +86,7 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, selectCB, don
 	var currentLevel	= this.options.get('currentLevel');
 	var levels			= [];
 	var l;
+	var small			= document.body.classList.contains('small');
 
 	/* Clear it out (rather violently) */
 	div.innerHTML = '';
@@ -127,7 +128,9 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, selectCB, don
 		var l;
 
 		if ((l = levels.shift())) {
-			l.img.src = this.getImage(l.level, l.num, 230, 230, 0.3, l.locked).toDataURL();
+			l.img.src = this.getImage(l.level, l.num,
+							230, small ? 110 : 230,
+							0.3, l.locked).toDataURL();
 
 			setTimeout(loadfunc, 10);
 		} else {

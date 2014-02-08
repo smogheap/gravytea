@@ -127,13 +127,13 @@ a, a:visited {
 
 	position:			absolute;
 	top:				30px;
-	right:				0px;
-	left:				0px;
+	right:				10px;
+	left:				10px;
 
 	margin-left:		auto;
 	margin-right:		auto;
 	margin-bottom:		auto;
-	width:				300px;
+	width:				280px;
 
 	font-family:		'arial';
 	font-size:			18px;
@@ -167,7 +167,7 @@ a, a:visited {
 	top:				65px;
 	left:				5px;
 	height:				auto;
-	width:				300px;
+	width:				280px;
 	font-size:			16px;
 }
 
@@ -254,9 +254,6 @@ a, a:visited {
 .levellist img {
 	border:				1px solid #888;
 	background:			#000;
-
-	width:				230px;
-	height:				230px;
 }
 .levellist .preview {
 	margin:				8px;
