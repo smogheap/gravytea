@@ -538,7 +538,8 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 			The cached image is 1.5 * the size needed for the body.
 		*/
 		var r = this.radius * 1.5;
-		ctx.drawImage(this.getImage(showUI, this.radius / scale),
+		var d = window.devicePixelRatio || 1;
+		ctx.drawImage(this.getImage(showUI, (this.radius / scale) * d),
 			this.position.x - r, this.position.y - r,
 			r * 2, r * 2);
 
