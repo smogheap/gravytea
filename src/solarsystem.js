@@ -371,15 +371,16 @@ SolarSystem.prototype.getPropertiesDialog = function getPropertiesDialog(closecb
 		delete that.propertyCBs;
 	});
 
-	// TODO Name
 	var e		= document.createElement('input');
 	e.type		= 'text';
 	e.className	= 'value';
 	e.value		= this.name || '';
 
-	e.addEventListener('change', function() {
-		that.name = e.value;
-	});
+	(function(input) {
+		input.addEventListener('change', function() {
+			that.name = input.value;
+		});
+	})(e);
 
 	content.appendChild(wrap([ lbl('Name:'), e ]));
 
