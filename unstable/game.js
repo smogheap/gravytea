@@ -518,7 +518,8 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		div.appendChild(document.createTextNode('  |  '));
 
 		addbtn('Save', function() {
-			this.options.set('nextPlaygroundID', this.playgroundID + 1);
+			this.options.set('nextPlaygroundID',
+				this.options.get('nextPlaygroundID') + 1);
 
 			this.options.set('levelUser-' + this.playgroundID, {
 				name:			this.solarsys.name,
