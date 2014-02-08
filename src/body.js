@@ -207,51 +207,57 @@ Body.prototype.setDensity = function setDensity(density)
 
 Body.prototype.getImage = function getImage(showUI)
 {
-	if (!this.cachedImage								||
-		this.cachedImage.type		!= this.type		||
-		this.cachedImage.radius		!= this.radius		||
-		this.cachedImage.goal		!= this.goal		||
-		this.cachedImage.completed	!= this.completed	||
-		this.cachedImage.showUI		!= showUI
+	var state	= this.drawState;
+	var canvas;
+	var ctx;
+
+	/*
+		The base images are of a planet with a radius of 256, so that is the
+		highest possible quality.
+
+		Try scaling down for mobile devices though.
+	*/
+	var radius			= 256;
+	var size			= (radius * 2) * 1.5;
+
+	if (state) {
+		canvas			= state.canvas;
+		ctx				= state.ctx;
+	} else {
+		state			= {};
+		canvas			= null;
+		ctx				= null;
+	}
+
+	if (!canvas ||
+		state.type		!= this.type	||
+		state.radius	!= this.radius	||
+		state.showUI	!= showUI
 	) {
-		/*
-			The base images are of a planet with a radius of 256, so that is the
-			highest possible quality.
-
-			Try scaling down for mobile devices though.
-		*/
-		var radius			= 256;
-		var size			= (radius * 2) * 1.5;
-		var canvas;
-		var ctx;
-
-		/* Either clear the canvas, or create a new one */
-		if (this.cachedImage) {
-			canvas			= this.cachedImage;
-			ctx				= canvas.cachedctx;
-
-			ctx.clearRect(-radius, -radius, radius, radius);
-		} else {
-			canvas			= document.createElement('canvas');
-			ctx				= canvas.getContext('2d');
-
-			this.cachedImage= canvas;
-			canvas.cachedctx= ctx;
-
-			canvas.setAttribute('width',  size);
-			canvas.setAttribute('height', size);
-			ctx.translate(size / 2, size / 2);
-		}
-
 		/*
 			Keep details needed to determine when this cached image is no longer
 			valid and must be recreated.
 		*/
-		canvas.type			= this.type;
-		canvas.radius		= this.radius;
-		canvas.goal			= this.goal;
-		canvas.completed	= this.completed;
-		canvas.showUI		= showUI;
+		state.type			= this.type;
+		state.radius		= this.radius;
+		state.showUI		= showUI;
+
+		/* Either clear the canvas, or create a new one */
+		if (canvas) {
+			ctx.clearRect(-(size / 2), -(size / 2), size, size);
+		} else {
+			canvas			= document.createElement('canvas');
+			ctx				= canvas.getContext('2d');
+
+			canvas.setAttribute('width',  size);
+			canvas.setAttribute('height', size);
+			ctx.translate(size / 2, size / 2);
+
+			state.canvas	= canvas;
+			state.ctx		= ctx;
+
+			this.drawState	= state;
+		}
 
 		/* Render the area around the body */
 		switch (this.type) {
@@ -314,47 +320,65 @@ Body.prototype.getImage = function getImage(showUI)
 			/* Render a texture on the body */
 			ctx.drawImage(this.texture, -radius, -radius, radius * 2, radius * 2);
 		}
-
-		if (showUI && this.goal) {
-			/* Draw the goal on top of the planet */
-			ctx.save();
-
-			/*
-				Draw a line around the planet indicating how close to the goal
-				the player is.
-			*/
-			var segmentSize	= (Math.PI * 2) / this.goal;
-
-			ctx.lineCap		= 'butt';
-			ctx.lineWidth	= radius / 4;
-
-			for (var i = 0; i < this.goal; i++) {
-				if (i < this.completed) {
-					ctx.strokeStyle = '#fff';
-				} else {
-					ctx.strokeStyle = '#666';
-				}
-
-				ctx.beginPath();
-
-				if (this.goal > 1) {
-					ctx.arc(0, 0, radius * 1.3,
-						(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
-						((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
-				} else {
-					ctx.arc(0, 0, radius * 1.3,
-						(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
-						((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
-				}
-
-				ctx.stroke();
-			}
-
-			ctx.restore();
-		}
 	}
 
-	return(this.cachedImage);
+	/* The pizza crust can be updated without re-rendering the whole image */
+	if (canvas && this.goal && showUI && (
+		state.completed		!= this.completed ||
+		state.goal			!= this.goal
+	)) {
+		var i;
+		var e;
+
+		/* Draw the goal on top of the planet */
+		ctx.save();
+
+		/*
+			Draw a line around the planet indicating how close to the goal
+			the player is.
+		*/
+		var segmentSize	= (Math.PI * 2) / this.goal;
+
+		ctx.lineCap		= 'butt';
+		ctx.lineWidth	= radius / 4;
+
+		/* Only render the segments that need to be rendered */
+		i = state.completed || 0;
+		e = this.goal;
+
+		if (!isNaN(canvas.goal) && this.completed < this.goal) {
+			e = this.completed + 1;
+		}
+
+		for (; i < e; i++) {
+			if (i < this.completed) {
+				ctx.strokeStyle = '#fff';
+			} else {
+				ctx.strokeStyle = '#666';
+			}
+
+			ctx.beginPath();
+
+			if (this.goal > 1) {
+				ctx.arc(0, 0, radius * 1.3,
+					(i       * segmentSize) + (segmentSize * 0.2) - toRad(90),
+					((i + 1) * segmentSize) - (segmentSize * 0.2) - toRad(90), false);
+			} else {
+				ctx.arc(0, 0, radius * 1.3,
+					(i       * segmentSize) + (segmentSize * 0.01) - toRad(90),
+					((i + 1) * segmentSize) - (segmentSize * 0.01) - toRad(90), false);
+			}
+
+			ctx.stroke();
+		}
+		ctx.restore();
+
+		/* Save the values so we can detect when we need to re-render */
+		state.completed	= this.completed;
+		state.goal		= this.goal;
+	}
+
+	return(canvas);
 };
 
 Body.prototype.render = function render(ctx, showBody, showTrajectory, showVelocity, showUI, predictCollisions)

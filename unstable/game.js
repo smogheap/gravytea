@@ -28,10 +28,6 @@ function UnstableGame(options, menu)
 
 	this.setUIOptions(true, true);
 
-	this.speed = 1.0;
-	// this.speed = 0.2;
-
-
 	this.failureText = [
 		"You were doing well... until everyone died.",
 		"Think of the pixel children!",
