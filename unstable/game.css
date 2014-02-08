@@ -159,6 +159,13 @@ a, a:visited {
 	/* Move down a bit so the logo can be seen */
 	top:				100px;
 }
+@media all and (orientation: landscape) {
+	.popup.mainmenu {
+		bottom:			15px;
+		overflow-y:		auto;
+		overflow-x:		hidden;
+	}
+}
 
 .popup.hint {
 	/* Move to the top left corner */
