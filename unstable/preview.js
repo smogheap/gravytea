@@ -127,7 +127,7 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, selectCB, don
 		var l;
 
 		if ((l = levels.shift())) {
-			l.img.src = this.getImage(l.level, l.num, 250, 250, 0.3, l.locked).toDataURL();
+			l.img.src = this.getImage(l.level, l.num, 230, 230, 0.3, l.locked).toDataURL();
 
 			setTimeout(loadfunc, 10);
 		} else {

@@ -100,7 +100,8 @@ a, a:visited {
 	font-family:		Arial;
 	display:			none;
 
-	overflow:			auto;
+	overflow-y:			auto;
+	overflow-x:			hidden;
 }
 
 .content .center {
@@ -241,11 +242,11 @@ a, a:visited {
 	border:				1px solid #888;
 	background:			#000;
 
-	width:				250px;
-	height:				250px;
+	width:				230px;
+	height:				230px;
 }
 .levellist .preview {
-	margin:				0px 10px 20px 0px;
+	margin:				8px;
 	display:			inline-block;
 	vertical-align:		top;
 }
