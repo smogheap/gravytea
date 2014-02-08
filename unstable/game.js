@@ -29,6 +29,8 @@ function UnstableGame(options, menu)
 
 	this.setUIOptions(true, true);
 
+	this.music = new UnstableGameMusic();
+
 	this.failureText = [
 		"You were doing well... until everyone died.",
 		"Think of the pixel children!",
@@ -795,6 +797,8 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 	if (!success) {
 		var options = [ 'Retry', 'Reset' ];
 
+		this.music.stop();
+
 		if (this.testing) {
 			options.push('Back to editor');
 		}
@@ -926,6 +930,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 	var fresh	= false;
 
 	this.running = true;
+	this.music.play();
 
 	/*
 		Needed for android
@@ -1146,6 +1151,8 @@ UnstableGame.prototype.show = function showUnstableGame()
 UnstableGame.prototype.hide = function hideUnstableGame(level)
 {
 	if (this.running) {
+		this.music.stop();
+
 		this.canvas.removeEventListener('DOMMouseScroll',	this, false);
 		this.canvas.removeEventListener('mousewheel',		this, false);
 		this.canvas.removeEventListener('click',			this, false);
