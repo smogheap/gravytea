@@ -416,9 +416,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 	var touch = ('ontouchstart' in window);
 	var scale;
 
-	try {
+	if (ctx.getScale) {
 		scale = ctx.getScale();
-	} catch (e) {
+	} else {
 		scale = 1;
 	}
 

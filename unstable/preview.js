@@ -132,7 +132,7 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, selectCB, don
 							230, small ? 110 : 230,
 							0.3, l.locked).toDataURL();
 
-			setTimeout(loadfunc, 10);
+			setTimeout(loadfunc, 1);
 		} else {
 			if (doneCB) doneCB();
 		}
@@ -146,7 +146,7 @@ LevelPreview.prototype.getImage = function getImage(level, num, width, height, s
 	var solarsys	= new SolarSystem({
 		showVelocity:	false,
 		paused:			true,
-		trajectory:		3000
+		trajectory:		1000
 	});
 	var canvas		= document.createElement('canvas');
 	var ctx			= canvas.getContext('2d');
