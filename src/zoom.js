@@ -67,6 +67,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				position = event.mouse;
 
 				dragStart = ctx.transformedPoint(position.x, position.y);
+				dragStart.time = (new Date()).getTime();
 				dragged	= false;
 				zoomed	= false;
 				return(true);
@@ -106,11 +107,18 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					oldDistance = NaN;
 				}
 
-				if (Math.abs(position.x - mousePos.x) <= 5 &&
-					Math.abs(position.y - mousePos.y) <= 5
-				) {
-					/* Ya gotta drag like ya mean it */
-					return(true);
+				/*
+					Require a 100ms delay to start dragging to tell between it
+					and pinch to zoom.
+				*/
+				if (dragStart.time) {
+					var end = (new Date()).getTime();
+
+					if (end - dragStart.time > 100) {
+						delete dragStart.time;
+					} else {
+						return(true);
+					}
 				}
 
 				position.x = mousePos.x;
