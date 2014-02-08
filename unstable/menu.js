@@ -105,7 +105,7 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 		menu.innerHTML = '';
 
 		if (this.currentSection) {
-			// TODO	Perhaps this should be moved somewhere else?
+			// TODO	Perhaps this should be moved somewhere else on screen?
 			this.addMenuItem(menu, '<< Back',
 					function() { this.showSection(); }.bind(this));
 			return;
@@ -114,7 +114,7 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 		this.askUser(null, [
 			'Play',
 			'Choose a Level',
-			'Playground',
+			// 'Playground',
 			'Options',
 			'About',
 

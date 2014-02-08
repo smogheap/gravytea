@@ -7,6 +7,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 	};
 	var dragStart	= null;
 	var dragged		= false;
+	var zoomed		= false;
 	var dragEnabled	= true;
 	var zoomEnabled	= true;
 	var mousePos	= { x: 0, y: 0 };
@@ -58,6 +59,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				if (!dragEnabled) {
 					dragStart	= null;
 					dragged		= false;
+					zoomed		= false;
 
 					return(true);
 				}
@@ -65,7 +67,8 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				position = event.mouse;
 
 				dragStart = ctx.transformedPoint(position.x, position.y);
-				dragged = false;
+				dragged	= false;
+				zoomed	= false;
 				return(true);
 
 			case 'mousemove':
@@ -75,6 +78,7 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				if (!dragStart || !dragEnabled) {
 					dragStart	= null;
 					dragged		= false;
+					zoomed		= false;
 
 					return(true);
 				}
@@ -84,6 +88,9 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 					var b = new V(touches[1].pageX, touches[1].pageY);
 					var newDistance = a.distance(b);
 
+					dragged	= false;
+					zoomed	= true;
+
 					if (!isNaN(oldDistance)) {
 						/* Scale to x where oldDistance * x == newDistance */
 						var x = newDistance / oldDistance;
@@ -91,6 +98,9 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 						ctx.scale(x, x);
 					}
 					oldDistance = newDistance;
+					break;
+				} else if (zoomed) {
+					/* Don't allow dragging if zooming has already started */
 					break;
 				} else {
 					oldDistance = NaN;
@@ -106,7 +116,8 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				position.x = mousePos.x;
 				position.y = mousePos.y;
 
-				dragged = true;
+				dragged	= true;
+				zoomed	= false;
 
 				var point = ctx.transformedPoint(position.x, position.y);
 
@@ -119,16 +130,12 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 				mousePos = event.mouse;
 				dragStart = null;
 
-				// Turn back on to allow click and shift click to zoom in and out...
-				if (false) {
-					if (!dragged) {
-						zoom(event.shiftKey ? -1 : 1 );
-					}
-				}
-
-				if (!dragged) {
+				if (!dragged && !zoomed) {
 					return(true);
 				}
+
+				dragged	= false;
+				zoomed	= false;
 				break;
 
 			case 'mousewheel':
