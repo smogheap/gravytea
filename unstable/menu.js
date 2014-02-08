@@ -44,6 +44,7 @@ function UnstableGameMenu(options)
 	if ((div = document.getElementById('gamemenu'))) {
 		div.innerHTML = '';
 
+		// TODO	Replace with icons
 		this.addMenuItem(div, 'Menu',
 				function() { that.showMenu();				});
 	}
@@ -309,7 +310,7 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
-UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className, survey)
+UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className, modal)
 {
 	var that	= this;
 	var content	= document.createElement('div');
@@ -347,7 +348,7 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 			{
 				that.hideDialog();
 
-				cb(action);
+				if (cb) cb(action);
 			});
 
 			defcb = defcb || f;
@@ -356,56 +357,13 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 		content.appendChild(a);
 	}
 
-	// TODO	Get rid of this after the beta
-	if (survey && !survey.userCreated) {
-		var div		= document.createElement('div');
-		var html	= [];
-
-		html.push('<hr>');
-		html.push('<form action="survey.html" target="_blank">');
-		html.push('<input type="hidden" name="id" value="' + survey.id + '" />');
-		html.push('<input type="hidden" name="title" value="' + survey.name + '" />');
-
-		html.push('How much did you like this level?');
-		html.push('<br/>');
-		html.push('<select name="rating">');
-		html.push('<option>Loved it</option>');
-		html.push('<option selected>Liked it</option>');
-		html.push('<option>Meh</option>');
-		html.push('<option>It annoyed me</option>');
-		html.push('<option>Hated it</option>');
-		html.push('</select>');
-		html.push('<br/>');
-		html.push('<br/>');
-
-		html.push('How hard was this level?');
-		html.push('<br/>');
-		html.push('<select name="difficulty">');
-		html.push('<option>Too Easy</option>');
-		html.push('<option>Easy</option>');
-		html.push('<option selected>Medium</option>');
-		html.push('<option>Hard</option>');
-		html.push('<option>Is there really a solution?</option>');
-		html.push('<option>Why would you do this to me?</option>');
-		html.push('</select>');
-		html.push('<br/>');
-		html.push('<br/>');
-
-		html.push('<input type="submit" value="Rate Level">');
-
-		html.push('</form>');
-
-		div.innerHTML = html.join('\n');
-		content.appendChild(div);
-	}
-
 	var cls = 'askuser';
 
 	if (className) {
 		cls += ' ' + className;
 	}
 
-	this.showDialog(content, true, cls);
+	this.showDialog(content, arguments.length >= 5 ? modal : true, cls);
 
 	/* Keep track of the first action, so it can be called in other ways */
 	this.defaultDialogCB = defcb;

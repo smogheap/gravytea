@@ -507,7 +507,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				this.menu.hideDialog();
 				delete this.propertiesDialog;
 
-				this.showHint(this.solarsys.name, null);
+				this.setTitle(this.solarsys.name);
 			}.bind(this));
 			this.menu.showDialog(this.propertiesDialog, false, 'levelProperties');
 		}.bind(this));
@@ -522,7 +522,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				userCreated:	true
 			});
 
-			this.menu.askUser('Saved', [ 'Okay' ], function(action) { });
+			this.menu.askUser('Saved');
 		}.bind(this));
 		div.appendChild(document.createTextNode('  |  '));
 
@@ -543,6 +543,7 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 			div.appendChild(document.createTextNode('  |  '));
 		}
 
+
 		if (this.solarsys.options.paused) {
 			addbtn('> Play',	this.go.bind(this));
 		} else {
@@ -557,10 +558,15 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 				this.reset();
 			}.bind(this));
 		}.bind(this));
+
+		if (this.hints && this.hints.length > 0) {
+			div.appendChild(document.createTextNode('  |  '));
+			addbtn('Hints',		this.showHint.bind(this));
+		}
 	}
 };
 
-UnstableGame.prototype.showHint = function showHint(title, hint)
+UnstableGame.prototype.setTitle = function setTitle(title)
 {
 	var titleDiv;
 
@@ -574,70 +580,35 @@ UnstableGame.prototype.showHint = function showHint(title, hint)
 			titleDiv.appendChild(h);
 		}
 	}
-
-	if (hint && hint.length > 0) {
-		var hintDiv = document.createElement('div');
-		var h		= document.createElement('div');
-		var i		= 0;
-		var a;
-
-		h.appendChild(document.createTextNode(hint[i]));
-		hintDiv.appendChild(h);
-		hintDiv.appendChild(document.createElement('br'));
-
-		a = document.createElement('a');
-		a.appendChild(document.createTextNode('Close'));
-		a.addEventListener('click', function() {
-			this.menu.hideDialog();
-		}.bind(this));
-		hintDiv.appendChild(a);
-
-		hintDiv.appendChild(document.createTextNode('  |  '));
-
-		a = document.createElement('a');
-		a.appendChild(document.createTextNode('More'));
-		a.addEventListener('click', function() {
-			i++;
-			if (!hint[i]) {
-				i = 0;
-			}
-			h.innerHTML = '';
-			h.appendChild(document.createTextNode(hint[i]));
-
-			a.innerHTML = '';
-			if (!hint[i + 1]) {
-				a.appendChild(document.createTextNode('Repeat hints'));
-			} else {
-				a.appendChild(document.createTextNode('More'));
-			}
-		}.bind(this));
-		hintDiv.appendChild(a);
-
-		this.menu.showDialog(hintDiv, false, 'hint');
-	}
 };
 
-UnstableGame.prototype.OLDshowHint = function OLDshowHint(title, hint)
+UnstableGame.prototype.showHint = function showHint(index)
 {
-	var hintDiv;
-
-	if ((hintDiv = document.getElementById('hint'))) {
-		hintDiv.innerHTML = '';
-
-		if (title) {
-			var h = document.createElement('h3');
-
-			h.appendChild(document.createTextNode(title));
-			hintDiv.appendChild(h);
-		}
-
-		if (hint) {
-			for (var i = 0, h; h = hint[i]; i++) {
-				hintDiv.appendChild(document.createTextNode(h));
-				hintDiv.appendChild(document.createElement('br'));
-			}
-		}
+	if (isNaN(index)) {
+		index = 0;
 	}
+
+	if (!this.hints || !this.hints[index]) {
+		return;
+	}
+
+	var options = [ 'Close' ];
+
+	if (index > 0) {
+		options.push('Prev');
+	}
+
+	if (index + 1 < this.hints.length) {
+		options.push('Next');
+	}
+
+	this.menu.askUser(this.hints[index], options, function(action) {
+		switch (action) {
+			case 'Close':	this.menu.hideDialog();		break;
+			case 'Prev':	this.showHint(index - 1);	break;
+			case 'Next':	this.showHint(index + 1);	break;
+		}
+	}.bind(this), 'hint', false);
 };
 
 /* Return a list of bodies for the specified level */
@@ -703,7 +674,11 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 		this.userCreated = true;
 	}
 
-	this.showHint(title, hint);
+	this.setTitle(title);
+
+	if ((this.hints = hint)) {
+		this.showHint();
+	}
 
 	var newbodies = [];
 	for (var i = 0, b; b = bodies[i]; i++) {
@@ -829,7 +804,7 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 					this.returnToEditor();
 					return;
 			}
-		}.bind(this), "fail", this.solarsys);
+		}.bind(this), "fail");
 	} else {
 		var options = [ 'Replay' ];
 
@@ -877,7 +852,7 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 
 			this.loadLevel(l, null, hint);
 			this.show();
-		}.bind(this), "success", this.solarsys);
+		}.bind(this), "success");
 	}
 };
 
