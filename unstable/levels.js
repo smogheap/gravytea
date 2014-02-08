@@ -510,6 +510,14 @@ UnstableLevels = [
 			{"position":{"x":117,"y":2.5},"velocity":{"x":0.875,"y":16.25,"locked":true},"radius":15,"type":"planet","color":"#45843E","goal":3}
 		]
 	}, {
+		author: 'Owen Swerkstrom',
+		name: 'Snowman',
+		bodies: [
+			{"p":[0,5],"v":[0,0],"r":50,"d":0.02,"t":"s","g":4},
+			{"p":[0,-90,true],"v":[0,0,true],"r":30,"d":0.09,"t":"s","g":4},
+			{"p":[0,-150],"v":[0,0],"r":20,"d":0.09,"t":"s","g":4}
+		]
+	}, {
 		author: 'Anthony Howe',
 		name: 'Weaving',
 		bodies:[

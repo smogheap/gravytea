@@ -5,6 +5,8 @@ function LevelPreview(options, menu)
 
 	/* Use this.options to access saved user data */
 	this.options	= options;
+
+	this.loading	= [];
 }
 
 LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, locked, playground)
@@ -33,9 +35,9 @@ LevelPreview.prototype.getMenuItem = function getMenuItem(div, cb, level, num, l
 
 	var img = document.createElement('img');
 
-	setTimeout(function() {
+	this.loading.push(function() {
 		img.src = this.getImage(level, num, 250, 250, 0.3, locked).toDataURL();
-	}.bind(this), 3);
+	}.bind(this));
 
 	a.appendChild(document.createElement('br'));
 	a.appendChild(img);
@@ -124,6 +126,16 @@ LevelPreview.prototype.getMenu = function getMenu(div, playground, cb)
 			}
 		}
 	}
+
+	var loadfunc = function() {
+		var cb = this.loading.shift();
+
+		if (cb) {
+			cb();
+			setTimeout(loadfunc, 10);
+		}
+	}.bind(this);
+	loadfunc();
 };
 
 LevelPreview.prototype.getImage = function getImage(level, num, width, height, scale, locked)

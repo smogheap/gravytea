@@ -22,8 +22,9 @@ function UnstableGame(options, menu)
 	this.keyboard	= { x: 0, y: 0 };
 
 	this.solarsys	= new SolarSystem({
-		paused:						true,
-		textures:					true
+		paused:				true,
+		textures:			true,
+		trackOrbits:		true
 	});
 
 	this.setUIOptions(true, true);

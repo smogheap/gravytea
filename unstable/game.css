@@ -240,6 +240,9 @@ a, a:visited {
 .levellist img {
 	border:				1px solid #888;
 	background:			#000;
+
+	width:				250px;
+	height:				250px;
 }
 .levellist .preview {
 	margin:				0px 10px 20px 0px;
