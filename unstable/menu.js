@@ -8,36 +8,53 @@ function UnstableGameMenu(options)
 	this.levelPreview	= new LevelPreview(options, this);
 	this.game			= new UnstableGame(options, this);
 
-	this.showMenu('beta');
-
-	var menu;
+	var div;
 	var that = this;
 
-	/* Create the main menu */
-	if ((menu = document.getElementById('mainmenu'))) {
-		menu.innerHTML = '';
+	if (window.innerWidth <= 320 || window.innerHeight <= 320) {
+		document.body.classList.add('small');
+		this.small = true;
 
-		this.playbtn = this.addMenuItem(menu, 'Play',
+		this.showMenu();
+	} else {
+		this.small = false;
+		this.showMenu('beta');
+	}
+
+	/* Create the main menu */
+	if (!this.small && (div = document.getElementById('mainmenu'))) {
+		div.innerHTML = '';
+
+		this.playbtn = this.addMenuItem(div, 'Play',
 				function(a) { that.loadLevel();				});
-		this.addMenuItem(menu, 'Choose a Level',
+		this.addMenuItem(div, 'Choose a Level',
 				function() { that.showSection('level');		});
-		this.addMenuItem(menu, 'Playground',
+		this.addMenuItem(div, 'Playground',
 				function() { that.showSection('playground');});
-		this.addMenuItem(menu, 'Options',
+		this.addMenuItem(div, 'Options',
 				function() { that.showSection('options');	});
-		this.addMenuItem(menu, 'About',
+		this.addMenuItem(div, 'About',
 				function() { that.showSection('about');		});
 		if (false)
-		this.addMenuItem(menu, 'Help',
+		this.addMenuItem(div, 'Help',
 				function() { that.showSection('help');		});
 	}
 
 	/* Fill out the static game menu */
-	if ((menu = document.getElementById('gamemenu'))) {
-		menu.innerHTML = '';
+	if ((div = document.getElementById('gamemenu'))) {
+		div.innerHTML = '';
 
-		this.addMenuItem(menu, 'Menu',
+		this.addMenuItem(div, 'Menu',
 				function() { that.showMenu();				});
+	}
+
+	/* Allow tapping on the logo to show the menu as well */
+	if (this.small && (div = document.getElementById('menu')) &&
+		(div = div.getElementsByClassName('title')[0])
+	) {
+		div.addEventListener('click', function() {
+			this.showSection();
+		}.bind(this));
 	}
 
 	/* Let the options class render the options page */
@@ -63,7 +80,7 @@ UnstableGameMenu.prototype.addMenuItem = function addMenuItem(menudiv, name, cb)
 	return(a);
 };
 
-UnstableGameMenu.prototype.showSection = function showSection(name)
+UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 {
 	var sections	= document.getElementsByClassName('content');
 	var section		= document.getElementById(name);
@@ -77,6 +94,43 @@ UnstableGameMenu.prototype.showSection = function showSection(name)
 		this.currentSection = name;
 	} else {
 		this.currentSection = null;
+	}
+
+	/*
+		On small screens the main menu gets displayed as a dialog instead of on
+		the top of the screen do to a lack of room.
+	*/
+	if (!noMenu && this.small) {
+		var menu = document.getElementById('mainmenu');
+		menu.innerHTML = '';
+
+		if (this.currentSection) {
+			// TODO	Perhaps this should be moved somewhere else?
+			this.addMenuItem(menu, '<< Back',
+					function() { this.showSection(); }.bind(this));
+			return;
+		}
+
+		this.askUser(null, [
+			'Play',
+			'Choose a Level',
+			'Playground',
+			'Options',
+			'About',
+
+			'Early Access Info'
+		], function(action) {
+			switch (action) {
+				case 'Resume':
+				case 'Play':				this.loadLevel();				break;
+				case 'Choose a Level':		this.showSection('level');		break;
+				case 'Playground':			this.showSection('playground');	break;
+				case 'Options':				this.showSection('options');	break;
+				case 'About':				this.showSection('about');		break;
+				case 'Help':				this.showSection('help');		break;
+				case 'Early Access Info':	this.showSection('beta');		break;
+			}
+		}.bind(this), 'mainmenu');
 	}
 };
 
@@ -116,7 +170,7 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 	this.hideDialog();
 
 	this.game.hide();
-	this.showSection('loading');
+	this.showSection('loading', true);
 
 	var sections = 2;
 
@@ -128,17 +182,14 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 				this.showSection(null);
 			}
 			this.show();
-
 		}
 	};
 
 	/* Update the level list based on the player's progress */
-	if (!this.loadedLevels) {
-		this.levelPreview.getMenu(document.getElementById('level'), false,
-				this.loadLevel.bind(this), readyfunc.bind(this));
+	this.levelPreview.getMenu(document.getElementById('level'), false,
+			this.loadLevel.bind(this), readyfunc.bind(this));
 
-		this.loadedLevels = true;
-	}
+	this.loadedLevels = true;
 
 	this.levelPreview.getMenu(document.getElementById('playground'), true,
 			this.loadLevel.bind(this), readyfunc.bind(this));
@@ -265,9 +316,11 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 	var p		= document.createElement('p');
 	var defcb	= null;
 
-	p.appendChild(document.createTextNode(message));
-	content.appendChild(p);
-	content.appendChild(document.createElement('br'));
+	if (message) {
+		p.appendChild(document.createTextNode(message));
+		content.appendChild(p);
+		content.appendChild(document.createElement('br'));
+	}
 
 	if (!actions || !actions.length) {
 		actions = [ 'Okay' ];
@@ -279,7 +332,12 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 		a.appendChild(document.createTextNode(actions[i]));
 
 		if (i > 0) {
-			content.appendChild(document.createTextNode('  |  '));
+			if (!this.small) {
+				content.appendChild(document.createTextNode('  |  '));
+			} else {
+				content.appendChild(document.createElement('br'));
+				content.appendChild(document.createElement('br'));
+			}
 		}
 
 		(function(action) {
@@ -341,7 +399,13 @@ UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, clas
 		content.appendChild(div);
 	}
 
-	this.showDialog(content, true, className);
+	var cls = 'askuser';
+
+	if (className) {
+		cls += ' ' + className;
+	}
+
+	this.showDialog(content, true, cls);
 
 	/* Keep track of the first action, so it can be called in other ways */
 	this.defaultDialogCB = defcb;

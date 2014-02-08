@@ -64,6 +64,10 @@ a, a:visited {
 	right:				30px;
 }
 
+.small #mainmenu {
+	text-align:			center;
+}
+
 #gamemenu {
 	left:				10px;
 	bottom:				10px;
@@ -145,6 +149,15 @@ a, a:visited {
 	box-shadow:			0px 0px 20px rgba(255, 255, 255, 0.5);
 	-moz-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
 	-webkit-box-shadow:	0px 0px 20px rgba(255, 255, 255, 0.5);
+}
+
+.popup.askuser a {
+	font-family:		'vSHandprinted';
+}
+
+.popup.mainmenu {
+	/* Move down a bit so the logo can be seen */
+	top:				100px;
 }
 
 .popup.hint {
