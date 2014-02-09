@@ -19,8 +19,9 @@ ${APP_DIR}/xulrunner:
 unstable.appcache:
 	@echo "CACHE MANIFEST"								>  unstable.appcache
 	@echo "# `date`"									>> unstable.appcache
-	@ls *.js *.css *.png						>> unstable.appcache
-	@find ../src ../fonts ../images images	-type f		>> unstable.appcache
+	@ls *.js *.css *.png								>> unstable.appcache
+	@find ../src ../fonts ../images images -type f		>> unstable.appcache
+	@find sfx music -type f								>> unstable.appcache
 
 appcache: unstable.appcache
 
