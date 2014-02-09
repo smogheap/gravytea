@@ -113,7 +113,7 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 		}
 
 		this.askUser(null, [
-			'Play',
+			this.loadedLevel ? 'Resume' : 'Play',
 			'Choose a Level',
 			// 'Playground',
 			'Options',
@@ -141,6 +141,8 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(num, level, playground
 
 	document.getElementById('menu').style.display = 'none';
 	document.getElementById('game').style.display = 'block';
+
+	this.loadedLevel = true;
 
 	this.hide();
 

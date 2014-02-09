@@ -1,5 +1,12 @@
 function UnstableGameOptions()
 {
+	/* It only makes sense to have one instance of this */
+	if (arguments.callee._singletonInstance) {
+		return(arguments.callee._singletonInstance);
+	}
+	arguments.callee._singletonInstance = this;
+
+
 	this.defaults = {
 		/* The highest level that the user has unlocked */
 		currentLevel:		0,
@@ -8,8 +15,12 @@ function UnstableGameOptions()
 		nextPlaygroundID:	0,
 
 		fullscreen:			false,
-		predictCollisions:	true
+		predictCollisions:	true,
+		sfx:				true,
+		music:				true
 	};
+
+	return(this);
 };
 
 UnstableGameOptions.prototype.setup = function setup(menu)
@@ -18,6 +29,15 @@ UnstableGameOptions.prototype.setup = function setup(menu)
 	var opts	= document.getElementById('options');
 
 	this.menu = menu;
+
+	var simulateClick = function simulateClick(el) {
+		el.dispatchEvent(new MouseEvent('click', {
+			'view':			window,
+			'bubbles':		true,
+			'cancelable':	true
+		}));
+	};
+
 
 	// TODO	Add options for mapping inputs with keyboard and/or gamepads
 	// TODO	Allow reading options from cli args when running in xulrunner
@@ -46,21 +66,41 @@ UnstableGameOptions.prototype.setup = function setup(menu)
 	opts.appendChild(div);
 	opts.appendChild(document.createElement('br'));
 
-	/*
-		Allow enabling or disabling of displaying predicting collisions.
+	/* Display a checkbox for each of these options */
+	var names = [
+		'Predict Collisions',
+		'Enable Sound Effects',
+		'Enable Music'
+	];
+	var keys = [
+		'predictCollisions',
+		'sfx',
+		'music'
+	];
 
-		The code will still predict collisions internally, but will not display
-		the predicted collisions.
-	*/
-	var i		= document.createElement('input');
-	i.type		= 'checkbox';
-	i.checked	= this.get('predictCollisions');
-	opts.appendChild(i);
-	i.addEventListener('change', function() {
-		that.set('predictCollisions', this.checked);
-	});
+	for (var x = 0; x < names.length; x++) {
+		(function(x) {
+			var i		= document.createElement('input');
+			i.type		= 'checkbox';
+			i.checked	= this.get(keys[x]);
+			opts.appendChild(i);
 
-	opts.appendChild(document.createTextNode('Predict Collisions'));
+			i.addEventListener('change', function() {
+				that.set(keys[x], this.checked);
+			});
+
+			var a		= document.createElement('a');
+			a.appendChild(document.createTextNode(names[x]));
+			opts.appendChild(a);
+
+			a.addEventListener('click', function() {
+				simulateClick(i);
+			});
+
+			opts.appendChild(document.createElement('br'));
+			opts.appendChild(document.createElement('br'));
+		}.bind(this))(x);
+	}
 };
 
 UnstableGameOptions.prototype.addFullscreenOption = function addFullscreenOption()

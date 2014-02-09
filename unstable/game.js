@@ -689,6 +689,8 @@ UnstableGame.prototype.loadLevel = function loadLevel(num, levelData, hint)
 	this.solarsys.id	= num;
 	this.solarsys.setBodies(newbodies);
 	this.loadLevelButtons();
+
+	this.music.resume();
 };
 
 UnstableGame.prototype.tryLevel = function tryLevel()
@@ -805,7 +807,10 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 
 		var x = Math.floor(Math.random() * this.failureText.length);
 
+		this.music.sfx('boo');
 		this.menu.askUser(this.failureText[x], options, function(action) {
+			this.music.resume();
+
 			switch (action) {
 				case "Reset":
 					this.reset();
@@ -832,6 +837,7 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 			options.push('Back to editor');
 		}
 
+		this.music.sfx('yay');
 		this.menu.askUser("Success!", options, function(action) {
 			var hint			= null;
 			var currentLevel	= this.options.get('currentLevel');
