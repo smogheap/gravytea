@@ -16,8 +16,10 @@ function UnstableGameOptions()
 
 		fullscreen:			false,
 		predictCollisions:	true,
-		sfx:				true,
-		music:				true
+
+		// TODO	Re-enable sound by default when we're happier with it
+		sfx:				false,
+		music:				false
 	};
 
 	return(this);
