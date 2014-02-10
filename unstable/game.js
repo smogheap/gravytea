@@ -722,8 +722,15 @@ UnstableGame.prototype.go = function go()
 	}
 
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
+		/* Ensure nothing is rendered as selected */
 		delete b.selected;
 		delete b.velocity.selected;
+
+		/* The pizza crusts must be re-rendered fresh */
+		if (b.drawState) {
+			delete b.drawState.goal;
+			delete b.drawState.completed;
+		}
 	}
 
 	for (var i = 0, b; b = this.solarsys.bodies[i]; i++) {
@@ -812,16 +819,16 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 			this.music.resume();
 
 			switch (action) {
-				case "Reset":
+				case 'Reset':
 					this.reset();
 					break;
 
-				case "Retry":
+				case 'Retry':
 				default:
 					this.stop();
 					break;
 
-				case "Back to editor":
+				case 'Back to editor':
 					this.returnToEditor();
 					return;
 			}
