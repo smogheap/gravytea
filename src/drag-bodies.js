@@ -82,7 +82,9 @@ function makeBodiesDraggable(canvas, ctx, solarsys)
 
 				var point = ctx.transformedPoint(event.mouse.x, event.mouse.y);
 
-				if (!solarsys.options.paused) {
+				if (!solarsys.options.paused ||
+					!solarsys.options.editable
+				) {
 					return(true);
 				}
 

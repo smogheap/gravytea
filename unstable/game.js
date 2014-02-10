@@ -22,6 +22,7 @@ function UnstableGame(options, menu)
 	this.keyboard	= { x: 0, y: 0 };
 
 	this.solarsys	= new SolarSystem({
+		editable:			true,
 		paused:				true,
 		textures:			true,
 		trackOrbits:		true
@@ -185,7 +186,10 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 		case 'click':
 			if (!this.nextClickAction) {
 				// this.selectBody(this.panTo = this.findBody());
-				this.selectBody(this.findBody());
+
+				if (this.solarsys.options.editable) {
+					this.selectBody(this.findBody());
+				}
 				return(true);
 			}
 
@@ -388,7 +392,9 @@ UnstableGame.prototype.handleEvent = function handleEvent(event)
 				}
 			}
 
-			if (!this.solarsys.options.paused) {
+			if (!this.solarsys.options.paused ||
+				!this.solarsys.options.editable
+			) {
 				/* Only allow selecting an object when the game isn't going */
 				this.canvas.classList.remove('mouse-grab');
 				return(true);
@@ -544,7 +550,9 @@ UnstableGame.prototype.loadLevelButtons = function loadLevelButtons()
 		}
 
 
-		if (this.solarsys.options.paused) {
+		if (this.solarsys.options.paused &&
+			this.solarsys.options.editable
+		) {
 			addbtn('> Play',	this.go.bind(this));
 		} else {
 			addbtn('<< Rewind',	this.go.bind(this));
@@ -716,7 +724,11 @@ UnstableGame.prototype.go = function go()
 		rendered:	0
 	};
 
-	if (!this.solarsys.options.paused) {
+	this.menu.hideDialog();
+
+	if (!this.solarsys.options.paused ||
+		!this.solarsys.options.editable
+	) {
 		this.stop();
 		return;
 	}
@@ -761,7 +773,8 @@ UnstableGame.prototype.stop = function stop()
 
 	/* Turn controls back on */
 	this.setUIOptions(true, true);
-	this.solarsys.options.paused = true;
+	this.solarsys.options.paused	= true;
+	this.solarsys.options.editable	= true;
 
 	/* Renable displaying the selected body */
 	this.selectBody(this.selectedBody);
@@ -792,7 +805,8 @@ UnstableGame.prototype.pan = function pan(x, y, shift)
 /* Pause the game and display either a success or failure dialog */
 UnstableGame.prototype.endLevel = function endLevel(success)
 {
-	this.solarsys.options.paused = true;
+	this.solarsys.options.paused	= true;
+	this.solarsys.options.editable	= false;
 
 	if (this.goTime) {
 		var elapsed	= (Date.now() - this.goTime) / 1000;
@@ -832,7 +846,7 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 					this.returnToEditor();
 					return;
 			}
-		}.bind(this), "fail");
+		}.bind(this), "fail", false);
 	} else {
 		var options = [ 'Replay' ];
 
@@ -881,7 +895,7 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 
 			this.loadLevel(l, null, hint);
 			this.show();
-		}.bind(this), "success");
+		}.bind(this), "success", false);
 	}
 };
 
@@ -1037,6 +1051,7 @@ UnstableGame.prototype.show = function showUnstableGame()
 						switch(action) {
 							case 'center':
 								ctx.center();
+
 								if (!that.solarsys.options.paused) {
 									var center = that.solarsys.getCenter();
 
@@ -1104,11 +1119,13 @@ UnstableGame.prototype.show = function showUnstableGame()
 				this.pan(this.keyboard.x, this.keyboard.y, this.keyboard.shift);
 			}
 
-			/*
-				Advance the bodies for this period (16ms)
-			*/
-			before = this.solarsys.getCenter();
+			if (this.selectedBody) {
+				before = this.selectedBody.getPosition();
+			} else {
+				before = this.solarsys.getCenter();
+			}
 
+			/* Advance the bodies for this period (16ms) */
 			this.lasttime += period;
 			this.solarsys.advance(this.lasttime);
 
@@ -1125,8 +1142,18 @@ UnstableGame.prototype.show = function showUnstableGame()
 					-((p.x - center.x) / 2),
 					-((p.y - center.y) / 2));
 			} else {
-				/* Adjust the position of the canvas to keep the suns fixed */
-				var after = this.solarsys.getCenter();
+				/*
+					Adjust the position based on the movements of either the
+					selected body, or the average of the suns.
+				*/
+				var after;
+
+				if (this.selectedBody) {
+					after = this.selectedBody.getPosition();
+				} else {
+					after = this.solarsys.getCenter();
+				}
+
 				ctx.translate(-(after.x - before.x), -(after.y - before.y));
 			}
 
