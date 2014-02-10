@@ -190,16 +190,16 @@ function makeCanvasZoomable(canvas, ctx, dragcb)
 
 		if (!center) {
 			point = ctx.transformedPoint(mousePos.x, mousePos.y);
-
-			ctx.translate(point.x, point.y);
+		} else {
+			point = ctx.transformedPoint(canvas.width / 2, canvas.height / 2);
 		}
+
+		ctx.translate(point.x, point.y);
 
 		var factor	= Math.pow(scaleFactor, clicks);
 		ctx.scale(factor, factor);
 
-		if (!center) {
-			ctx.translate(-point.x, -point.y);
-		}
+		ctx.translate(-point.x, -point.y);
 	};
 
 	/*
