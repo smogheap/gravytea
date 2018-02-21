@@ -8,6 +8,10 @@ function UnstableGameMenu(options)
 	this.levelPreview	= new LevelPreview(options, this);
 	this.game			= new UnstableGame(options, this);
 
+	/* Let the options class render the options page */
+	this.options.setup(this);
+	var currentLevel = this.options.get('currentLevel');
+
 	var div;
 	var that = this;
 
@@ -25,7 +29,7 @@ function UnstableGameMenu(options)
 	if (!this.small && (div = document.getElementById('mainmenu'))) {
 		div.innerHTML = '';
 
-		this.playbtn = this.addMenuItem(div, 'Play',
+		this.playbtn = this.addMenuItem(div, currentLevel > 0 ? 'Continue' : 'New Game',
 				function(a) { that.loadLevel();				});
 		this.addMenuItem(div, 'Choose a Level',
 				function() { that.showSection('level');		});
@@ -57,9 +61,6 @@ function UnstableGameMenu(options)
 			this.showSection();
 		}.bind(this));
 	}
-
-	/* Let the options class render the options page */
-	this.options.setup(this);
 }
 
 UnstableGameMenu.prototype.addMenuItem = function addMenuItem(menudiv, name, cb)
@@ -113,7 +114,8 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 		}
 
 		this.askUser(null, [
-			this.loadedLevel ? 'Resume' : 'Play',
+			this.loadedLevel ? 'Continue' : 'New Game',
+
 			'Choose a Level',
 			// 'Playground',
 			'Options',
@@ -122,8 +124,9 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 			'Early Access Info'
 		], function(action) {
 			switch (action) {
-				case 'Resume':
-				case 'Play':				this.loadLevel();				break;
+				case 'Continue':
+				case 'New Game':			this.loadLevel();				break;
+
 				case 'Choose a Level':		this.showSection('level');		break;
 				case 'Playground':			this.showSection('playground');	break;
 				case 'Options':				this.showSection('options');	break;
@@ -153,7 +156,7 @@ UnstableGameMenu.prototype.loadLevel = function loadLevel(num, level, playground
 	/* Replace the name of the button */
 	if (this.playbtn) {
 		this.playbtn.innerHTML = '';
-		this.playbtn.appendChild(document.createTextNode('Resume'));
+		this.playbtn.appendChild(document.createTextNode('Continue'));
 
 		/* This only needs to be done once */
 		delete this.playbtn;
