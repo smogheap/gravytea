@@ -849,7 +849,8 @@ UnstableGame.prototype.endLevel = function endLevel(success)
 			}
 		}.bind(this), "fail", false);
 	} else {
-		var options = [ 'Replay' ];
+		// var options = [ 'Replay' ];
+		var options = [];
 
 		if (!this.userCreated && !this.testing) {
 			options.unshift('Next Level');
