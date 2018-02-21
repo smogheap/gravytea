@@ -608,11 +608,12 @@ UnstableGame.prototype.showHint = function showHint(index)
 
 	if (index + 1 < this.hints.length) {
 		options.push('Next Hint');
+	} else {
+		options.push('Close');
 	}
 
 	this.menu.askUser(this.hints[index], options, function(action) {
 		switch (action) {
-			case '[Close]':		this.menu.hideDialog();		break;
 			case 'Prev':		this.showHint(index - 1);	break;
 			case 'Next Hint':	this.showHint(index + 1);	break;
 		}
