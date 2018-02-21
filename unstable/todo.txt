@@ -1,0 +1,28 @@
+- Default camera view to focus on the center of mass of the level, instead of
+on a selected star?
+
++ Menus/UI
+	- Replace "Play" with "New Game"/"Continue"
+	- Cleanup the success dialog. The order of the buttons (Next Level | Replay)
+	seems backwards now. Perhaps move "Replay" somewhere else?
+	- Are the scroll and zoom icons in the top right needed?
+	- The tutorial dialogs are not obvious and should be cleaned up, or at least
+	styled differently to make them harder to miss?
+
++ I need to re-record music
+	- and add some smash boom bang sound effects
+	- maybe some new title screen/credits music
+
++ related: possible juicing up / animating of failures
+	- add some kind of screen transition for retry/reset?
+	- slow time just before a collision?
+	- grow-in the big bat-smash graphics?
+
++ Levels
+	- More levels
+	- Ability to encode levels in a shareable URL
+	- Other level types? Perhaps things like planets that must get a specific
+	number of orbits and no more?
+
+- weird feature idea: different-colored orbit counters to require going around multiple bodies?
+

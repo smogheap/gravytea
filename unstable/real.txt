@@ -1,0 +1,6 @@
+Earth
+	Radius:				6,378,000 m
+	Volume:				1.08321*10^12 km^3
+	Mean Density:		5.515 g/cm^3
+	Mass:				5.97219*10^24 kg
+

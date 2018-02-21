@@ -600,23 +600,23 @@ UnstableGame.prototype.showHint = function showHint(index)
 		return;
 	}
 
-	var options = [ 'Close' ];
+	var options = [];
 
 	if (index > 0) {
 		options.push('Prev');
 	}
 
 	if (index + 1 < this.hints.length) {
-		options.push('Next');
+		options.push('Next Hint');
 	}
 
 	this.menu.askUser(this.hints[index], options, function(action) {
 		switch (action) {
-			case 'Close':	this.menu.hideDialog();		break;
-			case 'Prev':	this.showHint(index - 1);	break;
-			case 'Next':	this.showHint(index + 1);	break;
+			case '[Close]':		this.menu.hideDialog();		break;
+			case 'Prev':		this.showHint(index - 1);	break;
+			case 'Next Hint':	this.showHint(index + 1);	break;
 		}
-	}.bind(this), 'hint', false);
+	}.bind(this), 'hint', false, null, '[Close]');
 };
 
 /* Return a list of bodies for the specified level */

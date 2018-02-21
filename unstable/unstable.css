@@ -6,7 +6,6 @@ body {
 }
 
 a, a:visited {
-	color:				white;
 	cursor:				pointer;
 }
 
@@ -123,7 +122,8 @@ a, a:visited {
 }
 
 .popup {
-	color:				white;
+	color:				black;
+	background:			#ccc;
 
 	position:			absolute;
 	top:				30px;
@@ -138,7 +138,6 @@ a, a:visited {
 	font-family:		'arial';
 	font-size:			18px;
 
-	background:			#000;
 	padding:			10px;
 	text-align:			center;
 
@@ -254,8 +253,18 @@ a, a:visited {
 }
 
 .popup a {
-	color:				white;
 	padding:			10px;
+	font-weight:		bold;
+}
+
+.popup .title {
+	float:				left;
+	font-size:			14px;
+}
+
+.popup a.close {
+	float:				right;
+	font-size:			10px;
 }
 
 .levellist img {

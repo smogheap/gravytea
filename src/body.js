@@ -418,7 +418,9 @@ Body.prototype.render = function render(ctx, showBody, showTrajectory, showVeloc
 
 	if (ctx.getScale) {
 		scale = ctx.getScale();
-	} else {
+	}
+
+	if (isNaN(scale)) {
 		scale = 1;
 	}
 

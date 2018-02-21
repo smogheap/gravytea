@@ -178,7 +178,7 @@ UnstableGameMenu.prototype.showMenu = function showMenu(section)
 	var sections = 2;
 
 	var readyfunc = function() {
-		if (--sections == 0) {
+		if (--sections === 0) {
 			if (was != 'loading') {
 				this.showSection(was);
 			} else {
@@ -312,12 +312,35 @@ UnstableGameMenu.prototype.hide = function hide()
 	this.running = false;
 };
 
-UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className, modal)
+UnstableGameMenu.prototype.askUser = function askUser(message, actions, cb, className, modal, title, closeAction)
 {
 	var that	= this;
 	var content	= document.createElement('div');
 	var p		= document.createElement('p');
 	var defcb	= null;
+
+	if (title) {
+		var d = document.createElement('p');
+
+		d.appendChild(document.createTextNode(title));
+		d.className = 'title';
+		content.appendChild(d);
+	}
+
+	if (closeAction) {
+		var a = document.createElement('a');
+
+		a.className = 'close';
+		a.appendChild(document.createTextNode(closeAction));
+
+		a.addEventListener('click', function(e) {
+			that.hideDialog();
+			if (cb) {
+				cb(closeAction);
+			}
+		});
+		content.appendChild(a);
+	}
 
 	if (message) {
 		p.appendChild(document.createTextNode(message));
