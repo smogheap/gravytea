@@ -22,7 +22,7 @@ function UnstableGameMenu(options)
 		this.showMenu();
 	} else {
 		this.small = false;
-		this.showMenu('beta');
+		this.showMenu();
 	}
 
 	/* Create the main menu */
@@ -113,15 +113,15 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 			return;
 		}
 
+		var currentLevel = this.options.get('currentLevel');
+
 		this.askUser(null, [
-			this.loadedLevel ? 'Continue' : 'New Game',
+			currentLevel > 0 ? 'Continue' : 'New Game',
 
 			'Choose a Level',
 			// 'Playground',
 			'Options',
-			'About',
-
-			'Early Access Info'
+			'About'
 		], function(action) {
 			switch (action) {
 				case 'Continue':
@@ -132,7 +132,6 @@ UnstableGameMenu.prototype.showSection = function showSection(name, noMenu)
 				case 'Options':				this.showSection('options');	break;
 				case 'About':				this.showSection('about');		break;
 				case 'Help':				this.showSection('help');		break;
-				case 'Early Access Info':	this.showSection('beta');		break;
 			}
 		}.bind(this), 'mainmenu');
 	}
