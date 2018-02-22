@@ -336,7 +336,7 @@ UnstableLevels = [
 				position:	[ 0, 0 ],
 				velocity:	[ 0, 0 ],
 				radius:		15,
-				goal:		5
+				goal:		7
 			}
 		]
 	}, {
