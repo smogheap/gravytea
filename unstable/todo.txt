@@ -2,14 +2,9 @@
 on a selected star?
 
 + Menus/UI
-	- Replace "Play" with "New Game"/"Continue"
-	- Cleanup the success dialog. The order of the buttons (Next Level | Replay)
-	seems backwards now. Perhaps move "Replay" somewhere else?
 	- Are the scroll and zoom icons in the top right needed?
-	- The tutorial dialogs are not obvious and should be cleaned up, or at least
-	styled differently to make them harder to miss?
 
-+ I need to re-record music
++ Re-record music
 	- and add some smash boom bang sound effects
 	- maybe some new title screen/credits music
 
@@ -21,8 +16,12 @@ on a selected star?
 + Levels
 	- More levels
 	- Ability to encode levels in a shareable URL
-	- Other level types? Perhaps things like planets that must get a specific
-	number of orbits and no more?
+	- Option to require that a planet be ejected from the level, if we can find
+	a reasonable way to detect this.
+	- Option to require that a planet MUST crash
+	- Option to require a min and max number of orbits for a planet before the
+	level ends. May be used with multiple planets to force syncing, or with
+	planets that must be ejected or crashed.
 
 - weird feature idea: different-colored orbit counters to require going around multiple bodies?
 
