@@ -22,6 +22,7 @@ on a selected star?
 	- Option to require a min and max number of orbits for a planet before the
 	level ends. May be used with multiple planets to force syncing, or with
 	planets that must be ejected or crashed.
+	- Time based levels?
 
 - weird feature idea: different-colored orbit counters to require going around multiple bodies?
 
