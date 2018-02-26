@@ -15,6 +15,10 @@ function UnstableGameMusic()
 		{
 			src:		'music/offkilter2.mp3',
 			loopstart:	0
+		},
+		{
+			src:		'music/aquatic.mp3',
+			loopstart:	0
 		}
 	];
 
