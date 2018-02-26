@@ -9,11 +9,11 @@ function UnstableGameMusic()
 
 	this.songs = [
 		{
-			src:		'music/chillinspace.ogg',
+			src:		'music/chillinspace2-noreverb.mp3',
 			loopstart:	30
 		},
 		{
-			src:		'music/offkilter.ogg',
+			src:		'music/offkilter2.mp3',
 			loopstart:	0
 		}
 	];
