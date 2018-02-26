@@ -1,0 +1,23 @@
+{
+	"name": "unstable",
+	"productName": "unstable",
+	"author": "Micah N Gorrell and Owen Swerkstrom",
+	"description": "A simple little game about orbital mechanics",
+	"version": "1.0.0",
+	"license": "GPL-3.0",
+	"main": "electron.js",
+	"devDependencies": {
+		"electron": "^1.4.3",
+		"electron-packager": "^8.1.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/smogheap/gravytea.git"
+	},
+	"scripts": {
+		"package": "electron-packager . unstable --all --overwrite --asar=true --icon=unstable/icon128.png --prune=true --out=unstable/release-builds",
+		"package-mac": "electron-packager . unstable --overwrite --asar=true --platform=darwin --arch=x64  --icon=unstable/icon128.png --prune=true --out=unstable/release-builds",
+		"package-win": "electron-packager . unstable --overwrite --asar=true --platform=win32  --arch=ia32 --icon=unstable/icon128.png --prune=true --out=unstable/release-builds --version-string.CompanyName=smogheap --version-string.FileDescription=smogheap --version-string.ProductName=\"unstable\"",
+		"package-linux": "electron-packager . unstable --overwrite --asar=true --platform=linux  --arch=x64  --icon=unstable/icon128.png --prune=true --out=unstable/release-builds"
+	}
+}
