@@ -106,6 +106,7 @@ UnstableGameMusic.prototype.sfx = function sfx(name)
 	sound = sounds[x];
 
 	/* Play */
+	sound.currentTime = 0;
 	sound.play();
 };
 
