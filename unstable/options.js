@@ -17,9 +17,8 @@ function UnstableGameOptions()
 		fullscreen:			false,
 		predictCollisions:	true,
 
-		// TODO	Re-enable sound by default when we're happier with it
-		sfx:				false,
-		music:				false
+		sfx:				true,
+		music:				true
 	};
 
 	return(this);
@@ -333,7 +332,7 @@ UnstableGameOptions.prototype.get = function get(name)
 		}
 	}
 
-	if (result == null) {
+	if (result === null) {
 		result = this.defaults[key];
 	}
 
