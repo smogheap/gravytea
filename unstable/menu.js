@@ -38,7 +38,11 @@ function UnstableGameMenu(options)
 		this.addMenuItem(div, 'Options',
 				function() { that.showSection('options');	});
 		this.addMenuItem(div, 'About',
-				function() { that.showSection('about');		});
+						 function() {
+							 that.showSection('about');
+							 document.querySelector("audio.jingle").currentTime = 0;
+							 document.querySelector("audio.jingle").play();
+						 });
 		if (false)
 		this.addMenuItem(div, 'Help',
 				function() { that.showSection('help');		});
