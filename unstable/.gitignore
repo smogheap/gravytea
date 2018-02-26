@@ -1,4 +1,6 @@
 gravytea
 node_modules
 release-builds
+manifest.txt
+unstable.appcache
 
